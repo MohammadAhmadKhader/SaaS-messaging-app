@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.demo.dtos.roles.RoleViewDTO;
+import com.example.demo.dtos.globalroles.GlobalRoleViewDTO;
 import com.example.demo.models.User;
 
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class UserViewDTO implements Serializable {
     private String email;
     private Instant createdAt;
     private Instant updatedAt;
-    private List<RoleViewDTO> roles;
+    private List<GlobalRoleViewDTO> roles;
 
     public UserViewDTO(User user) {
         setId(user.getId());

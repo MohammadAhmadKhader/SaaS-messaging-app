@@ -12,8 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.session.Session;
-import org.springframework.session.data.redis.ReactiveRedisIndexedSessionRepository.RedisSession;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,10 +20,8 @@ import com.example.demo.dtos.apiResponse.ApiResponses;
 import com.example.demo.dtos.auth.LoginDTO;
 import com.example.demo.dtos.auth.RegisterDTO;
 import com.example.demo.dtos.auth.UserPrincipal;
-import com.example.demo.dtos.users.UserViewDTO;
-import com.example.demo.models.User;
 import com.example.demo.services.cache.RedisService;
-import com.example.demo.services.security.RolesService;
+import com.example.demo.services.security.GlobalRolesService;
 import com.example.demo.services.users.UsersService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,23 +34,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-
+@Validated
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UsersService usersService;
     private final PasswordEncoder passwordEncoder;
-    private final RolesService rolesService;
+    private final GlobalRolesService globalRolesService;
     private final SecurityContextRepository securityRepository = new HttpSessionSecurityContextRepository();
     private final RedisService redisService;
     
     public AuthController(AuthenticationManager authenticationManager, UsersService usersService,
-     PasswordEncoder passwordEncoder, RolesService rolesService, RedisService redisService) {
+     PasswordEncoder passwordEncoder, GlobalRolesService globalRolesService, RedisService redisService) {
        this.usersService = usersService;
        this.authenticationManager = authenticationManager;
        this.passwordEncoder = passwordEncoder;
-       this.rolesService = rolesService;
+       this.globalRolesService = globalRolesService;
        this.redisService = redisService;
     }
 
@@ -67,17 +64,18 @@ public class AuthController {
         var user = registerDTO.toUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        var role = rolesService.findByName("User");
+        var role = this.globalRolesService.findByName("User");
         if(role == null) {
             var errMsg = "User Role was not found";
-            return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(errMsg));
+            return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
         }
-        user.setRoles(Collections.singletonList(role));
-        
-        var createdUser = usersService.create(user);
+
+        user.getRoles().add(role);
+        var createdUser = this.usersService.create(user);
+
         var userDTO = createdUser.toViewDTO();
 
-        redisService.createSessionWithUser(req, userDTO);
+        this.redisService.createSessionWithUser(req, userDTO);
 
         var respBody = ApiResponses.OneKey("user", userDTO);
         
@@ -86,7 +84,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO dto, HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication auth = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             dto.getEmail(), 
             dto.getPassword()
         ));
@@ -94,13 +92,14 @@ public class AuthController {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(auth);
         SecurityContextHolder.setContext(context);
-        securityRepository.saveContext(context, request, response);
+        this.securityRepository.saveContext(context, request, response);
         
         var principal = (UserPrincipal) auth.getPrincipal();
-        var userViewDTO = principal.getUser().toViewDTO();
-        var respBody = ApiResponses.OneKey("user", userViewDTO);
+        var user = principal.getUser();
+        var userDTO = user.toViewDTO();
+        var respBody = ApiResponses.OneKey("user", userDTO);
         
-        redisService.storeUserInSession(request, userViewDTO);
+        this.redisService.storeUserInSession(request, userDTO);
 
         return ResponseEntity.ok().body(respBody);
     }

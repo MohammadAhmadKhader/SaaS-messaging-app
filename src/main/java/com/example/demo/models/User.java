@@ -9,7 +9,6 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.example.demo.dtos.shared.IViewDTO;
 import com.example.demo.dtos.users.UserViewDTO;
 import com.example.demo.dtos.users.UserWithoutPermissionsViewDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -41,9 +40,8 @@ import lombok.Setter;
 name = "users",
 indexes = {
     @Index(name = "idx_email_organizationid", columnList = "email, organization_id", unique = true)
-}
-)
-public class User implements IViewDTO<UserViewDTO>, Serializable {
+})
+public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -75,18 +73,11 @@ public class User implements IViewDTO<UserViewDTO>, Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-        name = "users_roles",
+        name = "users_global_roles",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users"),
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "roles")
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles")
     )
-    List<Role> roles = new ArrayList<>();
-
-    @Column(name = "organization_id",insertable = false, updatable = false)
-    Integer organizationId;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "organization_id")
-    Organization organization;
+    List<GlobalRole> roles = new ArrayList<>();
 
     public User(String email, String firstName, String lastName, String password) {
         setEmail(email);

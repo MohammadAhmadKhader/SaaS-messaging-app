@@ -2,6 +2,7 @@ package com.example.demo.dtos.apiResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,10 @@ public class ApiResponses {
         "count",collection.getCount(),
         "page",collection.getPage(),
         "size",collection.getSize());
+    }
+
+    public static Map<String, Object> GetAllResponse(String collectionKey, List<?> list, long count, Integer page, Integer size) {
+        return Map.of(collectionKey, list, "count", count,"page", page,"size", size);
     }
 
     public static Map<String, Object> OneKey(String modelKey, Object collection) {
@@ -55,8 +60,16 @@ public class ApiResponses {
         return Map.of("error", errorMessage);
     }
 
+    public static Map<String, Object> GetErrIdIsRequired(String idName ,Serializable id) {
+        return Map.of("error", String.format("%s is required", idName, id));
+    }
+
     public static Map<String, Object> GetInternalErr() {
         return Map.of("error", "Internal server error");
+    }
+
+    public static Map<String, Object> GetNotFoundErr(String resourceName, Serializable id) {
+        return Map.of("error", String.format("%s with id '%s' was not found", resourceName, id));
     }
 
     public static Map<String, Object> GetInternalErr(String message) {

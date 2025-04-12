@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
-
-
+@Validated
 @RestController
 @RequestMapping("/api/organizations")
 public class OrganizationsController {
@@ -34,37 +33,29 @@ public class OrganizationsController {
         this.organizationsService = organizationsService;
     }
 
-    @GetMapping("")
-    @PreAuthorize("hasAuthority('view:organization')")
-    public ResponseEntity<Object> getOrganizations(
-        @RequestParam(defaultValue = "1", name = "page") Integer page,
-        @RequestParam(defaultValue = "10", name = "size") Integer size ) {
-        var orgs = this.organizationsService.findAllOrganization(page, size);
-
-        var respBody = ApiResponses.GetAllResponse(orgs, "organizations");
-        
-        return ResponseEntity.ok().body(respBody);
-    }
-
     @PostMapping("")
+    @PreAuthorize("hasAuthority('view:organization')")
     public ResponseEntity<Object> createOrganization(@Valid @RequestBody OrganizationCreateDTO dto) {
-        var newOrg = this.organizationsService.createAndReturnAsView(dto.toModel());
+        var newOrg = this.organizationsService.create(dto.toModel());
 
-        var respBody = ApiResponses.OneKey("organization", newOrg);
+        var respBody = ApiResponses.OneKey("organization", newOrg.toViewDTO());
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateOrganization(@PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.updateAndReturnAsView(id, dto.toModel());
+        var updatedOrg = this.organizationsService.update(id, dto.toModel());
         
-        var respBody = ApiResponses.OneKey("organization", updatedOrg);
+        var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteOrganization(@PathVariable Integer id) {
-        this.organizationsService.deleteById(id);
+        var isDeleted = this.organizationsService.findThenDeleteById(id);
+        if(!isDeleted) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
+        }
         
         return ResponseEntity.noContent().build();
     }

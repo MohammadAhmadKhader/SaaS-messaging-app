@@ -1,275 +1,448 @@
 {
-    "permissions":[
-        {
-            "name":"view:user"
-        },
-        {
-            "name":"view_own:user"
-        },
-        {
-            "name":"create:user"
-        },
-        {
-            "name":"update:user"
-        },
-        {
-            "name":"delete:user"
-        },
-        {
-            "name":"view:organization"
-        },
-        {
-            "name":"create:organization"
-        },
-        {
-            "name":"update:organization"
-        },
-        {
-            "name":"delete:organization"
-        },
-        {
-            "name":"view:role"
-        },
-        {
-            "name":"create:role"
-        },
-        {
-            "name":"update:role"
-        },
-        {
-            "name":"delete:role"
-        }
-    ],
-    "roles":[
-        {
-            "name":"User"
-        },
-        {
-            "name":"Manager"
-        },
-        {
-            "name":"SuperAdmin"
-        },
-        {
-            "name":"Admin"
-        }
-    ],
-    "contents": [
-        {
-          "title": "Understanding Java Streams",
-          "description": "A deep dive into Java Streams.",
-          "status": "IDEA",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Spring Boot Microservices",
-          "description": "Building scalable microservices with Spring Boot.",
-          "status": "IN_PROGRESS",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "Introduction to Docker",
-          "description": "Learn the basics of Docker.",
-          "status": "COMPLETED",
-          "userId": null,
-          "contentType": "VIDEO",
-          "url": null
-        },
-        {
-          "title": "Mastering Hibernate",
-          "description": "A guide to advanced Hibernate usage.",
-          "status": "PUBLISHED",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Kubernetes for Developers",
-          "description": "An introduction to Kubernetes.",
-          "status": "IDEA",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "Spring Security Best Practices",
-          "description": "Secure your Spring applications.",
-          "status": "IN_PROGRESS",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Effective Database Design",
-          "description": "Key principles for relational databases.",
-          "status": "COMPLETED",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "REST API Design Principles",
-          "description": "Best practices for designing REST APIs.",
-          "status": "PUBLISHED",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Mastering GraphQL",
-          "description": "Learn GraphQL fundamentals.",
-          "status": "IDEA",
-          "userId": null,
-          "contentType": "VIDEO",
-          "url": null
-        },
-        {
-          "title": "Spring Boot Testing Strategies",
-          "description": "Unit and integration testing in Spring Boot.",
-          "status": "IN_PROGRESS",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "Scaling Java Applications",
-          "description": "How to scale Java applications effectively.",
-          "status": "COMPLETED",
-          "userId": null,
-          "contentType": "CONFERENCE_TALK",
-          "url": null
-        },
-        {
-          "title": "Clean Architecture in Java",
-          "description": "A guide to clean architecture principles.",
-          "status": "PUBLISHED",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Event-Driven Architecture",
-          "description": "How to design event-driven systems.",
-          "status": "IDEA",
-          "userId": null,
-          "contentType": "CONFERENCE_TALK",
-          "url": null
-        },
-        {
-          "title": "Building Reactive Applications",
-          "description": "Introduction to reactive programming.",
-          "status": "IN_PROGRESS",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "Machine Learning for Developers",
-          "description": "Practical ML techniques for software engineers.",
-          "status": "COMPLETED",
-          "userId": null,
-          "contentType": "VIDEO",
-          "url": null
-        },
-        {
-          "title": "Serverless Java Applications",
-          "description": "Deploying Java applications on serverless platforms.",
-          "status": "PUBLISHED",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Advanced SQL Optimization",
-          "description": "Optimizing SQL queries for performance.",
-          "status": "IDEA",
-          "userId": null,
-          "contentType": "COURSE",
-          "url": null
-        },
-        {
-          "title": "API Gateway Patterns",
-          "description": "How to implement API gateways effectively.",
-          "status": "IN_PROGRESS",
-          "userId": null,
-          "contentType": "CONFERENCE_TALK",
-          "url": null
-        },
-        {
-          "title": "Building Secure APIs",
-          "description": "Security best practices for API development.",
-          "status": "COMPLETED",
-          "userId": null,
-          "contentType": "ARTICLE",
-          "url": null
-        },
-        {
-          "title": "Deploying Java Apps with CI/CD",
-          "description": "Automating deployment with CI/CD pipelines.",
-          "status": "PUBLISHED",
-          "userId": null,
-          "contentType": "VIDEO",
-          "url": null
-        }
-    ],
-    "organizations":[
-        {
-          "name": "Tech Innovators Ltd.",
-          "industry": "Technology"
-        },
-        {
-          "name": "Future Enterprises Inc.",
-          "industry": "Business Services"
-        },
-        {
-          "name": "Global Ventures",
-          "industry": "Venture Capital"
-        },
-        {
-          "name": "Quantum Technologies",
-          "industry": "Technology"
-        },
-        {
-          "name": "Innovative Solutions Group",
-          "industry": "Consulting"
-        },
-        {
-          "name": "FutureTech Labs",
-          "industry": "Research & Development"
-        },
-        {
-          "name": "Creative Solutions Inc.",
-          "industry": "Marketing & Advertising"
-        },
-        {
-          "name": "Pioneers Technologies",
-          "industry": "Software Development"
-        },
-        {
-          "name": "Tech Dynamics",
-          "industry": "Technology"
-        },
-        {
-          "name": "Innovative Minds Ltd.",
-          "industry": "Innovation & Design"
-        }
-    ],
-    "users":[
-        {
-          "id":1,
-          "firstName": "john",
-          "lastName": "doe",
-          "email": "john.doe@gmail.com"
-        },
-        {
-          "id":2,
-          "firstName": "alice",
-          "lastName": "smith",
-          "email": "admin@gmail.com"
-        }
-    ]
+  "globalPermissions": [
+    {
+      "name": "app-dashboard:user:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:user:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:user:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:user:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:role:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:role:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:role:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:role:assign",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": false
+    },
+    {
+      "name": "app-dashboard:role:un-assign",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": false
+    },
+    {
+      "name": "app-dashboard:role:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:remove-ownership",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:organization:assign-ownership",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:content:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:content:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:create",
+      "isDefaultUser": true,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    }
+  ],
+  "organizationPermissions":[
+    {
+      "name": "org-dashboard:role:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    }, 
+    {
+      "name": "org-dashboard:role:create",
+      "isDefaultUser": false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:assign",
+      "isDefaultUser": false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:un-assign",
+      "isDefaultUser": false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:role:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:content:view",
+      "isDefaultUser": true,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:content:create",
+      "isDefaultUser": true,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:content:update",
+      "isDefaultUser": true,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:content:delete",
+      "isDefaultUser": false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:user:invite",
+      "isDefaultUser": true,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "organization:user:kick",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name":"organization:transfer-ownership",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultSuperAdmin": true
+    }
+  ],
+  "organizationRoles": [
+    {
+      "name": "Org-User"
+    },
+    {
+      "name": "Org-Admin"
+    },
+    {
+      "name": "Org-Owner"
+    }
+  ],
+  "globalRoles": [
+    {
+      "name": "User"
+    },
+    {
+      "name": "Admin"
+    },
+    {
+      "name": "SuperAdmin"
+    }
+  ],
+  "contents": [
+    {
+      "title": "Understanding Java Streams",
+      "description": "A deep dive into Java Streams.",
+      "status": "IDEA",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Spring Boot Microservices",
+      "description": "Building scalable microservices with Spring Boot.",
+      "status": "IN_PROGRESS",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "Introduction to Docker",
+      "description": "Learn the basics of Docker.",
+      "status": "COMPLETED",
+      "userId": null,
+      "contentType": "VIDEO",
+      "url": ""
+    },
+    {
+      "title": "Mastering Hibernate",
+      "description": "A guide to advanced Hibernate usage.",
+      "status": "PUBLISHED",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Kubernetes for Developers",
+      "description": "An introduction to Kubernetes.",
+      "status": "IDEA",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "Spring Security Best Practices",
+      "description": "Secure your Spring applications.",
+      "status": "IN_PROGRESS",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Effective Database Design",
+      "description": "Key principles for relational databases.",
+      "status": "COMPLETED",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "REST API Design Principles",
+      "description": "Best practices for designing REST APIs.",
+      "status": "PUBLISHED",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Mastering GraphQL",
+      "description": "Learn GraphQL fundamentals.",
+      "status": "IDEA",
+      "userId": null,
+      "contentType": "VIDEO",
+      "url": ""
+    },
+    {
+      "title": "Spring Boot Testing Strategies",
+      "description": "Unit and integration testing in Spring Boot.",
+      "status": "IN_PROGRESS",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "Scaling Java Applications",
+      "description": "How to scale Java applications effectively.",
+      "status": "COMPLETED",
+      "userId": null,
+      "contentType": "CONFERENCE_TALK",
+      "url": ""
+    },
+    {
+      "title": "Clean Architecture in Java",
+      "description": "A guide to clean architecture principles.",
+      "status": "PUBLISHED",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Event-Driven Architecture",
+      "description": "How to design event-driven systems.",
+      "status": "IDEA",
+      "userId": null,
+      "contentType": "CONFERENCE_TALK",
+      "url": ""
+    },
+    {
+      "title": "Building Reactive Applications",
+      "description": "Introduction to reactive programming.",
+      "status": "IN_PROGRESS",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "Machine Learning for Developers",
+      "description": "Practical ML techniques for software engineers.",
+      "status": "COMPLETED",
+      "userId": null,
+      "contentType": "VIDEO",
+      "url": ""
+    },
+    {
+      "title": "Serverless Java Applications",
+      "description": "Deploying Java applications on serverless platforms.",
+      "status": "PUBLISHED",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Advanced SQL Optimization",
+      "description": "Optimizing SQL queries for performance.",
+      "status": "IDEA",
+      "userId": null,
+      "contentType": "COURSE",
+      "url": ""
+    },
+    {
+      "title": "API Gateway Patterns",
+      "description": "How to implement API gateways effectively.",
+      "status": "IN_PROGRESS",
+      "userId": null,
+      "contentType": "CONFERENCE_TALK",
+      "url": ""
+    },
+    {
+      "title": "Building Secure APIs",
+      "description": "Security best practices for API development.",
+      "status": "COMPLETED",
+      "userId": null,
+      "contentType": "ARTICLE",
+      "url": ""
+    },
+    {
+      "title": "Deploying Java Apps with CI/CD",
+      "description": "Automating deployment with CI/CD pipelines.",
+      "status": "PUBLISHED",
+      "userId": null,
+      "contentType": "VIDEO",
+      "url": ""
+    }
+  ],
+  "organizations": [
+    {
+      "name": "Tech Innovators Ltd.",
+      "industry": "Technology"
+    },
+    {
+      "name": "Future Enterprises Inc.",
+      "industry": "Business Services"
+    },
+    {
+      "name": "Global Ventures",
+      "industry": "Venture Capital"
+    },
+    {
+      "name": "Quantum Technologies",
+      "industry": "Technology"
+    },
+    {
+      "name": "Innovative Solutions Group",
+      "industry": "Consulting"
+    },
+    {
+      "name": "FutureTech Labs",
+      "industry": "Research & Development"
+    },
+    {
+      "name": "Creative Solutions Inc.",
+      "industry": "Marketing & Advertising"
+    },
+    {
+      "name": "Pioneers Technologies",
+      "industry": "Software Development"
+    },
+    {
+      "name": "Tech Dynamics",
+      "industry": "Technology"
+    },
+    {
+      "name": "Innovative Minds Ltd.",
+      "industry": "Innovation & Design"
+    }
+  ],
+  "users": [
+    {
+      "firstName": "john",
+      "lastName": "doe",
+      "email": "john.doe@gmail.com"
+    },
+    {
+      "firstName": "alice",
+      "lastName": "smith",
+      "email": "admin@gmail.com"
+    }
+  ]
 }

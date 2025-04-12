@@ -58,7 +58,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -68,7 +68,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfiguration() {
+    CorsConfigurationSource corsConfiguration() {
         CorsConfiguration corsConfigs = new CorsConfiguration();
         corsConfigs.setAllowCredentials(true);
         corsConfigs.setAllowedHeaders(List.of("*"));

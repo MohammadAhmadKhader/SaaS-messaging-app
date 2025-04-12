@@ -1,88 +1,72 @@
 package com.example.demo.services.contents;
 
-import java.text.Collator;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.access.method.P;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.models.Content;
-import com.example.demo.repository.contents.ContentsRepository;
+import com.example.demo.repository.ContentsRepository;
 import com.example.demo.services.cache.RedisService;
 import com.example.demo.services.generic.GenericService;
-import com.example.demo.services.ownership.ContentsOwnershipService;
-import com.example.demo.dtos.contents.ContentViewDTO;
-import com.example.demo.dtos.shared.FindAllResult;
+
 import com.example.demo.specifications.ContentSpecifications;
 import com.example.demo.utils.FiltersHandler;
 import com.example.demo.utils.PageableHelper;
 
 @Service
-public class ContentsService extends GenericService<Content, Integer, ContentViewDTO> {
+public class ContentsService extends GenericService<Content, Integer> {
     private final static String defaultSortBy = "createdAt";
     private final static String defaultSortDir = "DESC";
 
     private final ContentsRepository contentsRepository;
+    private final ContentsServicesHelper servicesHelper;
     private final RedisService redisService;
     private final ContentsOwnershipService contentsOwnershipService;
 
-    public ContentsService(ContentsRepository contentsRepository, RedisService redisService, ContentsOwnershipService contentsOwnershipService) {
+    public ContentsService(ContentsRepository contentsRepository, RedisService redisService, ContentsOwnershipService contentsOwnershipService, ContentsServicesHelper servicesHelper) {
         super(contentsRepository);
+        this.servicesHelper = servicesHelper;
         this.contentsRepository = contentsRepository;
         this.redisService = redisService;
         this.contentsOwnershipService = contentsOwnershipService;
     }
 
-    public Content createByUser(Content content) {
-        return contentsOwnershipService.createOwn(content);
+    public Content findById(Integer id, Integer organizationId) {
+        return this.contentsRepository.findByIdAndOrganizationId(id, organizationId).orElse(null);
     }
 
-    public Content updateByUser(Integer id, Content content) {
-        return contentsOwnershipService.updateOwn(id, content);
+    public Content createByUser(Content content, Integer tenantId) {
+        return contentsOwnershipService.createOwn(content,tenantId);
     }
 
-    public void deleteByUser(Integer id) {
-        contentsOwnershipService.deleteOwn(id);
+    public Content updateByUser(Integer id, Content content, Integer tenantId) {
+        return contentsOwnershipService.updateOwn(id, content, tenantId);
     }
 
-    public FindAllResult<ContentViewDTO> findAllPopulatedWithFilters(Integer page, Integer size, String sortDir, String sortBy, List<String> filters) {
+    public void deleteByUser(Integer id, Integer tenantId) {
+        contentsOwnershipService.deleteOwn(id, tenantId);
+    }
+
+    public Page<Content> findAllPopulatedWithFilters(Integer page, Integer size, String sortDir, String sortBy, List<String> filters, Integer tenantId) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
 
         var parsedFilters = FiltersHandler.parseFilters(filters);
-        var spec = applyFilters(parsedFilters);
+        var spec = applyFilters(parsedFilters, tenantId);
         
-        var result = contentsRepository.findAllWithSpecifications(spec ,pageable);
-        var count = result.getTotalElements();
-
-        var contentsViews = result.getContent().stream().map((content) -> {
-            return content.toViewDTO();
-        }).toList();
-
-        return new FindAllResult<>(contentsViews, count, page, size);
+        return this.servicesHelper.findAllWithSpecifications(pageable, spec, null);
     }
 
-    public FindAllResult<ContentViewDTO> findContentsByUserId(Integer page, Integer size, Long userId) {
+    public Page<Content> findContentsByUserId(Integer page, Integer size, Long userId, Integer tenantId) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, page, size);
-        
-        var result = contentsRepository.findContentsByUserId(userId, pageable);
-        var count = result.getTotalElements();
+        var result = this.contentsRepository.findContentsByUserId(userId, pageable);
 
-        var contentsViews = result.getContent().stream().map((content) -> {
-            return content.toViewDTO();
-        }).toList();
-
-        return new FindAllResult<>(contentsViews, count, page, size);
+        return result;
     }
 
-    private Specification<Content> applyFilters(Map<String, String> filtersMap) {
+    private Specification<Content> applyFilters(Map<String, String> filtersMap, Integer tenantId) {
         Specification<Content> spec = Specification.where(null);
 
         for(Map.Entry<String, String> entry: filtersMap.entrySet()){
@@ -103,6 +87,10 @@ public class ContentsService extends GenericService<Content, Integer, ContentVie
                     spec = spec.and(ContentSpecifications.hasCreatedAt(val));
                     break;
             }
+        }
+
+        if(tenantId != null) {
+            spec = spec.and(ContentSpecifications.hasOrganizationId(tenantId));
         }
 
         return spec;

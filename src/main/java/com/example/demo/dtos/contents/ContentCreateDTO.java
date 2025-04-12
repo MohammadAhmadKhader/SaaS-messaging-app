@@ -30,12 +30,15 @@ public record ContentCreateDTO(
     @NotNull(message = "content type can not be nullable")
     ContentType contentType,
 
-    @Max(value = 256, message = "url length be at most {value}")
+    @Size(max = 256, message = "url length be at most {max}")
     String url
 ) {
     public ContentCreateDTO {
         if(status == null) {
             status = Status.IDEA;
+        }
+        if(url == null) {
+            url = "";
         }
     }
 

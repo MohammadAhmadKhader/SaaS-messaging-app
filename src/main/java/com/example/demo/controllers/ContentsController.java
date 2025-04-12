@@ -3,6 +3,11 @@ package com.example.demo.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.annotations.contract.AuthorizeOrg;
+import com.example.demo.common.resolvers.contract.HandlePage;
+import com.example.demo.common.resolvers.contract.HandleSize;
+import com.example.demo.common.validators.contract.ValidateNumberId;
+import com.example.demo.common.validators.contract.ValidateSize;
 import com.example.demo.dtos.apiResponse.ApiResponses;
 import com.example.demo.dtos.contents.ContentCreateDTO;
 import com.example.demo.dtos.contents.ContentUpdateDTO;
@@ -10,22 +15,23 @@ import com.example.demo.services.contents.ContentsService;
 import com.example.demo.services.users.UsersService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
+@Validated
 @RestController
 @RequestMapping("/api/contents")
 public class ContentsController {
@@ -39,47 +45,54 @@ public class ContentsController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllContents(
-        @RequestParam(name ="page",defaultValue = "1") Integer page, @RequestParam(name ="size",defaultValue = "9") Integer size,
-        @RequestParam(name ="sortBy", defaultValue = "createdAt") String sortBy, @RequestParam(name= "sortDir", defaultValue = "DESC") String sortDir, 
-        @RequestParam(name = "filters", defaultValue = "") List<String> filters) {
-        
-        var start = Instant.now();
-        var result = contentsService.findAllPopulatedWithFilters(page, size, sortBy, sortBy, filters);
-        var bodyResponse = ApiResponses.GetAllResponse(result,"contents");
-        var end = Instant.now();
-        System.out.println(String.format("Request has taken: '%s'ms", Duration.between(start, end).toMillis()));
+    public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
+        @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
+        @RequestParam(defaultValue = "") List<String> filters, @RequestHeader("X-Tenant-ID") String tenantId) {
+
+        var contents = this.contentsService.findAllPopulatedWithFilters(page, size, sortBy, sortBy, filters, Integer.parseInt(tenantId));
+        var count = contents.getTotalElements();
+        var contentsViews = contents.map((con) -> {
+            return con.toViewDTO();
+        }).toList();
+
+        var bodyResponse = ApiResponses.GetAllResponse("contents", contentsViews, count, page, size);
 
         return ResponseEntity.ok(bodyResponse);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getContentById(@PathVariable Integer id) {
-        var content = contentsService.findByIdAsView(id);
+    @AuthorizeOrg({""})
+    public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
+        var content = this.contentsService.findById(id, Integer.parseInt(tenantId));
         if(content == null) {
-            var respBody = ApiResponses.GetErrResponse(String.format("Content with id: %s", id));
+            var respBody = ApiResponses.GetErrResponse(String.format("content with id: %s was not found", id));
             return ResponseEntity.badRequest().body(respBody);
         }
 
-        var bodyResponse = ApiResponses.OneKey("content",content);
+        var bodyResponse = ApiResponses.OneKey("content",content.toViewDTO());
 
         return ResponseEntity.ok(bodyResponse);
     }
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<Object> getContentsByUserId(
-        @PathVariable Long userId, @RequestParam(name ="page",defaultValue = "1") Integer page, 
-        @RequestParam(name ="size",defaultValue = "9") Integer size) {
+        @PathVariable @ValidateNumberId Long userId, @RequestParam(defaultValue = "1") @Min(value = 1 ,message = "page must be at least {value}") Integer page, 
+        @RequestParam(defaultValue = "9") Integer size, @RequestHeader("X-Tenant-ID") String tenantId) {
         
-        var result = contentsService.findContentsByUserId(page, size,userId);
-        var bodyResponse = ApiResponses.GetAllResponse(result,"contents");
+        var contents = this.contentsService.findContentsByUserId(page, size,userId, Integer.parseInt(tenantId));
+        var count = contents.getTotalElements();
+        var contentsViews = contents.stream().map((con) -> {
+            return con.toViewDTO();
+        }).toList();
+
+        var bodyResponse = ApiResponses.GetAllResponse("contents", contentsViews, count, page, size);
         
         return ResponseEntity.ok().body(bodyResponse);
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto) {
-        var content = this.contentsService.createByUser(dto.toModel());
+    public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
+        var content = this.contentsService.createByUser(dto.toModel(), Integer.parseInt(tenantId));
         var contentView = content.toViewDTO();
         var responseBody = ApiResponses.OneKey("content", contentView);
 
@@ -87,8 +100,8 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateContent(@PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto) {
-        var updatedContent = contentsService.updateByUser(id, dto.toModel());
+    public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
+        var updatedContent = this.contentsService.updateByUser(id, dto.toModel(), Integer.parseInt(tenantId));
         if(updatedContent == null) {
             var respBody = ApiResponses.GetErrResponse(String.format("content with id: '%s' does not exist", id));
             return ResponseEntity.badRequest().body(respBody);
@@ -100,8 +113,8 @@ public class ContentsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Integer id) {
-        contentsService.deleteByUser(id);
+    public ResponseEntity<Object> delete(@PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
+        this.contentsService.deleteByUser(id, Integer.parseInt(tenantId));
         return ResponseEntity.noContent().build();
     }
     

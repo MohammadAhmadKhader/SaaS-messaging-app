@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.example.demo.dtos.roles.RoleWithoutPermissionsDTO;
+import com.example.demo.dtos.globalroles.GlobalRoleWithoutPermissionsDTO;
 import com.example.demo.models.User;
 
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class UserWithoutPermissionsViewDTO {
     private String email;
     private Instant createdAt;
     private Instant updatedAt;
-    private List<RoleWithoutPermissionsDTO> roles;
+    private List<GlobalRoleWithoutPermissionsDTO> roles;
 
     public UserWithoutPermissionsViewDTO(User user) {
         setId(user.getId());
@@ -29,7 +29,7 @@ public class UserWithoutPermissionsViewDTO {
         setLastName(user.getLastName());
 
         var idsMap = new HashMap<Integer, Object>();
-        var rolesView = new ArrayList<RoleWithoutPermissionsDTO>();
+        var rolesView = new ArrayList<GlobalRoleWithoutPermissionsDTO>();
         user.getRoles().stream().forEach((role) -> {
             if(!idsMap.containsKey(role.getId())) {
                 idsMap.put(role.getId(), "");

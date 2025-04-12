@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "custom.passkey.bypass.tenant-filter",
+  "type": "java.lang.Boolean",
+  "description": "A description for 'custom.passkey.bypass.tenant-filter'"
+}]}

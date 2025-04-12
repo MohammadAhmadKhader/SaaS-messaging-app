@@ -1,50 +1,40 @@
 package com.example.demo.services.users;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dtos.shared.FindAllResult;
 import com.example.demo.dtos.users.UserViewDTO;
 import com.example.demo.models.User;
-import com.example.demo.repository.users.UsersRepository;
+import com.example.demo.repository.UsersRepository;
 import com.example.demo.services.generic.GenericService;
 import com.example.demo.utils.PageableHelper;
+import com.example.demo.utils.ServicesHelper;
 
 @Service
-public class UsersService extends GenericService<User, Long, UserViewDTO> {
+public class UsersService extends GenericService<User, Long> {
     private static String defaultSortBy = "createdAt";
     private static String defaultSortDir = "DESC";
 
     private UsersRepository usersRepository;
+    private ServicesHelper<User> servicesHelper;
 
     public UsersService(UsersRepository usersRepository) {
         super(usersRepository);
         this.usersRepository = usersRepository;
     }
 
-    public FindAllResult<UserViewDTO> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
+    public Page<User> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
-
-        var result =  this.usersRepository.findAllWithSpecifications(null,pageable);
-        var count = result.getTotalElements();
+        var result = this.servicesHelper.findAllWithSpecifications(pageable, null, null);
         
-        var usersView = result.getContent().stream().map((u) -> {
-            return u.toViewDTO();
-        }).toList();
-
-        return new FindAllResult<>(usersView, count, page, size);
+        return result;
     }
 
-    public FindAllResult<UserViewDTO> findAllWithContents(Integer page, Integer size, String sortBy, String sortDir) {
+    public Page<User> findAllWithContents(Integer page, Integer size, String sortBy, String sortDir) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
-
         var result = this.usersRepository.findAll(pageable);
-        var count = result.getTotalElements();
-        
-        var usersView = result.getContent().stream().map((u) -> {
-            return u.toViewDTO();
-        }).toList();
-
-        return new FindAllResult<>(usersView, count, page, size);
+    
+        return result;
     }
 
     public User findByEmail(String email) {

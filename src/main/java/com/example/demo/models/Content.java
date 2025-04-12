@@ -9,11 +9,9 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.example.demo.dtos.contents.ContentViewDTO;
-import com.example.demo.dtos.shared.IViewDTO;
 import com.example.demo.models.enums.ContentType;
 import com.example.demo.models.enums.Status;
-import com.example.demo.services.ownership.contract.OrganizationOwnershipEntity;
-import com.example.demo.services.ownership.contract.UserOwnershipEntity;
+import com.example.demo.services.ownership.contract.OwnershipEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -39,9 +37,9 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "contents")
-public class Content implements IViewDTO<ContentViewDTO>, UserOwnershipEntity<Content, Integer>, OrganizationOwnershipEntity {
+public class Content implements OwnershipEntity<Content, Integer> {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Id in db
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
     @Column(name = "title", nullable = false)
@@ -90,6 +88,6 @@ public class Content implements IViewDTO<ContentViewDTO>, UserOwnershipEntity<Co
     }
 
     public ContentViewDTO toViewDTO() {
-        return new ContentViewDTO(id, title, description, status, contentType, createdAt, updatedAt, user == null ? null : user.toUserWithoutPermissionsViewDTO(), url);
+        return new ContentViewDTO(id, title, description, status, organizationId, contentType, createdAt, updatedAt, user == null ? null : user.toUserWithoutPermissionsViewDTO(), url);
     }
 } 
