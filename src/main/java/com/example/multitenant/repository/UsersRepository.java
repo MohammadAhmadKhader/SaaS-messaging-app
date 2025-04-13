@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.multitenant.models.User;
 
+import io.lettuce.core.dynamic.annotation.Param;
+
 @Repository
 public interface UsersRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     Optional<User> findByEmail(String email);
@@ -23,4 +25,7 @@ public interface UsersRepository extends JpaRepository<User, Long>, JpaSpecifica
     @EntityGraph(attributePaths = {"contents"}) // Eagerly load contents
     @Query("SELECT u FROM User u") // Explicit query to select all users
     List<User> findAllWithContents();
+
+    @Query("SELECT u FROM User u JOIN FETCH u.roles r JOIN FETCH r.permissions p WHERE u.email = :email")
+    User findByEmailWithPermissions(@Param("email") String email);
 }

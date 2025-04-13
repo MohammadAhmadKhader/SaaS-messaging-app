@@ -165,6 +165,18 @@
       "isDefaultSuperAdmin": true
     },
     {
+      "name": "org-dashboard:content:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "org-dashboard:content:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
       "name": "organization:content:view",
       "isDefaultUser": true,
       "isDefaultAdmin": true,

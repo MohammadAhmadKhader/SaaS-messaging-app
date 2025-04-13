@@ -11,6 +11,8 @@ public class OrganizationPermissions {
     public static final String CONTENT_CREATE = "organization:content:create";
     public static final String CONTENT_UPDATE = "organization:content:update";
     public static final String CONTENT_DELETE = "organization:content:delete";
+    public static final String DASH_CONTENT_VIEW = "org-dashboard:content:view"; // new
+    public static final String DASH_CONTENT_DELETE = "org-dashboard:content:delete"; // new
     public static final String USER_INVITE = "organization:user:invite";
     public static final String USER_KICK = "organization:user:kick";
     public static final String TRANSFER_OWNERSHIP = "organization:transfer-ownership";

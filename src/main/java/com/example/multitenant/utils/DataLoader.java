@@ -2,6 +2,7 @@ package com.example.multitenant.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.OrganizationPermission;
 import com.example.multitenant.models.OrganizationRole;
 import com.example.multitenant.models.User;
+import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.repository.ContentsRepository;
 import com.example.multitenant.repository.GlobalPermissionsRepository;
 import com.example.multitenant.repository.GlobalRolesRepository;
@@ -84,6 +86,7 @@ public class DataLoader {
         loadOrganizations();
         loadUsersData();
         loadGlobalRolesData();
+        assignGlobalRoles();
     }
 
     private void loadOrganizationPermissions() {
@@ -109,25 +112,54 @@ public class DataLoader {
     }
 
     private void loadGlobalPermissions() {
-        if (this.globalPermissionsRepository.count() == 0) {
+        var globalPermissions = this.data.getGlobalPermissions();
 
-            var globalPermissions = this.data.getGlobalPermissions();
-            var permsHashMap = new HashMap<String, GlobalPermission>();
-            
-            globalPermissions.stream().forEach((perm) -> {
-                permsHashMap.put(perm.getName(), perm);
-            });
+        for(var perm: globalPermissions) {
+            if(!this.globalPermissionsRepository.findByName(perm.getName()).isPresent()) {
+                this.globalPermissionsRepository.save(perm);
+            }
+        }
+             
+        System.out.println("permissions Loaded Successfully");
+    }
 
-            for(var perm: globalPermissions) {
-                if(!this.globalPermissionsRepository.findByName(perm.getName()).isPresent()) {
-                    this.globalPermissionsRepository.save(perm);
+    private void assignGlobalRoles() {
+        var globalRolesJson = this.data.getGlobalRoles();
+        var globalPermsJson = this.data.getGlobalPermissions();
+        
+        var defaultGlobalRoles = new ArrayList<String>(List.of(DefaultGlobalRole.USER.getRoleName(), DefaultGlobalRole.ADMIN.getRoleName(), DefaultGlobalRole.SUPERADMIN.getRoleName()));
+        for (var defaultGlobalRole : defaultGlobalRoles) {
+            for(var globalRoleJson: globalRolesJson) {
+                var optRole = this.globalRolesRepository.findByName(globalRoleJson.getName());
+
+                if(optRole.isPresent()) {
+                    var role = optRole.get();
+
+                    if(role.getName().equals(defaultGlobalRole)) {
+                        for (var globalPermJson : globalPermsJson) {
+                            var hasPermission = role.getPermissions().stream().
+                                                    anyMatch((perm) -> perm.getName().equals(globalPermJson.getName()));
+
+                            if(defaultGlobalRole.equals("User") && globalPermJson.isDefaultUser() && !hasPermission) {
+                                role.getPermissions().add(globalPermJson);
+                                this.globalRolesRepository.save(role);
+
+                            } else if(defaultGlobalRole.equals("Admin") && globalPermJson.isDefaultAdmin() && !hasPermission) {
+                                role.getPermissions().add(globalPermJson);
+                                this.globalRolesRepository.save(role);
+
+                            } else if (defaultGlobalRole.equals("SuperAdmin") && globalPermJson.isDefaultSuperAdmin() && !hasPermission) {
+                                role.getPermissions().add(globalPermJson);
+                                this.globalRolesRepository.save(role);
+
+                            }
+                        }
+                    }
                 }
             }
-             
-            System.out.println("permissions Loaded Successfully");
-        } else {
-            System.out.println("permissions already exists, skipping.");
         }
+
+        System.out.println("Global roles were loaded successfully");
     }
 
     private void loadOrganizationRoles() {
@@ -185,12 +217,12 @@ public class DataLoader {
 
     public void loadGlobalRolesData() {
         if (
-            !this.globalRolesRepository.findByName("User").isPresent() ||
-            !this.globalRolesRepository.findByName("Admin").isPresent()  ||
-            !this.globalRolesRepository.findByName("SuperAdmin").isPresent() 
+            !this.globalRolesRepository.findByName(DefaultGlobalRole.USER.getRoleName()).isPresent() ||
+            !this.globalRolesRepository.findByName(DefaultGlobalRole.ADMIN.getRoleName()).isPresent()  ||
+            !this.globalRolesRepository.findByName(DefaultGlobalRole.SUPERADMIN.getRoleName()).isPresent() 
         ) {    
         
-            var userRoleName = "User";
+            var userRoleName = DefaultGlobalRole.USER.getRoleName();
             var isFoundUserRole = this.globalRolesRepository.findByName(userRoleName).orElse(null);
             if(isFoundUserRole == null) {
                 var userRole = new GlobalRole();
@@ -211,7 +243,7 @@ public class DataLoader {
 
                 System.out.println("User Role Loaded Successfully");
             }
-            var adminRoleName = "Admin";
+            var adminRoleName = DefaultGlobalRole.ADMIN.getRoleName();
             var isFoundAdminRole = this.globalRolesRepository.findByName(adminRoleName).orElse(null);
             if(isFoundAdminRole == null) {
                 var adminRole = new GlobalRole();
@@ -233,7 +265,7 @@ public class DataLoader {
                 System.out.println("Admin Role Loaded Successfully");
             }
            
-            var superAdminRoleName =  "SuperAdmin";
+            var superAdminRoleName =  DefaultGlobalRole.SUPERADMIN.getRoleName();
             var isFoundSuperAdminRole = this.globalRolesRepository.findByName(superAdminRoleName).orElse(null);
             if(isFoundSuperAdminRole == null) {
                 var superAdminRole = new GlobalRole();
@@ -255,7 +287,7 @@ public class DataLoader {
                 System.out.println("SuperAdmin Role Loaded Successfully");
             }
         } else {
-            System.out.println("users_roles already exists, skipping.");
+            System.out.println("loading global roles was skipped.");
         }
     }
 }

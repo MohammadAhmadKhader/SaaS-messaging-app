@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.example.multitenant.models.binders.OrganizationMembershipKey;
+import com.example.multitenant.models.binders.MembershipKey;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,10 +25,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-@Entity(name = "organization_membership")
-public class OrganizationMembership {
+@Entity(name = "membership")
+public class Membership {
     @EmbeddedId
-    private OrganizationMembershipKey id;
+    private MembershipKey id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId("userId")
@@ -52,4 +53,7 @@ public class OrganizationMembership {
 
     @CreationTimestamp
     private Instant joinedAt;
+
+    @Column(name = "is_member", nullable = false)
+    private boolean isMember;
 }

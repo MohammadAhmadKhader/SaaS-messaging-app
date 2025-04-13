@@ -9,8 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.OrganizationPermission;
-import com.example.multitenant.models.binders.OrganizationMembershipKey;
-import com.example.multitenant.repository.OrganizationMembershipRepository;
+import com.example.multitenant.models.binders.MembershipKey;
+import com.example.multitenant.models.binders.MembershipKey;
+import com.example.multitenant.repository.MembershipRepository;
 import com.example.multitenant.repository.OrganizationPermissionsRepository;
 import com.example.multitenant.services.generic.GenericService;
 
@@ -18,9 +19,9 @@ import com.example.multitenant.services.generic.GenericService;
 public class OrganizationPermissionsService extends GenericService<OrganizationPermission, Integer> {
     
     private final OrganizationPermissionsRepository organizationPermissionsRepository;
-    private final OrganizationMembershipRepository organizationsMembershipRepository;
+    private final MembershipRepository organizationsMembershipRepository;
 
-    public OrganizationPermissionsService(OrganizationPermissionsRepository organizationPermissionsRepository, OrganizationMembershipRepository organizationsMembershipRepository ) {
+    public OrganizationPermissionsService(OrganizationPermissionsRepository organizationPermissionsRepository, MembershipRepository organizationsMembershipRepository ) {
         super(organizationPermissionsRepository);
         this.organizationPermissionsRepository = organizationPermissionsRepository;
         this.organizationsMembershipRepository = organizationsMembershipRepository;
@@ -48,9 +49,7 @@ public class OrganizationPermissionsService extends GenericService<OrganizationP
     }
 
     public boolean hasPermission(long userId, Integer tenantId, String... permissions) {
-        var key = new OrganizationMembershipKey();
-        key.setOrganizationId(tenantId);
-        key.setUserId(userId);
+        var key = new MembershipKey(tenantId, userId);
 
         var membership = this.organizationsMembershipRepository.findById(key).orElse(null);
         if(membership == null) {

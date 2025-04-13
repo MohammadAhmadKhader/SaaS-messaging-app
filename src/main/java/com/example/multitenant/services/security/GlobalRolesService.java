@@ -38,12 +38,11 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
     public GlobalRole assignPermissionsToRole(Integer roleId, Set<Integer> permissionsIds) {
         try {
             var roleTask = CompletableFuture.supplyAsync(() -> {
-                return this.globalRolesRepository.findById(roleId);
+                return this.globalRolesRepository.findById(roleId).orElse(null);
             });
             var permissionsTask = CompletableFuture.supplyAsync(() -> this.globalPermissionsService.findAllByIds(permissionsIds));
 
-            var roleOpt = roleTask.get();
-            var role = roleOpt.get();
+            var role = roleTask.get();
             var permissions = permissionsTask.get();
 
             if(role == null) {
@@ -66,12 +65,11 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
     public GlobalRole unAssignPermissionsFromRole(Integer roleId, Set<Integer> permissionsIds) {
         try {
             var roleTask = CompletableFuture.supplyAsync(() -> {
-                return this.globalRolesRepository.findById(roleId);
+                return this.globalRolesRepository.findById(roleId).orElse(null);
             });
             var permissionsTask = CompletableFuture.supplyAsync(() -> this.globalPermissionsService.findAllByIds(permissionsIds));
 
-            var roleOpt = roleTask.get();
-            var role = roleOpt.get();
+            var role = roleTask.get();
             var permissions = permissionsTask.get();
 
             if(role == null) {

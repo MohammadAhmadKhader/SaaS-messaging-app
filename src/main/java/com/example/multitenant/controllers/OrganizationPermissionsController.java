@@ -66,7 +66,10 @@ public class OrganizationPermissionsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id) {
-        this.organizationPermissionsService.deleteById(id);
+        var isDeleted = this.organizationPermissionsService.findThenDeleteById(id);
+        if(!isDeleted) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
+        }
         
         return ResponseEntity.noContent().build();
     }

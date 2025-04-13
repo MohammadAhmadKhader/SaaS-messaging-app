@@ -37,6 +37,10 @@ public class ApiResponses {
         return Map.of(modelKey, collection);
     }
 
+    public static Map<String, Object> InvalidEmailOrPassword() {
+        return Map.of("error", "invalid email or password");
+    }
+
     public static Map<String, Object> GetErrResponse(Exception e) {
         var stackTrace = e.getStackTrace();
         var st = new ArrayList<>();
@@ -82,8 +86,8 @@ public class ApiResponses {
         return Map.of("error", "unauthorized");
     }
 
-    public static Map<String, Object> Unauthenticated() {
-        return Map.of("error", "Unauthenticated");
+    public static Map<String, Object> Forbidden() {
+        return Map.of("error", "Forbidden");
     }
 
     public static void SendErrTooManyRequests(HttpServletResponse response) throws IOException {

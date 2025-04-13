@@ -15,17 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.multitenant.common.annotations.contract.AuthorizeOrg;
 import com.example.multitenant.common.resolvers.contract.HandlePage;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.organizationroles.AssignOrganizationPermissionsDTO;
+import com.example.multitenant.dtos.organizationroles.OrganizationRoleCreateDTO;
+import com.example.multitenant.dtos.organizationroles.OrganizationRoleUpdateDTO;
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
 import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
-import com.example.multitenant.dtos.roles.AssignOrganizationPermissionsDTO;
-import com.example.multitenant.dtos.roles.OrganizationRoleCreateDTO;
-import com.example.multitenant.dtos.roles.OrganizationRoleUpdateDTO;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.services.organizations.OrganizationsService;
+import com.example.multitenant.services.security.OrganizationPermissions;
 import com.example.multitenant.services.security.OrganizationRolesService;
 
 import jakarta.validation.Valid;
@@ -73,22 +75,6 @@ public class OrganizationRolesController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
     
-    @PostMapping("/{id}/permissions")
-    public ResponseEntity<Object> assignPermissions(@ValidateNumberId @PathVariable(name = "id") Integer id, @Valid @RequestBody AssignOrganizationPermissionsDTO dto,
-        @RequestHeader("X-Tenant-ID") String tenantId
-    ) {
-        var tenantIdAsInt = Integer.parseInt(tenantId);
-        var organization = this.organizationsService.findById(tenantIdAsInt);
-        if(organization == null) {
-            var errRes = ApiResponses.GetErrResponse(String.format("tenant with id: '%s' was not found" ,tenantId));
-            return ResponseEntity.badRequest().body(errRes);
-        }
-
-        var updatedRole = this.organizationRolesService.unAssignPermissionsFromRole(id, dto.getPermissionsIds(), tenantIdAsInt);
-        var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
-
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {

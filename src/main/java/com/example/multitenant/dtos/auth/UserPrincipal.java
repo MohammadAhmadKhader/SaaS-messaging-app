@@ -2,6 +2,8 @@ package com.example.multitenant.dtos.auth;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,13 +26,16 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        var permissions = this.user.getRoles().stream().flatMap((role) -> {
-            return role.getPermissions().stream();
-        }).map((perm) -> {
-            return new SimpleGrantedAuthority(perm.getName());
-        }).toList();
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        for (var role : user.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
 
-        return permissions;
+            for (var perm : role.getPermissions()) {
+                authorities.add(new SimpleGrantedAuthority(perm.getName()));
+            }
+        }
+
+        return authorities;
     }
 
     @Override

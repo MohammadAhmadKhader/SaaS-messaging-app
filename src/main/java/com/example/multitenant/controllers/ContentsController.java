@@ -12,6 +12,7 @@ import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.contents.ContentCreateDTO;
 import com.example.multitenant.dtos.contents.ContentUpdateDTO;
 import com.example.multitenant.services.contents.ContentsService;
+import com.example.multitenant.services.security.OrganizationPermissions;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.validation.Valid;
@@ -45,6 +46,7 @@ public class ContentsController {
     }
 
     @GetMapping("")
+    @AuthorizeOrg({OrganizationPermissions.CONTENT_VIEW})
     public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
         @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
         @RequestParam(defaultValue = "") List<String> filters, @RequestHeader("X-Tenant-ID") String tenantId) {
@@ -61,9 +63,9 @@ public class ContentsController {
     }
 
     @GetMapping("/{id}")
-    @AuthorizeOrg({""})
+    @AuthorizeOrg({OrganizationPermissions.CONTENT_VIEW})
     public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var content = this.contentsService.findById(id, Integer.parseInt(tenantId));
+        var content = this.contentsService.findByIdAndOrganizationId(id, Integer.parseInt(tenantId));
         if(content == null) {
             var respBody = ApiResponses.GetErrResponse(String.format("content with id: %s was not found", id));
             return ResponseEntity.badRequest().body(respBody);
@@ -74,23 +76,8 @@ public class ContentsController {
         return ResponseEntity.ok(bodyResponse);
     }
 
-    @GetMapping("/users/{userId}")
-    public ResponseEntity<Object> getContentsByUserId(
-        @PathVariable @ValidateNumberId Long userId, @RequestParam(defaultValue = "1") @Min(value = 1 ,message = "page must be at least {value}") Integer page, 
-        @RequestParam(defaultValue = "9") Integer size, @RequestHeader("X-Tenant-ID") String tenantId) {
-        
-        var contents = this.contentsService.findContentsByUserId(page, size,userId, Integer.parseInt(tenantId));
-        var count = contents.getTotalElements();
-        var contentsViews = contents.stream().map((con) -> {
-            return con.toViewDTO();
-        }).toList();
-
-        var bodyResponse = ApiResponses.GetAllResponse("contents", contentsViews, count, page, size);
-        
-        return ResponseEntity.ok().body(bodyResponse);
-    }
-
     @PostMapping("")
+    @AuthorizeOrg({OrganizationPermissions.CONTENT_CREATE})
     public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
         var content = this.contentsService.createByUser(dto.toModel(), Integer.parseInt(tenantId));
         var contentView = content.toViewDTO();
@@ -100,6 +87,7 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
+    @AuthorizeOrg({OrganizationPermissions.CONTENT_UPDATE})
     public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
         var updatedContent = this.contentsService.updateByUser(id, dto.toModel(), Integer.parseInt(tenantId));
         if(updatedContent == null) {
@@ -113,7 +101,8 @@ public class ContentsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
+    @AuthorizeOrg({OrganizationPermissions.CONTENT_DELETE})
+    public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
         this.contentsService.deleteByUser(id, Integer.parseInt(tenantId));
         return ResponseEntity.noContent().build();
     }

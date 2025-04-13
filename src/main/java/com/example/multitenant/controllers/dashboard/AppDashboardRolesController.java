@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.resolvers.contract.HandlePage;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
+import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.globalroles.GlobalAssignPermissionsDTO;
 import com.example.multitenant.dtos.globalroles.GlobalRoleCreateDTO;
 import com.example.multitenant.dtos.globalroles.GlobalRoleUpdateDTO;
-import com.example.multitenant.dtos.roles.AssignOrganizationPermissionsDTO;
+import com.example.multitenant.dtos.organizationroles.AssignOrganizationPermissionsDTO;
 import com.example.multitenant.services.security.GlobalRolesService;
+import com.example.multitenant.services.security.GlobalPermissions;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -38,7 +40,7 @@ public class AppDashboardRolesController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('app-dashboard:role:view')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_VIEW)")
     public ResponseEntity<Object> getRoles(@HandlePage Integer page, @HandleSize Integer size) {
             
         var roles = this.globalRolesService.findAllRoles(page, size);
@@ -53,7 +55,7 @@ public class AppDashboardRolesController {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasAuthority('app-dashboard:role:create')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_CREATE)")
     public ResponseEntity<Object> createRole(@Valid @RequestBody GlobalRoleCreateDTO dto) {
         var newRole = this.globalRolesService.create(dto.toModel());
 
@@ -62,8 +64,8 @@ public class AppDashboardRolesController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:role:update')")
-    public ResponseEntity<Object> updateRole(@PathVariable Integer id, @Valid @RequestBody GlobalRoleUpdateDTO dto) {
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_UPDATE)")
+    public ResponseEntity<Object> updateRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody GlobalRoleUpdateDTO dto) {
         var updatedRole = this.globalRolesService.update(id, dto.toModel());
         
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
@@ -71,8 +73,17 @@ public class AppDashboardRolesController {
     }
 
     @PostMapping("/{id}/permissions")
-    @PreAuthorize("hasAuthority('app-dashboard:role:assign')")
-    public ResponseEntity<Object> assignPermissions(@PathVariable(name = "id") Integer id,  @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_PERMISSION_ASSIGN)")
+    public ResponseEntity<Object> assignPermissions(@ValidateNumberId @PathVariable Integer id,  @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+        var updatedRole = this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
+        var respBody = ApiResponses.OneKey("role", updatedRole.toString());
+        
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
+    }
+
+    @DeleteMapping("/{id}/permissions/{permissionId}")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_PERMISSION_UN_ASSIGN)")
+    public ResponseEntity<Object> unAssignPermissions(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Integer permissionId, @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
         var updatedRole = this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
         var respBody = ApiResponses.OneKey("role", updatedRole.toString());
         
@@ -80,26 +91,32 @@ public class AppDashboardRolesController {
     }
 
     @PostMapping("/{id}/assign")
-    @PreAuthorize("hasAuthority('app-dashboard:role:assign')")
-    public ResponseEntity<Object> assignRole(@PathVariable(name = "id") Integer id, @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_ASSIGN)")
+    public ResponseEntity<Object> assignRole(@PathVariable Integer id, @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
         this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Object());
     }
 
-    @PostMapping("/{id}/un-assign")
-    @PreAuthorize("hasAuthority('app-dashboard:role:un-assign')")
-    public ResponseEntity<Object> unAssignRole(@PathVariable(name = "id") Integer id, @Valid @RequestBody GlobalAssignPermissionsDTO dto) {
+    @DeleteMapping("/{id}/un-assign")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_UN_ASSIGN)")
+    public ResponseEntity<Object> unAssignRole(@PathVariable Integer id, @Valid @RequestBody GlobalAssignPermissionsDTO dto) {
         this.globalRolesService.unAssignPermissionsFromRole(id, dto.getPermissionsIds());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Object());
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:role:delete')")
-    public ResponseEntity<Object> deleteRole(@PathVariable Integer id) {
-        var isDeleted = this.globalRolesService.findThenDeleteById(id);
-        if(!isDeleted) {
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_DELETE)")
+    public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id) {
+        var role = this.globalRolesService.findById(id);
+        if(role == null) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation"));
+        }
+
+        if(role.getName() != "User" && role.getName() != "Admin" && role.getName() != "SuperAdmin") {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
         }
+        
+        this.globalRolesService.deleteById(role.getId());
         
         return ResponseEntity.noContent().build();
     }

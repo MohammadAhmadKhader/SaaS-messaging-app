@@ -18,12 +18,7 @@ public class GenericService<TModel, ID extends Serializable> {
     }
 
     public TModel findById(ID id) {
-        var optional = this.genericRepository.findById(id);
-        if(!optional.isPresent()) {
-            return null;
-        }
-
-        return optional.get();
+        return this.genericRepository.findById(id).orElse(null);
     }
 
     public TModel update(ID id, TModel model) {

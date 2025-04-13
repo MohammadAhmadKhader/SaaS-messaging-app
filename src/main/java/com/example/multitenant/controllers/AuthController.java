@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.auth.LoginDTO;
 import com.example.multitenant.dtos.auth.RegisterDTO;
 import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
@@ -55,8 +57,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @PreAuthorize("!@customSPEL.hasAnyRole(authentication)")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest req) {
-        if(usersService.existsByEmail(registerDTO.getEmail())) {
+        if(this.usersService.existsByEmail(registerDTO.getEmail())) {
             var respBody = ApiResponses.GetErrResponse(String.format("User with email: '%s' already exists", registerDTO.getEmail()));
             return ResponseEntity.badRequest().body(respBody);
         }
@@ -64,7 +67,7 @@ public class AuthController {
         var user = registerDTO.toUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        var role = this.globalRolesService.findByName("User");
+        var role = this.globalRolesService.findByName(DefaultGlobalRole.USER.getRoleName());
         if(role == null) {
             var errMsg = "User Role was not found";
             return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
@@ -83,6 +86,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @PreAuthorize("!@customSPEL.hasAnyRole(authentication)")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO dto, HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             dto.getEmail(), 
@@ -129,7 +133,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body(respBody);
         }
 
-        session.invalidate();
+        try {
+            session.invalidate();
+        } catch (Exception e) {
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.noContent().build();
     }

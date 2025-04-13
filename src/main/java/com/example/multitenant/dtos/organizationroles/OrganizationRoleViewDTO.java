@@ -1,4 +1,4 @@
-package com.example.multitenant.dtos.roles;
+package com.example.multitenant.dtos.organizationroles;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -16,8 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.example.multitenant.common.annotations.contract.AuthorizeOrg;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
-import com.example.multitenant.repository.OrganizationPermissionsRepository;
-import com.example.multitenant.services.security.CustomUserDetailsService;
+
 import com.example.multitenant.services.security.OrganizationPermissionsService;
 
 @Aspect
@@ -48,7 +47,7 @@ public class AuthorizeOrgImpl {
         var tenantIdAsInt = Integer.parseInt(tenantId);
 
         var userId = userDetails.getUser().getId();
-        var hasPermission = organizationPermissionsService.hasPermission(userId, tenantIdAsInt, allowedPerms);
+        var hasPermission = this.organizationPermissionsService.hasPermission(userId, tenantIdAsInt, allowedPerms);
         if(!hasPermission) {
             throw new UnauthorizedUserException("Unauthorized");
         }

@@ -1,4 +1,4 @@
-package com.example.multitenant.dtos.roles;
+package com.example.multitenant.dtos.organizationroles;
 
 import com.example.multitenant.models.OrganizationRole;
 

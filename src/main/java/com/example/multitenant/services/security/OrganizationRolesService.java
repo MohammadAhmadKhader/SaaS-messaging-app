@@ -54,12 +54,11 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
                 
                 probe.setId(roleId);
                 var ex = Example.of(probe);
-                return this.rolesRepository.findOne(ex);
+                return this.rolesRepository.findOne(ex).orElse(null);
             });
             
             var permissionsTask = CompletableFuture.supplyAsync(() -> this.organizationPermissionsService.findAllByIds(permissionsIds));
-            var roleOpt = roleTask.get();
-            var role = roleOpt.get();
+            var role = roleTask.get();
             var permissions = permissionsTask.get();
 
             if(role == null) {

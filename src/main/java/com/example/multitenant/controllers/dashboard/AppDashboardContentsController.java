@@ -18,7 +18,6 @@ import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.services.contents.ContentsService;
 
-import jakarta.validation.constraints.Min;
 
 @Validated
 @RestController
@@ -30,7 +29,7 @@ public class AppDashboardContentsController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('app-dashboard:content:view')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_CONTENT_VIEW)")
     public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
         @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
         @RequestParam(defaultValue = "") List<String> filters) {
@@ -47,7 +46,7 @@ public class AppDashboardContentsController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:content:view')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_CONTENT_VIEW)")
     public ResponseEntity<Object> getContentById(@ValidateNumberId @PathVariable Integer id) {
         var content = this.contentsService.findById(id);
         if(content == null) {
@@ -62,7 +61,7 @@ public class AppDashboardContentsController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:content:delete')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_CONTENT_DELETE)")
     public ResponseEntity<Object> delete(@ValidateNumberId @PathVariable Integer id) {
         var isDeleted = this.contentsService.findThenDeleteById(id);
         if(!isDeleted) {

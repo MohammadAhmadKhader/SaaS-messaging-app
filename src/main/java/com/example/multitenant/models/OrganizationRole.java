@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.multitenant.dtos.roles.OrganizationRoleViewDTO;
-import com.example.multitenant.dtos.roles.OrganizationRoleWithoutPermissionsDTO;
+import com.example.multitenant.dtos.organizationroles.OrganizationRoleViewDTO;
+import com.example.multitenant.dtos.organizationroles.OrganizationRoleWithoutPermissionsDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,7 +44,7 @@ public class OrganizationRole implements Serializable {
     Organization organization;    
 
     @ManyToMany(mappedBy = "organizationRoles")
-    private List<OrganizationMembership> memberships = new ArrayList<>();
+    private List<Membership> memberships = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(

@@ -11,6 +11,7 @@ import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
 import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
 import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.organizations.OrganizationsService;
+import com.example.multitenant.services.security.GlobalPermissions;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ public class AppDashboardOrganizationsController {
     }
     
     @GetMapping("")
-    @PreAuthorize("hasAuthority('app-dashboard:organization:view')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_VIEW)")
     public ResponseEntity<Object> getOrganizations(@HandlePage Integer page, @HandleSize Integer size) {
 
         var orgs = this.organizationsService.findAllOrganization(page, size);
@@ -57,7 +58,7 @@ public class AppDashboardOrganizationsController {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasAuthority('app-dashboard:organization:create')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_CREATE)")
     public ResponseEntity<Object> createOrganization(@Valid @RequestBody OrganizationCreateDTO dto) {
 
         var newOrg = this.organizationsService.create(dto.toModel());
@@ -67,7 +68,7 @@ public class AppDashboardOrganizationsController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:organization:update')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
         var updatedOrg = this.organizationsService.update(id, dto.toModel());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
@@ -76,7 +77,7 @@ public class AppDashboardOrganizationsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('app-dashboard:organization:delete')")
+    @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_DELETE)")
     public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
         var isDeleted = this.organizationsService.findThenDeleteById(id);
         if(!isDeleted) {

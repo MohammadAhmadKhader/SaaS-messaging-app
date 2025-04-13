@@ -33,20 +33,20 @@ public class ContentsService extends GenericService<Content, Integer> {
         this.contentsOwnershipService = contentsOwnershipService;
     }
 
-    public Content findById(Integer id, Integer organizationId) {
+    public Content findByIdAndOrganizationId(Integer id, Integer organizationId) {
         return this.contentsRepository.findByIdAndOrganizationId(id, organizationId).orElse(null);
     }
 
     public Content createByUser(Content content, Integer tenantId) {
-        return contentsOwnershipService.createOwn(content,tenantId);
+        return this.contentsOwnershipService.createOwn(content,tenantId);
     }
 
     public Content updateByUser(Integer id, Content content, Integer tenantId) {
-        return contentsOwnershipService.updateOwn(id, content, tenantId);
+        return this.contentsOwnershipService.updateOwn(id, content, tenantId);
     }
 
     public void deleteByUser(Integer id, Integer tenantId) {
-        contentsOwnershipService.deleteOwn(id, tenantId);
+        this.contentsOwnershipService.deleteOwn(id, tenantId);
     }
 
     public Page<Content> findAllPopulatedWithFilters(Integer page, Integer size, String sortDir, String sortBy, List<String> filters, Integer tenantId) {

@@ -12,8 +12,6 @@ import com.example.multitenant.dtos.contents.ContentViewDTO;
 import com.example.multitenant.models.enums.ContentType;
 import com.example.multitenant.models.enums.Status;
 import com.example.multitenant.services.ownership.contract.OwnershipEntity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

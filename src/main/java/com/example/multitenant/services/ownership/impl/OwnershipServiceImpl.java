@@ -24,7 +24,7 @@ import com.example.multitenant.utils.HelperFuncs;
  * The behavior it will search by id + userId when user attempt to change its own resources.
  * if not found then not found error is returned, if found then updated.
  * 
- * any model that contain a userId and will be used with it must implement 'OwnershipHandlerEntity' which enable us to achieve this behavior.
+ * any model that contain a userId and will be used with it must implement 'OwnershipEntity' which enable us to achieve this behavior.
  * 
  */
 @Component
