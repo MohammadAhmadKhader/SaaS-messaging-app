@@ -13,12 +13,6 @@
       "isDefaultSuperAdmin": true
     },
     {
-      "name": "app-dashboard:user:update",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
-    },
-    {
       "name": "app-dashboard:user:delete",
       "isDefaultUser":false,
       "isDefaultAdmin": true,
@@ -120,103 +114,109 @@
       "name": "org-dashboard:role:view",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     }, 
     {
       "name": "org-dashboard:role:create",
       "isDefaultUser": false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:update",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:delete",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:assign",
       "isDefaultUser": false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:un-assign",
       "isDefaultUser": false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:update",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:role:delete",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:content:view",
       "isDefaultUser":false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "org-dashboard:content:delete",
       "isDefaultUser":false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name": "org-dashboard:organization:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": false,
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:content:view",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:content:create",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:content:update",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:content:delete",
       "isDefaultUser": false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:user:invite",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name": "organization:user:kick",
       "isDefaultUser":false,
       "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     },
     {
       "name":"organization:transfer-ownership",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultSuperAdmin": true
+      "isDefaultOrgOwner": true
     }
   ],
   "organizationRoles": [

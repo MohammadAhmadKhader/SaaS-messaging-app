@@ -24,7 +24,6 @@ public class GlobalPermissionsService extends GenericService<GlobalPermission, I
     public Page<GlobalPermission> findAllPermissions(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size);
         var result = this.globalPermissionsRepository.findAll(pageable);
-        var count = result.getTotalElements();
 
         return result;
     }

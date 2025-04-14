@@ -14,18 +14,22 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "organization_roles")
+@Table(name = "organization_roles",indexes = {
+    @Index(name = "idx_name_organizationid", columnList = "name, organization_id", unique = true)
+})
 public class OrganizationRole implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -46,7 +50,7 @@ public class OrganizationRole implements Serializable {
     @ManyToMany(mappedBy = "organizationRoles")
     private List<Membership> memberships = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "organization_roles_organization_permissions",
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "organization_roles"),

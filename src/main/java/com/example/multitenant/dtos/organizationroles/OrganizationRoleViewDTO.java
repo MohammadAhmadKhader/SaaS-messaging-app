@@ -19,7 +19,7 @@ public class OrganizationRoleViewDTO implements Serializable {
 
     private String name;
 
-    private List<OrganizationPermissionViewDTO> organizationPermissions = new ArrayList<>();
+    private List<OrganizationPermissionViewDTO> permissions = new ArrayList<>();
 
     public OrganizationRoleViewDTO(OrganizationRole role) {
         setId(role.getId());
@@ -29,7 +29,7 @@ public class OrganizationRoleViewDTO implements Serializable {
             return perm.toViewDTO();
         }).toList();
 
-        setOrganizationPermissions(permsView);
+        setPermissions(permsView);
     }
 }
 

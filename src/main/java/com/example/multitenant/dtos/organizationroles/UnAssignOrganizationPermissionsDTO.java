@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 @Getter
-public class UnAssignPermissionsDTO {
+public class UnAssignOrganizationPermissionsDTO {
     @NotEmpty(message = "one permissions Id is required at least")
     private Set<@NotNull(message = "permission id cannot be null") 
                @Positive(message = "permission id must be positive") Integer> permissionsIds;

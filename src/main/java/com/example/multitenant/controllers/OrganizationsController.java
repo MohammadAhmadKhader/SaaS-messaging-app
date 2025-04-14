@@ -2,14 +2,13 @@ package com.example.multitenant.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.multitenant.common.annotations.contract.AuthorizeOrg;
-import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
 import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
+import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
-import com.example.multitenant.services.security.GlobalPermissions;
-import com.example.multitenant.services.security.OrganizationPermissions;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 
@@ -18,13 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Validated
 @RestController
@@ -32,36 +26,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class OrganizationsController {
     
     private final OrganizationsService organizationsService;
+    private final MemberShipService memberShipService;
+    private final SecurityUtils securityUtils;
     
-    public OrganizationsController(OrganizationsService organizationsService) {
+    public OrganizationsController(OrganizationsService organizationsService, MemberShipService memberShipService, SecurityUtils securityUtils) {
         this.organizationsService = organizationsService;
+        this.memberShipService = memberShipService;
+        this.securityUtils = securityUtils;
     }
 
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")
     public ResponseEntity<Object> createOrganization(@Valid @RequestBody OrganizationCreateDTO dto) {
-        var newOrg = this.organizationsService.create(dto.toModel());
+        if (this.organizationsService.existsByName(dto.name())) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("organization name was taken already"));
+        }
+        var org = this.organizationsService.create(dto.toModel());
 
-        var respBody = ApiResponses.OneKey("organization", newOrg.toViewDTO());
+        var user = securityUtils.getPrincipal().getUser();
+        var membership = this.memberShipService.createOwnerMembership(org, user);
+
+        var respBody = ApiResponses.OneKey("membership", membership.toViewDTO());
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.update(id, dto.toModel());
-        
-        var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
-        var isDeleted = this.organizationsService.findThenDeleteById(id);
-        if(!isDeleted) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
-        }
-        
-        return ResponseEntity.noContent().build();
-    }
-    
 }

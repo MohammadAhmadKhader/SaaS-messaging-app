@@ -37,15 +37,15 @@ public class OrganizationPermission implements Serializable {
 
     @JsonProperty("isDefaultUser")
     @Column(name = "is_default_user")
-    private boolean isDefaultUser;
+    private Boolean isDefaultUser;
 
     @JsonProperty("isDefaultAdmin")
     @Column(name = "is_default_admin")
-    private boolean isDefaultAdmin;
+    private Boolean isDefaultAdmin;
 
-    @JsonProperty("isDefaultSuperAdmin")
-    @Column(name = "is_default_superAdmin")
-    private boolean isDefaultSuperAdmin;
+    @JsonProperty("isDefaultOrgOwner")
+    @Column(name = "is_default_org_owner")
+    private Boolean isDefaultOrgOwner;
 
     public OrganizationPermissionWithRolesViewDTO toWithRoleViewDTO() {
         return new OrganizationPermissionWithRolesViewDTO(this);

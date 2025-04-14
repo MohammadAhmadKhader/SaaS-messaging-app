@@ -3,6 +3,7 @@ package com.example.multitenant.dtos.apiResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +34,20 @@ public class ApiResponses {
         return Map.of(collectionKey, list, "count", count,"page", page,"size", size);
     }
 
+    public static Map<String, Object> GetNestedAllResponse(String collectionKey, Object list, long count, Integer page, Integer size) {
+        return Map.of(collectionKey, list, "count", count,"page", page,"size", size);
+    }
+
     public static Map<String, Object> OneKey(String modelKey, Object collection) {
         return Map.of(modelKey, collection);
+    }
+
+    public static <K, V> Map<K, V> Keys(K k1, V v1, K k2, V v2) {
+        return Map.of(k1, v1, k2, v2);
+    }
+
+    public static <K, V> Map<K, V> Keys(K k1, V v1, K k2, V v2,  K k3, V v3) {
+        return Map.of(k1, v1, k2, v2, k3, v3);
     }
 
     public static Map<String, Object> InvalidEmailOrPassword() {

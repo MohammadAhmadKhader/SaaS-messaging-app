@@ -140,15 +140,15 @@ public class DataLoader {
                             var hasPermission = role.getPermissions().stream().
                                                     anyMatch((perm) -> perm.getName().equals(globalPermJson.getName()));
 
-                            if(defaultGlobalRole.equals("User") && globalPermJson.isDefaultUser() && !hasPermission) {
+                            if(defaultGlobalRole.equals("User") && globalPermJson.getIsDefaultUser() && !hasPermission) {
                                 role.getPermissions().add(globalPermJson);
                                 this.globalRolesRepository.save(role);
 
-                            } else if(defaultGlobalRole.equals("Admin") && globalPermJson.isDefaultAdmin() && !hasPermission) {
+                            } else if(defaultGlobalRole.equals("Admin") && globalPermJson.getIsDefaultAdmin() && !hasPermission) {
                                 role.getPermissions().add(globalPermJson);
                                 this.globalRolesRepository.save(role);
 
-                            } else if (defaultGlobalRole.equals("SuperAdmin") && globalPermJson.isDefaultSuperAdmin() && !hasPermission) {
+                            } else if (defaultGlobalRole.equals("SuperAdmin") && globalPermJson.getIsDefaultSuperAdmin() && !hasPermission) {
                                 role.getPermissions().add(globalPermJson);
                                 this.globalRolesRepository.save(role);
 
@@ -229,7 +229,7 @@ public class DataLoader {
                 userRole.setName(userRoleName);
 
                 var userProbe = new GlobalPermission();
-                userProbe.setDefaultUser(true);
+                userProbe.setIsDefaultUser(true);
                 var userEx = Example.of(userProbe);
                 
                 var userPermissions = this.globalPermissionsRepository.findAll(userEx);
@@ -250,7 +250,7 @@ public class DataLoader {
                 adminRole.setName(adminRoleName);
 
                 var adminProbe = new GlobalPermission();
-                adminProbe.setDefaultAdmin(true);
+                adminProbe.setIsDefaultAdmin(true);
                 var adminEx = Example.of(adminProbe);
 
                 var adminPermissions = this.globalPermissionsRepository.findAll(adminEx);
@@ -272,7 +272,7 @@ public class DataLoader {
                 superAdminRole.setName(superAdminRoleName);
 
                 var superAdminProbe = new GlobalPermission();
-                superAdminProbe.setDefaultSuperAdmin(true);
+                superAdminProbe.setIsDefaultSuperAdmin(true);
                 var superAdminEx = Example.of(superAdminProbe);
                 
                 var superAdminPermissions = this.globalPermissionsRepository.findAll(superAdminEx);

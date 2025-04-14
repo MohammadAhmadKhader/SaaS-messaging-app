@@ -9,8 +9,10 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.multitenant.dtos.users.UserOrganizationViewDTO;
 import com.example.multitenant.dtos.users.UserViewDTO;
 import com.example.multitenant.dtos.users.UserWithoutPermissionsViewDTO;
+import com.example.multitenant.dtos.users.UserWithoutRolesViewDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -88,6 +90,14 @@ public class User implements Serializable {
     
     public UserViewDTO toViewDTO() {
         return new UserViewDTO(this);
+    }
+
+    public UserOrganizationViewDTO toOrganizationViewDTO(Membership membership) {
+        return new UserOrganizationViewDTO(this, membership);
+    }
+
+    public UserWithoutRolesViewDTO toViewWithoutRolesDTO() {
+        return new UserWithoutRolesViewDTO(this);
     }
 
     public UserWithoutPermissionsViewDTO toUserWithoutPermissionsViewDTO() {

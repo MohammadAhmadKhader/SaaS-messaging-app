@@ -25,7 +25,7 @@ public class AuthorizeOrgImpl {
     @Autowired
     OrganizationPermissionsService organizationPermissionsService;
 
-    @Before("annotation(com.example.demo.annotations.contract.AuthorizeOrg)")
+    @Before("annotation(com.example.multitenant.annotations.contract.AuthorizeOrg)")
     public void checkOrgPermissions(JoinPoint joinPoint) {
         var method = ((MethodSignature) joinPoint.getSignature()).getMethod();
         var annotation = method.getAnnotation(AuthorizeOrg.class);

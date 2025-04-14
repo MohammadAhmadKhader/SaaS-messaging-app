@@ -30,22 +30,17 @@ public class SecurityConfig {
     public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
     }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults()).
         csrf((csrf) -> {
             csrf.disable();
-            csrf.ignoringRequestMatchers("/api/auth/**");
-            csrf.ignoringRequestMatchers("/api/users/**");
         })
         .authorizeHttpRequests((auth) -> {
-            auth.requestMatchers(
-                "/api/auth/**", 
-                "/api/contents/**").permitAll();;
-
-            auth.requestMatchers("/api/users/**").authenticated();
-            auth.requestMatchers("/api/organizations").authenticated();
-            auth.anyRequest().permitAll();
+            auth.requestMatchers("/api/auth/**").permitAll();
+            auth.requestMatchers("/api/auth/login", "/api/auth/register").anonymous();
+            auth.anyRequest().authenticated();
         })
         .httpBasic(Customizer.withDefaults())
         .formLogin((fl)->{

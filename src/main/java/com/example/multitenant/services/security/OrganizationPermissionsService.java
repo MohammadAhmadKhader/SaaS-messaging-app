@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.OrganizationPermission;
 import com.example.multitenant.models.binders.MembershipKey;
+import com.example.multitenant.models.enums.DefaultOrganizationRole;
 import com.example.multitenant.models.binders.MembershipKey;
 import com.example.multitenant.repository.MembershipRepository;
 import com.example.multitenant.repository.OrganizationPermissionsRepository;
@@ -35,17 +38,27 @@ public class OrganizationPermissionsService extends GenericService<OrganizationP
     }
 
     public OrganizationPermission findByName(String name) {
-        var optional = this.organizationPermissionsRepository.findByName(name);
-        if(!optional.isPresent()) {
-            return null;
-        }
-
-        return optional.get();
+        return this.organizationPermissionsRepository.findByName(name).orElse(null);
     }
 
     public List<OrganizationPermission> findAllByIds(Set<Integer> ids) {
         var result = this.organizationPermissionsRepository.findAllById(ids);
         return result;
+    }
+
+    public List<OrganizationPermission> findAllDefaultPermissions(DefaultOrganizationRole role) {
+        var probe = new OrganizationPermission();
+        if(role == DefaultOrganizationRole.ORG_OWNER) {
+            probe.setIsDefaultOrgOwner(true);
+        } else if (role == DefaultOrganizationRole.ORG_ADMIN) {
+            probe.setIsDefaultAdmin(true);
+        } else if (role == DefaultOrganizationRole.ORG_USER) {
+            probe.setIsDefaultUser(true);
+        } else {
+            // TODO: will be handled later
+        }
+
+        return this.organizationPermissionsRepository.findAll(Example.of(probe));
     }
 
     public boolean hasPermission(long userId, Integer tenantId, String... permissions) {

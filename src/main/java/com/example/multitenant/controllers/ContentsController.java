@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,7 @@ public class ContentsController {
     }
 
     @GetMapping("")
-    @AuthorizeOrg({OrganizationPermissions.CONTENT_VIEW})
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
         @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
         @RequestParam(defaultValue = "") List<String> filters, @RequestHeader("X-Tenant-ID") String tenantId) {
@@ -63,7 +64,7 @@ public class ContentsController {
     }
 
     @GetMapping("/{id}")
-    @AuthorizeOrg({OrganizationPermissions.CONTENT_VIEW})
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
         var content = this.contentsService.findByIdAndOrganizationId(id, Integer.parseInt(tenantId));
         if(content == null) {
@@ -77,7 +78,7 @@ public class ContentsController {
     }
 
     @PostMapping("")
-    @AuthorizeOrg({OrganizationPermissions.CONTENT_CREATE})
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_CREATE)")
     public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
         var content = this.contentsService.createByUser(dto.toModel(), Integer.parseInt(tenantId));
         var contentView = content.toViewDTO();
@@ -87,7 +88,7 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
-    @AuthorizeOrg({OrganizationPermissions.CONTENT_UPDATE})
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_UPDATE)")
     public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
         var updatedContent = this.contentsService.updateByUser(id, dto.toModel(), Integer.parseInt(tenantId));
         if(updatedContent == null) {
@@ -101,7 +102,7 @@ public class ContentsController {
     }
 
     @DeleteMapping("/{id}")
-    @AuthorizeOrg({OrganizationPermissions.CONTENT_DELETE})
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_DELETE)")
     public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
         this.contentsService.deleteByUser(id, Integer.parseInt(tenantId));
         return ResponseEntity.noContent().build();

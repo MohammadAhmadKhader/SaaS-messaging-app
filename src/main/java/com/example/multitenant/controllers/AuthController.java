@@ -57,7 +57,6 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("!@customSPEL.hasAnyRole(authentication)")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest req) {
         if(this.usersService.existsByEmail(registerDTO.getEmail())) {
             var respBody = ApiResponses.GetErrResponse(String.format("User with email: '%s' already exists", registerDTO.getEmail()));
@@ -86,7 +85,6 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @PreAuthorize("!@customSPEL.hasAnyRole(authentication)")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO dto, HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             dto.getEmail(), 

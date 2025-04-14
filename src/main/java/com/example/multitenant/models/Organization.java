@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import com.example.multitenant.dtos.organizations.OrganizationViewDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,11 +44,16 @@ public class Organization implements Serializable {
     @CreationTimestamp
     private Instant createdAt;
 
-    // @OneToMany(cascade = CascadeType.ALL, mappedBy = "organization")
-    // private List<User> users = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "organization")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "organization")
     private List<Content> contents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore()
+    private List<Membership> memberships = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore()
+    private List<OrganizationRole> roles = new ArrayList<>();
 
     public OrganizationViewDTO toViewDTO() {
         return new OrganizationViewDTO(this);

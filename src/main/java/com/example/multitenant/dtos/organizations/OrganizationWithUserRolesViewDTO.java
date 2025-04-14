@@ -4,8 +4,8 @@ import java.time.Instant;
 import java.util.List;
 
 import com.example.multitenant.dtos.users.UserViewDTO;
+import com.example.multitenant.dtos.users.UserWithoutRolesViewDTO;
 import com.example.multitenant.models.Organization;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class OrganizationViewDTO {
+public class OrganizationWithUserRolesViewDTO {
     private Integer id;
 
     private String name;
@@ -23,17 +23,16 @@ public class OrganizationViewDTO {
 
     private Instant createdAt;
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<UserViewDTO> users;
+    private List<UserWithoutRolesViewDTO> users;
 
-    public OrganizationViewDTO(Organization org) {
+    public OrganizationWithUserRolesViewDTO(Organization org) {
         setId(org.getId());
         setName(org.getName());
         setIndustry(org.getIndustry());
         setCreatedAt(org.getCreatedAt());
     }
 
-    public OrganizationViewDTO() {
+    public OrganizationWithUserRolesViewDTO() {
         
     }
 }

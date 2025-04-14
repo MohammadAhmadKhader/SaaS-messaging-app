@@ -19,22 +19,45 @@ public class CustomSPEL {
             .anyMatch(granted -> granted.getAuthority().startsWith("ROLE_"));
     }
 
-    // public boolean hasOrgAuthority(Authentication auth, String tenantId) {
-    //     var authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal userDetails)) {
-    //         return false;
-    //     }
+    public boolean hasOrgAuthority(Authentication auth, String tenantId, String permission) {
+        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+            return false;
+        }
 
-    //     var tenantIdAsInt = Integer.parseInt(tenantId);
-    //     var userId = userDetails.getUser().getId();
+        var tenantIdAsInt = Integer.parseInt(tenantId);
+        var userId = userDetails.getUser().getId();
 
-    //     var membership = this.memberShipService.findById(new MembershipKey(tenantIdAsInt, userId));
-    //     membership.getOrganizationRoles().stream().flatMap((role) -> {
-    //         var perms = role.getOrganizationPermissions();
-          
-    //         return perms.stream();
-    //     }).anyMatch((perm) -> permsList.contains(perm.getName()));
+        var membership = this.memberShipService.findUserMembershipWithRolesAndPermissions(tenantIdAsInt, userId);
+        if(membership == null) {
+            return false;
+        }
+        
+        var perms = membership.getUser().getRoles().stream().flatMap((role) -> {
+            return role.getPermissions().stream().map((perm) -> {
+                return perm.getName();
+            });
+        }).toList();
 
-    //     return true;
-    // }
+        return perms.stream().anyMatch((perm) -> perm.equals(permission));
+    }
+
+    public boolean hasOrgRole(Authentication auth, String tenantId, String roleName) {
+        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+            return false;
+        }
+
+        var tenantIdAsInt = Integer.parseInt(tenantId);
+        var userId = userDetails.getUser().getId();
+
+        var membership = this.memberShipService.findUserMembershipWithRolesAndPermissions(tenantIdAsInt, userId);
+        if(membership == null) {
+            return false;
+        }
+        
+        var roles = membership.getOrganizationRoles().stream().map((role) -> {
+            return role.getName();
+        }).toList();
+
+        return roles.stream().anyMatch((role) -> role.equals(roleName));
+    }
 }

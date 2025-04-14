@@ -1,6 +1,7 @@
 package com.example.multitenant.services.generic;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,6 +36,22 @@ public class GenericService<TModel, ID extends Serializable> {
         }
         
         return this.genericRepository.save(model);
+    }
+
+    public List<TModel> createMany(List<TModel> model) {
+        if(model.isEmpty()) {
+            throw new RuntimeException("list is empty");
+        }
+        
+        return this.genericRepository.saveAll(model);
+    }
+
+    public List<TModel> createManyAndFlush(List<TModel> model) {
+        if(model.isEmpty()) {
+            throw new RuntimeException("list is empty");
+        }
+        
+        return this.genericRepository.saveAllAndFlush(model);
     }
 
     public boolean existsById(ID id) {
