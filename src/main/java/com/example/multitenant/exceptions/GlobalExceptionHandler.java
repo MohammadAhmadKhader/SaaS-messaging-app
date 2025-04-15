@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,9 +56,29 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
         var errors = new ArrayList<String>();
-        ex.getBindingResult().getFieldErrors().forEach(error -> errors.add(error.getDefaultMessage()));
+        
+        var nonFieldError = ex.getBindingResult().getAllErrors().get(0);
+        errors.add(nonFieldError.getDefaultMessage());
+        var body = ApiResponses.OneKey("errors", errors);
 
-        var body = Map.of("errors", errors);
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<Object> handleInvalidOperationException(InvalidOperationException ex) {
+        var errors = new ArrayList<String>();
+        errors.add(ex.getMessage());
+        var body = ApiResponses.OneKey("errors", errors);
+        
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        var errors = new ArrayList<String>();
+        var errMsg = "the request body is missing or malformed";
+        errors.add(errMsg);
+        var body = ApiResponses.OneKey("errors", errors);
 
         return ResponseEntity.badRequest().body(body);
     }
@@ -66,7 +87,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleValidationException(BadRequestException ex) {
         var errors = new ArrayList<String>();
         errors.add(ex.getMessage());
-        var body = Map.of("errors", errors);
+        var body = ApiResponses.OneKey("errors", errors);
 
         return ResponseEntity.badRequest().body(body);
     }

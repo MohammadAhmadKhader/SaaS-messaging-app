@@ -15,7 +15,7 @@ import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.binders.MembershipKey;
 
 @Repository
-public interface MembershipRepository extends JpaRepository<Membership, MembershipKey>, JpaSpecificationExecutor<Membership> {
+public interface MembershipRepository extends GenericRepository<Membership, MembershipKey>, JpaSpecificationExecutor<Membership> {
     @EntityGraph(attributePaths = "user")
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.isMember = true")
     public Page<Membership> findByOrganizationAndIsMemberTrue(@Param("organization") Organization organization, Pageable pageable);

@@ -54,12 +54,24 @@ public class UsersService extends GenericService<User, Long> {
         return this.usersRepository.existsByEmail(email);
     }
 
-    public void deleteUser(Long id) {
-        var user = this.usersRepository.findById(id);
-        if(!user.isPresent()) {
-            throw new RuntimeException(String.format("Error during deletion: User with id:'%s' was not found", id));
+    public User findThenUpdate(long id, User user) {
+        return this.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
+    }
+
+    private void patcher(User target, User source) {
+        var newEmail = source.getEmail();
+        var newFirstName = source.getFirstName();
+        var newLastName = source.getLastName();
+
+        if(newEmail != null) {
+            target.setEmail(newEmail);
         }
-        
-        this.usersRepository.delete(user.get());
+        if(newFirstName != null) {
+            target.setFirstName(newFirstName);
+        }
+
+        if(newLastName != null) {
+            target.setLastName(newLastName);
+        }
     }
 }

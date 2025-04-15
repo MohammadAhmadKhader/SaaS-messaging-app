@@ -73,13 +73,16 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     List<Content> contents = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "users_global_roles",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles")
     )
     List<GlobalRole> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Membership> memberships = new ArrayList<>();
 
     public User(String email, String firstName, String lastName, String password) {
         setEmail(email);

@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
-import com.example.multitenant.exceptions.BadRequestException;
+import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
@@ -176,7 +176,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
             membership.getOrganizationRoles().forEach((role) -> {
                 if(role.getId() == orgRoleId) {
-                    throw new BadRequestException("user already have the role");
+                    throw new InvalidOperationException("user already have the role");
                 }
             });
 
@@ -207,8 +207,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
                 .anyMatch(role -> role.getId().equals(orgRoleId));
 
             if (!hasRole) {
-                // TODO: must be changed to decopule service from http
-                throw new BadRequestException("user does not have this role assigned");
+                throw new InvalidOperationException("user does not have this role assigned");
             }
 
             this.unAssignRoleToUser(membership, orgRole);

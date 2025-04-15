@@ -1,6 +1,10 @@
 package com.example.multitenant.controllers;
 
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+import javax.management.RuntimeErrorException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.auth.LoginDTO;
 import com.example.multitenant.dtos.auth.RegisterDTO;
+import com.example.multitenant.dtos.auth.ResetPasswordDTO;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +38,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -44,16 +51,18 @@ public class AuthController {
     private final UsersService usersService;
     private final PasswordEncoder passwordEncoder;
     private final GlobalRolesService globalRolesService;
-    private final SecurityContextRepository securityRepository = new HttpSessionSecurityContextRepository();
+    private final SecurityContextRepository securityRepository;
     private final RedisService redisService;
     
     public AuthController(AuthenticationManager authenticationManager, UsersService usersService,
-     PasswordEncoder passwordEncoder, GlobalRolesService globalRolesService, RedisService redisService) {
+     PasswordEncoder passwordEncoder, GlobalRolesService globalRolesService, RedisService redisService,
+     SecurityContextRepository securityRepository) {
        this.usersService = usersService;
        this.authenticationManager = authenticationManager;
        this.passwordEncoder = passwordEncoder;
        this.globalRolesService = globalRolesService;
        this.redisService = redisService;
+       this.securityRepository = securityRepository;
     }
 
     @PostMapping("/register")
@@ -66,22 +75,63 @@ public class AuthController {
         var user = registerDTO.toUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        var role = this.globalRolesService.findByName(DefaultGlobalRole.USER.getRoleName());
+        var role = this.globalRolesService.findByName(DefaultGlobalRole.SUPERADMIN.getRoleName());
         if(role == null) {
-            var errMsg = "User Role was not found";
             return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
         }
 
+        System.out.println(securityRepository + " <-----------------------------------------------------------------");
         user.getRoles().add(role);
         var createdUser = this.usersService.create(user);
-
         var userDTO = createdUser.toViewDTO();
 
         this.redisService.createSessionWithUser(req, userDTO);
-
         var respBody = ApiResponses.OneKey("user", userDTO);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordDTO dto, HttpServletRequest req) {
+        var principal = SecurityUtils.getPrincipal();
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponses.Unauthorized());
+        }
+        
+        if(!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            var res = ApiResponses.GetErrResponse(String.format("new passsword and confirm new password are not equal"));
+            return ResponseEntity.badRequest().body(res);
+        }
+
+        if(dto.getOldPassword().equals(dto.getNewPassword())) {
+            var res = ApiResponses.GetErrResponse(String.format("old password and new password cant be the same"));
+            return ResponseEntity.badRequest().body(res);
+        }
+
+        var userId = principal.getUser().getId();
+        var user = this.usersService.findById(userId);
+        try {
+            var isOldPasswordIsIncorrectTask = CompletableFuture.supplyAsync(() -> !this.passwordEncoder.matches(dto.getOldPassword(), user.getPassword()));
+            var isNewAndOldPasswordEqualTask = CompletableFuture.supplyAsync(() -> this.passwordEncoder.matches(dto.getNewPassword(), user.getPassword()));
+        
+            if(isOldPasswordIsIncorrectTask.get()) {
+                var res = ApiResponses.GetErrResponse(String.format("old password is incorrect"));
+                return ResponseEntity.badRequest().body(res);
+            }
+
+            if(isNewAndOldPasswordEqualTask.get()) {
+                var res = ApiResponses.GetErrResponse(String.format("new password can't be the same as the current password"));
+                return ResponseEntity.badRequest().body(res);
+            }
+
+            var encodedNewPassword = this.passwordEncoder.encode(dto.getNewPassword());
+            user.setPassword(encodedNewPassword);
+            this.usersService.save(user);
+        
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException( "an error has occured during async process");
+        }
     }
 
     @PostMapping("/login")

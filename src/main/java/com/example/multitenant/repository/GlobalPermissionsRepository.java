@@ -9,6 +9,6 @@ import com.example.multitenant.models.GlobalPermission;
 import java.util.Optional;
 
 @Repository
-public interface GlobalPermissionsRepository extends JpaRepository<GlobalPermission, Integer>, JpaSpecificationExecutor<GlobalPermission> {
+public interface GlobalPermissionsRepository extends GenericRepository<GlobalPermission, Integer>, JpaSpecificationExecutor<GlobalPermission> {
     Optional<GlobalPermission> findByName(String name);
 } 

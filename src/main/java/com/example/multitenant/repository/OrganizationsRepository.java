@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.example.multitenant.models.Organization;
 
 @Repository
-public interface OrganizationsRepository extends JpaRepository<Organization, Integer>, JpaSpecificationExecutor<Organization> {
+public interface OrganizationsRepository extends GenericRepository<Organization, Integer>, JpaSpecificationExecutor<Organization> {
 
 }

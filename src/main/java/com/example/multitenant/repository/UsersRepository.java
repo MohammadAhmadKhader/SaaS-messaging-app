@@ -2,6 +2,7 @@ package com.example.multitenant.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +15,7 @@ import com.example.multitenant.models.User;
 import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository
-public interface UsersRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UsersRepository extends GenericRepository<User, Long>, JpaSpecificationExecutor<User> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 
