@@ -25,7 +25,9 @@ import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/dashboard/users")

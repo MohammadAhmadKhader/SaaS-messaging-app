@@ -101,4 +101,16 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
     public GlobalRole findOne(Integer roleId) {
         return this.globalRolesRepository.findById(roleId).orElse(null);
     }
+
+    public GlobalRole findThenUpdate(Integer roleId, GlobalRole globalRole) {
+        return this.findThenUpdate(roleId, (existingRole) -> patcher(existingRole, globalRole));
+    }
+
+    public void patcher(GlobalRole target, GlobalRole source) {
+        var newName = source.getName();
+
+        if(newName != null) {
+            target.setName(newName);
+        }
+    }
 }

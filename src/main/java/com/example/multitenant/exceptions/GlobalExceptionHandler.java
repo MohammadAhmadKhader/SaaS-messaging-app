@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         var paramName = ex.getName();
         var invalidValue = String.valueOf(ex.getValue());
         logger.error("[MethodArgumentTypeMismatchException]: " +ex.getMessage());
-
+    
         var errRes = ApiResponses.GetErrIdIsRequired(paramName, invalidValue);
         return ResponseEntity.badRequest().body(errRes);
     }

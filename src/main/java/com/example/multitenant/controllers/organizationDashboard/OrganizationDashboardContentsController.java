@@ -18,6 +18,9 @@ import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/organizations/dashboard/contents")
@@ -28,7 +31,7 @@ public class OrganizationDashboardContentsController {
         this.contentsService = contentsService;
     }
 
-    @GetMapping("/users/{userId}/contents")
+    @GetMapping("/users/{userId}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getContentsByUserId(
         @PathVariable @ValidateNumberId Long userId,
@@ -46,7 +49,7 @@ public class OrganizationDashboardContentsController {
         return ResponseEntity.ok().body(bodyResponse);
     }
 
-    @DeleteMapping("/contents/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @globalPermissions.CONTENT_DELETE)")
     public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
         var content = this.contentsService.findByIdAndOrganizationId(id, Integer.parseInt(tenantId));

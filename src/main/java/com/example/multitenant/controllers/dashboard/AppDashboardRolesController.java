@@ -22,12 +22,16 @@ import com.example.multitenant.dtos.globalroles.GlobalAssignPermissionsDTO;
 import com.example.multitenant.dtos.globalroles.GlobalRoleCreateDTO;
 import com.example.multitenant.dtos.globalroles.GlobalRoleUpdateDTO;
 import com.example.multitenant.dtos.organizationroles.AssignOrganizationPermissionsDTO;
+import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.security.GlobalPermissions;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/dashboard/roles")
@@ -58,17 +62,17 @@ public class AppDashboardRolesController {
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_CREATE)")
     public ResponseEntity<Object> createRole(@Valid @RequestBody GlobalRoleCreateDTO dto) {
         var newRole = this.globalRolesService.create(dto.toModel());
-
         var respBody = ApiResponses.OneKey("role", newRole.toViewDTO());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
     
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_UPDATE)")
     public ResponseEntity<Object> updateRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody GlobalRoleUpdateDTO dto) {
-        var updatedRole = this.globalRolesService.update(id, dto.toModel());
-        
+        var updatedRole = this.globalRolesService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
+
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
 
@@ -109,11 +113,13 @@ public class AppDashboardRolesController {
     public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id) {
         var role = this.globalRolesService.findById(id);
         if(role == null) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation"));
+            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
         }
 
-        if(role.getName() != "User" && role.getName() != "Admin" && role.getName() != "SuperAdmin") {
-            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
+        if(role.getName() == DefaultGlobalRole.USER.getRoleName() || 
+        role.getName() == DefaultGlobalRole.ADMIN.getRoleName() || 
+        role.getName() == DefaultGlobalRole.SUPERADMIN.getRoleName()) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation, can't delete default role"));
         }
         
         this.globalRolesService.deleteById(role.getId());

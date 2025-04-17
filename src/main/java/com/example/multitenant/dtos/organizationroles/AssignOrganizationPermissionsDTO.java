@@ -10,6 +10,7 @@ import lombok.Getter;
 
 @Getter
 public class AssignOrganizationPermissionsDTO {
+    @NotNull(message = "role id is required")
     @Min(value = 1 ,message = "role id can not be less than {value}")
     private Integer roleId;
 

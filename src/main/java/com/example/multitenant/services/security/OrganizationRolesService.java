@@ -142,4 +142,16 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
     public OrganizationRole findOne(Integer orgRoleId) {
         return this.rolesRepository.findById(orgRoleId).orElse(null);
     }
+
+    public OrganizationRole findThenUpdate(Integer orgRoleId, OrganizationRole orgRole) {
+        return this.findThenUpdate(orgRoleId, (existingOrgRole) -> patcher(existingOrgRole, orgRole));
+    }
+
+    private void patcher(OrganizationRole target, OrganizationRole source) {
+        var newName = source.getName();
+
+        if (newName != null) {
+            target.setName(newName);
+        }
+    }
 }

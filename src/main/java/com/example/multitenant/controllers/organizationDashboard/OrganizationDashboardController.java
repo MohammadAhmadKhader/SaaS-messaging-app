@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
+import com.example.multitenant.models.Organization;
 import com.example.multitenant.services.organizations.OrganizationsService;
 
 import jakarta.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/organizations/dashboard")
@@ -34,9 +38,9 @@ public class OrganizationDashboardController {
     @PutMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.update(id, dto.toModel());
-        
+        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
+        
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
 
@@ -50,4 +54,5 @@ public class OrganizationDashboardController {
         
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -24,15 +24,6 @@ public abstract class GenericService<TModel, ID extends Serializable> {
         return this.repository.findById(id).orElse(null);
     }
 
-    // TODO: this is invalid, will be removed
-    public TModel update(ID id, TModel model) {
-        if (!existsById(id)) {
-            throw new ResourceNotFoundException(model.getClass().getName(), id);
-        }
-        
-        return this.repository.save(model);
-    }
-
     // TODO: will be refactored to a clearer approach
     public TModel create(TModel model) {
         if (model == null) {

@@ -40,4 +40,21 @@ public class OrganizationsService extends GenericService<Organization, Integer> 
 
         return null;
     }
+
+    public Organization findThenUpdate(Integer id, Organization org) {
+        return this.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
+    }
+    
+    private void patcher(Organization target, Organization source) {
+        var newIndustry = source.getIndustry();
+        var newName = source.getName();
+
+        if(newIndustry != null) {
+            target.setIndustry(newIndustry);
+        }
+
+        if(newName != null) {
+            target.setName(newName);
+        }
+    }
 }

@@ -41,10 +41,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-class TestBody {
-    public long id;
-}
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/dashboard/organizations")
@@ -111,7 +110,7 @@ public class AppDashboardOrganizationsController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.update(id, dto.toModel());
+        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);

@@ -8,7 +8,6 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.utils.PageableHelper;
-import com.example.multitenant.utils.ServicesHelper;
 
 @Service
 public class UsersService extends GenericService<User, Long> {
@@ -16,16 +15,17 @@ public class UsersService extends GenericService<User, Long> {
     private static String defaultSortDir = "DESC";
 
     private UsersRepository usersRepository;
-    private ServicesHelper<User> servicesHelper;
+    private UsersServicesHelper usersServicesHelper;
 
-    public UsersService(UsersRepository usersRepository) {
+    public UsersService(UsersRepository usersRepository, UsersServicesHelper usersServicesHelper) {
         super(usersRepository);
         this.usersRepository = usersRepository;
+        this.usersServicesHelper = usersServicesHelper;
     }
 
     public Page<User> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
-        var result = this.servicesHelper.findAllWithSpecifications(pageable, null, null);
+        var result = this.usersServicesHelper.findAllWithSpecifications(pageable, null, null);
         
         return result;
     }

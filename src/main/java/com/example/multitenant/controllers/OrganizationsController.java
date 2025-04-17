@@ -20,6 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/organizations")
@@ -27,12 +30,10 @@ public class OrganizationsController {
     
     private final OrganizationsService organizationsService;
     private final MemberShipService memberShipService;
-    private final SecurityUtils securityUtils;
     
-    public OrganizationsController(OrganizationsService organizationsService, MemberShipService memberShipService, SecurityUtils securityUtils) {
+    public OrganizationsController(OrganizationsService organizationsService, MemberShipService memberShipService) {
         this.organizationsService = organizationsService;
         this.memberShipService = memberShipService;
-        this.securityUtils = securityUtils;
     }
 
     @PostMapping("")
@@ -43,7 +44,7 @@ public class OrganizationsController {
         }
         var org = this.organizationsService.create(dto.toModel());
 
-        var user = securityUtils.getPrincipal().getUser();
+        var user = SecurityUtils.getPrincipal().getUser();
         var membership = this.memberShipService.createOwnerMembership(org, user);
 
         var respBody = ApiResponses.OneKey("membership", membership.toViewDTO());

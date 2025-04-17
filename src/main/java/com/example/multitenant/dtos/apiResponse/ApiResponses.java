@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,15 @@ public class ApiResponses {
 
     public static Map<String, Object> OneKey(String modelKey, Object collection) {
         return Map.of(modelKey, collection);
+    }
+
+    public static <TCursor> Map<Object, Object> CursorResponse(String modelKey, Object collection, boolean hasNext, TCursor nextCursor) {
+        var map = new HashMap<>();
+        map.put(modelKey, collection);
+        map.put("hasNext", hasNext);
+        map.put("nextCursor", nextCursor);
+        
+        return map;
     }
 
     public static <K, V> Map<K, V> Keys(K k1, V v1, K k2, V v2) {
@@ -87,6 +97,10 @@ public class ApiResponses {
 
     public static Map<String, Object> GetNotFoundErr(String resourceName, Serializable id) {
         return Map.of("error", String.format("%s with id '%s' was not found", resourceName, id));
+    }
+
+    public static Map<String, Object> GetNotFoundErr(String resourceName) {
+        return Map.of("error", String.format("%s with was not found", resourceName));
     }
 
     public static Map<String, Object> GetInternalErr(String message) {

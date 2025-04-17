@@ -54,6 +54,8 @@ public class ContentsService extends GenericService<Content, Integer> {
 
         var parsedFilters = FiltersHandler.parseFilters(filters);
         var spec = applyFilters(parsedFilters, tenantId);
+
+        System.out.println(this.servicesHelper +"   " + "<--------------------------------------------------------------------");
         
         return this.servicesHelper.findAllWithSpecifications(pageable, spec, null);
     }

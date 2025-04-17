@@ -31,6 +31,9 @@ import com.example.multitenant.services.security.OrganizationRolesService;
 
 import jakarta.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/organizations/dashboard/roles")
@@ -72,9 +75,9 @@ public class OrganizationDashboardRolesController {
     @PutMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.ROLE_UPDATE)")
     public ResponseEntity<Object> updateRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationRoleUpdateDTO dto) {
-        var updatedRole = this.organizationRolesService.update(id, dto.toModel());
-        
+        var updatedRole = this.organizationRolesService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
+        
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
     

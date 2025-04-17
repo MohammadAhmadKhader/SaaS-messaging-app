@@ -221,6 +221,15 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return this.findById(membershipKey);
     }
 
+    public boolean isMember(Integer orgId, long userId) {
+        var membershipKey = new MembershipKey(orgId, userId);
+        var probe = new Membership();
+        probe.setId(membershipKey);
+        probe.setMember(true);
+
+        return this.membershipRepository.exists(Example.of(probe));
+    }
+
     public Membership findUserMembershipWithRolesAndPermissions(Integer orgId, long userId) {
         var organization = new Organization();
         organization.setId(orgId);
