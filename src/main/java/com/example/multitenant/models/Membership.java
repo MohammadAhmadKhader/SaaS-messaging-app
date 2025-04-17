@@ -48,12 +48,12 @@ public class Membership {
     @JoinColumn(name = "organization_id", nullable = false, insertable = false, updatable = false)
     private Organization organization;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "membership_roles",
         joinColumns = {
-            @JoinColumn(name = "organization_id"),
-            @JoinColumn(name = "user_id")
+            @JoinColumn(name = "organization_id", referencedColumnName =  "organization_id"),
+            @JoinColumn(name = "user_id", referencedColumnName =  "user_id")
         },
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )

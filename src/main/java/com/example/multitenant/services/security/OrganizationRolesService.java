@@ -39,8 +39,8 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
         return this.rolesRepository.findAll(ex, pageable);
     }
 
-    public OrganizationRole findByName(String name) {
-        return this.rolesRepository.findByName(name).orElse(null);
+    public OrganizationRole findByNameAndOrganizationId(String name, Integer orgId) {
+        return this.rolesRepository.findByNameAndOrganizationId(name, orgId).orElse(null);
     }
 
     public OrganizationRole assignPermissionsToRole(Integer roleId, Set<Integer> permissionsIds, Integer organizationId) {

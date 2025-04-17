@@ -33,7 +33,7 @@ public class OrganizationDashboardContentsController {
     }
 
     @GetMapping("/users/{userId}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getContentsByUserId( @PathVariable @ValidateNumberId Long userId,
         @HandlePage Integer page, @HandleSize Integer size) {
         var tenantId = AppUtils.getTenantId();
@@ -50,7 +50,7 @@ public class OrganizationDashboardContentsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @globalPermissions.CONTENT_DELETE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@globalPermissions.CONTENT_DELETE)")
     public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
 

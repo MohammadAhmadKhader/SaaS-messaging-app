@@ -50,7 +50,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @GetMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_VIEW)")
     public ResponseEntity<Object> getRoles(@HandlePage Integer page, @HandleSize Integer size) { 
         var tenantId = AppUtils.getTenantId();
 
@@ -66,7 +66,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @PostMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_CREATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_CREATE)")
     public ResponseEntity<Object> createRole(@Valid @RequestBody OrganizationRoleCreateDTO dto) {
         var newOrg = this.organizationRolesService.create(dto.toModel());
 
@@ -75,7 +75,7 @@ public class OrganizationDashboardRolesController {
     }
         
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_UPDATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UPDATE)")
     public ResponseEntity<Object> updateRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationRoleUpdateDTO dto) {
         var updatedRole = this.organizationRolesService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
@@ -85,7 +85,7 @@ public class OrganizationDashboardRolesController {
     
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_DELETE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_DELETE)")
     public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
         this.organizationRolesService.deleteRole(id, tenantId);
@@ -94,7 +94,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @PostMapping("/assign")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_ASSIGN)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_ASSIGN)")
     public ResponseEntity<Object> assignRole(@Valid @RequestBody AssignOrganizationRoleDTO dto) {  
         var tenantId = AppUtils.getTenantId();
 
@@ -105,7 +105,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @DeleteMapping("/un-assign/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.ROLE_UN_ASSIGN)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UN_ASSIGN)")
     public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody UnAssignOrganizationRoleDTO dto) {
         var tenantId = AppUtils.getTenantId();
         this.memberShipService.unAssignRole(dto.getRoleId(),tenantId, dto.getUserId());
@@ -114,7 +114,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @PostMapping("/permissions/assign")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.PERMISSION_UN_ASSIGN)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.PERMISSION_UN_ASSIGN)")
     public ResponseEntity<Object> assignPermissions(@Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
         var tenantId = AppUtils.getTenantId();
         var organization = this.organizationsService.findById(tenantId);
@@ -130,7 +130,7 @@ public class OrganizationDashboardRolesController {
     }
 
     @DeleteMapping("/permissions/un-assign/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.PERMISSION_UN_ASSIGN)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.PERMISSION_UN_ASSIGN)")
     public ResponseEntity<Object> unAssignPermissions(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody UnAssignOrganizationPermissionsDTO dto) {
         var tenantId = AppUtils.getTenantId();
         var organization = this.organizationsService.findById(tenantId);

@@ -20,7 +20,8 @@ public class CustomSPEL {
             .anyMatch(granted -> granted.getAuthority().startsWith("ROLE_"));
     }
 
-    public boolean hasOrgAuthority(Authentication auth, String permission) {
+    public boolean hasOrgAuthority(String permission) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
             return false;
         }
@@ -42,7 +43,8 @@ public class CustomSPEL {
         return perms.stream().anyMatch((perm) -> perm.equals(permission));
     }
 
-    public boolean hasOrgRole(Authentication auth, String roleName) {
+    public boolean hasOrgRole(String roleName) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
             return false;
         }

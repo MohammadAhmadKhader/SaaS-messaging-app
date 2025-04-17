@@ -67,29 +67,29 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return memebership.isMember();
     }
 
+    @Transactional
     public Membership joinOrganization(Integer orgId, long userId) {
-        var organization = this.organizationsService.findById(orgId);
-        if (organization == null) {
-            throw new ResourceNotFoundException("organization", orgId);
+        if(orgId == null || orgId<= 0) {
+            throw new InvalidOperationException("invalid organization id");
         }
 
-        var membership = new Membership(orgId, userId);
+        var oldMembership = this.findOne(orgId, userId);
+        if(oldMembership != null && oldMembership.isMember() == true) {
+            throw new InvalidOperationException("user is already a member of this organization");
+        }
+
+        var membership = oldMembership == null ? new Membership(orgId, userId) : oldMembership;
         membership.loadDefaults();
-        membership.setOrganization(organization);
 
-        this.membershipRepository.save(membership);
+        var orgUserRole = this.organizationRolesService.
+        findByNameAndOrganizationId(DefaultOrganizationRole.ORG_USER.getRoleName(), orgId);
+        if(orgUserRole == null) {
+            throw new ResourceNotFoundException("organization role");
+        }
         
-        return membership;
-    }
+        membership.setOrganizationRoles(List.of(orgUserRole));
 
-    public Membership joinOrganization(Organization org, long userId) {
-        var membership = new Membership(org.getId(), userId);
-        membership.loadDefaults();
-        membership.setOrganization(org);
-
-        this.membershipRepository.save(membership);
-        
-        return membership;
+        return this.membershipRepository.save(membership);
     }
 
     @Transactional

@@ -11,5 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface OrganizationRolesRepository extends GenericRepository<OrganizationRole, Integer>, JpaSpecificationExecutor<OrganizationRole> {
-    public Optional<OrganizationRole> findByName(String name);
+    public Optional<OrganizationRole> findByNameAndOrganizationId(String name, Integer organizationId);
 }

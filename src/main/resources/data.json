@@ -107,6 +107,18 @@
       "isDefaultUser": true,
       "isDefaultAdmin": true,
       "isDefaultSuperAdmin": true
+    },
+    {
+      "name":"invitation:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name":"invitation:reject",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
     }
   ],
   "organizationPermissions":[
@@ -216,6 +228,18 @@
       "name":"organization:transfer-ownership",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:invitation:send",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:invitation:cancel",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
       "isDefaultOrgOwner": true
     }
   ],

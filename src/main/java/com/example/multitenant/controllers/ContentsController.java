@@ -51,7 +51,7 @@ public class ContentsController {
     }
 
     @GetMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
         @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
         @RequestParam(defaultValue = "") List<String> filters) {
@@ -69,7 +69,7 @@ public class ContentsController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id) {
         var tenantId = AppUtils.getTenantId();
 
@@ -85,7 +85,7 @@ public class ContentsController {
     }
 
     @PostMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_CREATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_CREATE)")
     public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto) {
         var tenantId = AppUtils.getTenantId();
 
@@ -97,7 +97,7 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_UPDATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_UPDATE)")
     public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto) {
         var tenantId = AppUtils.getTenantId();
 
@@ -113,7 +113,7 @@ public class ContentsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_DELETE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_DELETE)")
     public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
         this.contentsService.deleteByUser(id, tenantId);

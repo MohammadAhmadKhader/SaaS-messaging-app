@@ -50,7 +50,7 @@ public class OrganizationRole implements Serializable {
     Organization organization;    
 
     @ManyToMany(mappedBy = "organizationRoles")
-    private List<Membership> memberships = new ArrayList<>();
+    private List<Membership> memberships;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(

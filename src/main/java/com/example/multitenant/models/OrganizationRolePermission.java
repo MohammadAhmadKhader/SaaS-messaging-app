@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "organization_roles_permissions")
+@Table(name = "organization_roles_organization_permissions")
 public class OrganizationRolePermission {
     @EmbeddedId
     RolePermissionKey id;

@@ -36,7 +36,7 @@ public class OrganizationDashboardController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @globalPermissions.DASH_ORGANIZATION_UPDATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
         var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
@@ -45,7 +45,7 @@ public class OrganizationDashboardController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgRole(authentication, 'Org-Owner')")
+    @PreAuthorize("@customSPEL.hasOrgRole('Org-Owner')")
     public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
         var isDeleted = this.organizationsService.findThenDeleteById(id);
         if(!isDeleted) {
