@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.multitenant.dtos.apiResponse.ApiResponses;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,20 +46,14 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
 
         var tenantId = request.getHeader(TENANT_HEADER);
         if (tenantId == null || tenantId.isBlank()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Missing required header: " + TENANT_HEADER + "\"}");
-
+            ApiResponses.SendErrMissingRequiredHeader(response, TENANT_HEADER);
             return;
         }
 
         try {
             Integer.parseInt(tenantId);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":" + "\"" + String.format("Invalid tenantId received: '%s' must be an integer", tenantId) + "\"}");
-            
+            ApiResponses.SendErrInvalidTenantId(response, tenantId);
             return;
         }
 

@@ -52,6 +52,18 @@ public class ApiResponses {
         return map;
     }
 
+    public static void SendErrMissingRequiredHeader(HttpServletResponse response, String header) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"missing required header: " + header + "\"}");
+    }
+
+    public static void SendErrInvalidTenantId(HttpServletResponse response, String tenantId) throws IOException {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\":" + "\"" + String.format("invalid tenantId received: '%s' must be an integer", tenantId) + "\"}");
+    }
+    
     public static <K, V> Map<K, V> Keys(K k1, V v1, K k2, V v2) {
         return Map.of(k1, v1, k2, v2);
     }

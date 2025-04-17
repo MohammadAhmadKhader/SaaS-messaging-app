@@ -2,7 +2,9 @@ package com.example.multitenant.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleViewDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleWithoutPermissionsDTO;
@@ -56,7 +58,7 @@ public class OrganizationRole implements Serializable {
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "organization_roles"),
         inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id", table = "organization_permissions")
     )
-    private List<OrganizationPermission> organizationPermissions = new ArrayList<>();
+    private Set<OrganizationPermission> organizationPermissions = new HashSet<>();
 
     public OrganizationRoleViewDTO toViewDTO() {
         return new OrganizationRoleViewDTO(this);

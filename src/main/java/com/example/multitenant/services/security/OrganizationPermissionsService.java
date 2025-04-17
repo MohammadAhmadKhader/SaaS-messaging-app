@@ -3,6 +3,7 @@ package com.example.multitenant.services.security;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,7 @@ public class OrganizationPermissionsService extends GenericService<OrganizationP
         return result;
     }
 
-    public List<OrganizationPermission> findAllDefaultPermissions(DefaultOrganizationRole role) {
+    public Set<OrganizationPermission> findAllDefaultPermissions(DefaultOrganizationRole role) {
         var probe = new OrganizationPermission();
         if(role == DefaultOrganizationRole.ORG_OWNER) {
             probe.setIsDefaultOrgOwner(true);
@@ -58,7 +59,7 @@ public class OrganizationPermissionsService extends GenericService<OrganizationP
             // TODO: will be handled later
         }
 
-        return this.organizationPermissionsRepository.findAll(Example.of(probe));
+        return this.organizationPermissionsRepository.findAll(Example.of(probe)).stream().map((s) -> s).collect(Collectors.toSet());
     }
 
     public boolean hasPermission(long userId, Integer tenantId, String... permissions) {

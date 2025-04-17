@@ -17,6 +17,7 @@ import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
+import com.example.multitenant.utils.AppUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,13 +33,12 @@ public class OrganizationDashboardContentsController {
     }
 
     @GetMapping("/users/{userId}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
-    public ResponseEntity<Object> getContentsByUserId(
-        @PathVariable @ValidateNumberId Long userId,
-        @HandlePage Integer page, @HandleSize Integer size, 
-        @RequestHeader("X-Tenant-ID") String tenantId) {
-        
-        var contents = this.contentsService.findContentsByUserId(page, size,userId, Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
+    public ResponseEntity<Object> getContentsByUserId( @PathVariable @ValidateNumberId Long userId,
+        @HandlePage Integer page, @HandleSize Integer size) {
+        var tenantId = AppUtils.getTenantId();
+
+        var contents = this.contentsService.findContentsByUserId(page, size,userId, tenantId);
         var count = contents.getTotalElements();
         var contentsViews = contents.stream().map((con) -> {
             return con.toViewDTO();
@@ -50,9 +50,11 @@ public class OrganizationDashboardContentsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @globalPermissions.CONTENT_DELETE)")
-    public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var content = this.contentsService.findByIdAndOrganizationId(id, Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @globalPermissions.CONTENT_DELETE)")
+    public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id) {
+        var tenantId = AppUtils.getTenantId();
+
+        var content = this.contentsService.findByIdAndOrganizationId(id, tenantId);
         if(content == null) {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("content", id));
         }

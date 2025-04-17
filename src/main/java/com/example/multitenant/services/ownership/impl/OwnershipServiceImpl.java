@@ -16,7 +16,7 @@ import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.ownership.contract.OwnershipEntity;
 import com.example.multitenant.services.ownership.contract.OwnershipService;
-import com.example.multitenant.utils.HelperFuncs;
+import com.example.multitenant.utils.AppUtils;
 
 /**
  * This Class meant to add a re-usable implementation to any resource that must be created/modified by user/organization
@@ -92,7 +92,7 @@ public abstract class OwnershipServiceImpl<TModel extends OwnershipEntity<TModel
             throw new UnauthorizedUserException(modelSupplier.get().getClass().getName(), id);
         }
        
-        HelperFuncs.copyNonNullProperties(model, resource);
+        AppUtils.copyNonNullProperties(model, resource);
 
         return this.repository.save(resource);
     }

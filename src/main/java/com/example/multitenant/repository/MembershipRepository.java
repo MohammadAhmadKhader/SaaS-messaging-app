@@ -20,7 +20,7 @@ public interface MembershipRepository extends GenericRepository<Membership, Memb
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.isMember = true")
     public Page<Membership> findByOrganizationAndIsMemberTrue(@Param("organization") Organization organization, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"organizationRoles", "organizationRoles.permissions"})
+    @EntityGraph(attributePaths = {"organizationRoles", "organizationRoles.organizationPermissions"})
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.user.id = :userId AND m.isMember = true")
     public Membership findUserMembershipWithRolesAndPermissions(@Param("organization") Organization organization, @Param("userId") long userId);
 

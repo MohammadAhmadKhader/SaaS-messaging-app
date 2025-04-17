@@ -14,6 +14,7 @@ import com.example.multitenant.dtos.contents.ContentUpdateDTO;
 import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.security.OrganizationPermissions;
 import com.example.multitenant.services.users.UsersService;
+import com.example.multitenant.utils.AppUtils;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -50,12 +51,13 @@ public class ContentsController {
     }
 
     @GetMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
     public ResponseEntity<Object> getAllContents(@HandlePage Integer page, @HandleSize Integer size,
         @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir, 
-        @RequestParam(defaultValue = "") List<String> filters, @RequestHeader("X-Tenant-ID") String tenantId) {
+        @RequestParam(defaultValue = "") List<String> filters) {
+        var tenantId = AppUtils.getTenantId();
 
-        var contents = this.contentsService.findAllPopulatedWithFilters(page, size, sortBy, sortBy, filters, Integer.parseInt(tenantId));
+        var contents = this.contentsService.findAllPopulatedWithFilters(page, size, sortBy, sortBy, filters, tenantId);
         var count = contents.getTotalElements();
         var contentsViews = contents.map((con) -> {
             return con.toViewDTO();
@@ -67,9 +69,11 @@ public class ContentsController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_VIEW)")
-    public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var content = this.contentsService.findByIdAndOrganizationId(id, Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_VIEW)")
+    public ResponseEntity<Object> getContentById(@PathVariable @ValidateNumberId Integer id) {
+        var tenantId = AppUtils.getTenantId();
+
+        var content = this.contentsService.findByIdAndOrganizationId(id, tenantId);
         if(content == null) {
             var respBody = ApiResponses.GetErrResponse(String.format("content with id: %s was not found", id));
             return ResponseEntity.badRequest().body(respBody);
@@ -81,9 +85,11 @@ public class ContentsController {
     }
 
     @PostMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_CREATE)")
-    public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var content = this.contentsService.createByUser(dto.toModel(), Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_CREATE)")
+    public ResponseEntity<Object> createContent(@Valid @RequestBody ContentCreateDTO dto) {
+        var tenantId = AppUtils.getTenantId();
+
+        var content = this.contentsService.createByUser(dto.toModel(), tenantId);
         var contentView = content.toViewDTO();
         var responseBody = ApiResponses.OneKey("content", contentView);
 
@@ -91,9 +97,11 @@ public class ContentsController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_UPDATE)")
-    public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var updatedContent = this.contentsService.updateByUser(id, dto.toModel(), Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_UPDATE)")
+    public ResponseEntity<Object> updateContent(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody ContentUpdateDTO dto) {
+        var tenantId = AppUtils.getTenantId();
+
+        var updatedContent = this.contentsService.updateByUser(id, dto.toModel(), tenantId);
         if(updatedContent == null) {
             var respBody = ApiResponses.GetErrResponse(String.format("content with id: '%s' does not exist", id));
             return ResponseEntity.badRequest().body(respBody);
@@ -105,9 +113,10 @@ public class ContentsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, #tenantId, @organizationPermissions.CONTENT_DELETE)")
-    public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id, @RequestHeader("X-Tenant-ID") String tenantId) {
-        this.contentsService.deleteByUser(id, Integer.parseInt(tenantId));
+    @PreAuthorize("@customSPEL.hasOrgAuthority(authentication, @organizationPermissions.CONTENT_DELETE)")
+    public ResponseEntity<Object> deleteContent(@ValidateNumberId @PathVariable Integer id) {
+        var tenantId = AppUtils.getTenantId();
+        this.contentsService.deleteByUser(id, tenantId);
         return ResponseEntity.noContent().build();
     }
     

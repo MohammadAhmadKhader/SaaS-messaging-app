@@ -14,6 +14,7 @@ import com.example.multitenant.dtos.invitations.InvitationCancelRejectDTO;
 import com.example.multitenant.dtos.invitations.InvitationSendDTO;
 import com.example.multitenant.models.enums.InvitiationAction;
 import com.example.multitenant.services.invitations.InvitationsService;
+import com.example.multitenant.utils.AppUtils;
 import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -49,21 +50,20 @@ public class InvitationsController {
     }
 
     @GetMapping("/organizations")
-    public ResponseEntity<Object> getOrganizationInvitations(Integer cursor, @ValidateSize Integer size, @RequestHeader("X-Tenant-ID") String tenantId) {
-        var tenantIdAsInt = Integer.parseInt(tenantId);
+    public ResponseEntity<Object> getOrganizationInvitations(Integer cursor, @ValidateSize Integer size) {
+        var tenantId = AppUtils.getTenantId();
 
-        var inviations = this.invitationsService.getOrganizationInvitationsWithCursor(tenantIdAsInt, cursor, size);
-
+        var inviations = this.invitationsService.getOrganizationInvitationsWithCursor(tenantId, cursor, size);
         var res = ApiResponses.OneKey("invitations", inviations);
         
         return ResponseEntity.ok().body(res);
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> sendInvitation(@Valid @RequestBody InvitationSendDTO dto, @RequestHeader("X-Tenant-ID") String tenantId) {
+    public ResponseEntity<Object> sendInvitation(@Valid @RequestBody InvitationSendDTO dto) {
+        var orgId = AppUtils.getTenantId();
         var principal = SecurityUtils.getPrincipal();
         var sender = principal.getUser();
-        var orgId = Integer.parseInt(tenantId);
 
         var inviation = this.invitationsService.sendInviteToUser(sender, orgId, dto.toModel());
         var res = ApiResponses.OneKey("invitation", inviation.toViewDTO());
@@ -73,13 +73,12 @@ public class InvitationsController {
     
     @PatchMapping("/cancel-reject/{id}")
     public ResponseEntity<Object> cancelOrReject(
-        @ValidateNumberId @PathVariable Integer id,
-        @Valid @RequestBody InvitationCancelRejectDTO dto,
-        @RequestHeader("X-Tenant-ID") String tenantId) {
-        
+        @ValidateNumberId @PathVariable Integer id, 
+        @Valid @RequestBody InvitationCancelRejectDTO dto) {
+            
+        var orgId = AppUtils.getTenantId();
         var principal = SecurityUtils.getPrincipal();
         var user = principal.getUser();
-        var orgId = Integer.parseInt(tenantId);
         
         var inv = this.invitationsService.findPendingInvitation(id, orgId);
         if(inv == null) {
@@ -101,12 +100,10 @@ public class InvitationsController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Object> acceptInvitiation(
-        @Valid @RequestBody InvitationAcceptDTO dto, 
-        @RequestHeader("X-Tenant-ID") String tenantId) {
+    public ResponseEntity<Object> acceptInvitiation(@Valid @RequestBody InvitationAcceptDTO dto) {
+        var orgId = AppUtils.getTenantId();
         var principal = SecurityUtils.getPrincipal();
         var user = principal.getUser();
-        var orgId = Integer.parseInt(tenantId);
         
         var inv = this.invitationsService.findPendingInvitation(dto.getId(), orgId);
         if(inv == null) {
