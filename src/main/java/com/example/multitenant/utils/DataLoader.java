@@ -16,7 +16,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.example.multitenant.models.Content;
 import com.example.multitenant.models.GlobalPermission;
@@ -26,6 +25,7 @@ import com.example.multitenant.models.OrganizationPermission;
 import com.example.multitenant.models.OrganizationRole;
 import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
+import com.example.multitenant.models.enums.DefaultOrganizationRole;
 import com.example.multitenant.repository.ContentsRepository;
 import com.example.multitenant.repository.GlobalPermissionsRepository;
 import com.example.multitenant.repository.GlobalRolesRepository;
@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 
 @Component
@@ -89,26 +90,51 @@ public class DataLoader {
         assignGlobalRoles();
     }
 
+    @Transactional
     private void loadOrganizationPermissions() {
-        if (this.organizationPermissionsRepository.count() == 0) {
+        var permissions = this.data.getOrganizationPermissions();
+        var permsHashMap = new HashMap<String, OrganizationPermission>();
 
-            var permissions = this.data.getOrganizationPermissions();
-            var permsHashMap = new HashMap<String, OrganizationPermission>();
+        permissions.stream().forEach((perm) -> {
+            permsHashMap.put(perm.getName(), perm);
+        });
 
-            permissions.stream().forEach((perm) -> {
-                permsHashMap.put(perm.getName(), perm);
-            });
+        var ownerPerms = new ArrayList<OrganizationPermission>();
+        var adminPerms = new ArrayList<OrganizationPermission>();
+        var userPerms = new ArrayList<OrganizationPermission>();
+        for(var perm: permissions) {
+            if(!this.organizationPermissionsRepository.findByName(perm.getName()).isPresent()) {
+                this.organizationPermissionsRepository.save(perm);
+                if(perm.getIsDefaultOrgOwner()) {
+                    ownerPerms.add(perm);
+                }
 
-            for(var perm: permissions) {
-                if(!this.organizationPermissionsRepository.findByName(perm.getName()).isPresent()) {
-                    this.organizationPermissionsRepository.save(perm);
+                if(perm.getIsDefaultAdmin()) {
+                    adminPerms.add(perm);
+                }
+
+                if(perm.getIsDefaultUser()) {
+                    userPerms.add(perm);
                 }
             }
-             
-            System.out.println("permissions Loaded Successfully");
-        } else {
-            System.out.println("permissions already exists, skipping.");
         }
+
+        if(ownerPerms.size() > 0) {
+            DataLoaderHelper.addNewOrganizationPermissions
+            (organizationRolesRepository, ownerPerms, DefaultOrganizationRole.ORG_OWNER);
+        }
+
+        if(adminPerms.size() > 0) {
+            DataLoaderHelper.addNewOrganizationPermissions
+            (organizationRolesRepository, adminPerms, DefaultOrganizationRole.ORG_ADMIN);
+        }
+
+        if(userPerms.size() > 0) {
+            DataLoaderHelper.addNewOrganizationPermissions
+            (organizationRolesRepository, userPerms, DefaultOrganizationRole.ORG_USER);
+        }  
+             
+        System.out.println("permissions were checked");
     }
 
     private void loadGlobalPermissions() {
@@ -318,6 +344,21 @@ class DataLoaderInitCaller {
             dataLoader.loadData();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+}
+
+class DataLoaderHelper {
+    static void addNewOrganizationPermissions(OrganizationRolesRepository repo, 
+    List<OrganizationPermission> newPerms, DefaultOrganizationRole role) {
+        var probe = new OrganizationRole();
+        probe.setName(role.getRoleName());
+
+        var ownerRoles = repo.findAll(Example.of(probe));
+
+        for (OrganizationRole organizationRole : ownerRoles) {
+           organizationRole.getOrganizationPermissions().addAll(newPerms);
+           repo.save(organizationRole);
         }
     }
 }

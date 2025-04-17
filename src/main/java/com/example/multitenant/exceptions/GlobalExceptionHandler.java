@@ -123,6 +123,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponses.InvalidEmailOrPassword());
     }
+
+    @ExceptionHandler(UnknownException.class)
+    public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
+        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
+    }
     
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Map<String, Object>> handleUnknownErrors(Throwable ex) {

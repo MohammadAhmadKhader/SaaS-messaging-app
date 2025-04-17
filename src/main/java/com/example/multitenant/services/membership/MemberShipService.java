@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
+import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.OrganizationRole;
@@ -170,12 +171,12 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
                 throw new ResourceNotFoundException("membership");
             }
 
-            if(orgRole == null) {
+            if(orgRole == null || !orgRole.getOrganizationId().equals(orgId)) {
                 throw new ResourceNotFoundException("organization role", orgRoleId);
             }
 
             membership.getOrganizationRoles().forEach((role) -> {
-                if(role.getId() == orgRoleId) {
+                if(role.getId().equals(orgRoleId)) {
                     throw new InvalidOperationException("user already have the role");
                 }
             });
@@ -247,12 +248,28 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     }
 
     public Membership assignRoleToUser(Membership membership, OrganizationRole orgRole) {
+        if(orgRole.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
+            throw new InvalidOperationException("cant assign organization owner to a user");
+        }
+
         membership.getOrganizationRoles().add(orgRole);
         return this.membershipRepository.save(membership);
     }
 
     public Membership unAssignRoleToUser(Membership membership, OrganizationRole orgRole) {
-        membership.getOrganizationRoles().remove(orgRole);
+        if(orgRole.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
+            throw new InvalidOperationException("cant un-assign organization owner from a user");
+        }
+
+        if(orgRole.getName().equals(DefaultOrganizationRole.ORG_USER.getRoleName())) {
+            throw new InvalidOperationException("cant un-assign organization user from a user");
+        }
+
+        var isRemoved = membership.getOrganizationRoles().removeIf((role) -> role.getId().equals(orgRole.getId()));
+        if (!isRemoved) {
+            throw new UnknownException("an error has occured during attempt to un-assign organization role");
+        }
+
         return this.membershipRepository.save(membership);
     }
 

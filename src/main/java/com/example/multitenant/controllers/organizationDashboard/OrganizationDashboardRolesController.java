@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,8 +22,6 @@ import com.example.multitenant.dtos.organizationroles.AssignOrganizationRoleDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleCreateDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleUpdateDTO;
 import com.example.multitenant.dtos.organizationroles.UnAssignOrganizationPermissionsDTO;
-import com.example.multitenant.dtos.organizationroles.UnAssignOrganizationRoleDTO;
-import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
@@ -68,16 +65,27 @@ public class OrganizationDashboardRolesController {
     @PostMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_CREATE)")
     public ResponseEntity<Object> createRole(@Valid @RequestBody OrganizationRoleCreateDTO dto) {
-        var newOrg = this.organizationRolesService.create(dto.toModel());
+        var orgId = AppUtils.getTenantId();
+        var orgRole = this.organizationRolesService.findByNameAndOrganizationId(dto.getName(), orgId);
+        if(orgRole != null) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("role with such name already exists"));
+        }
 
-        var respBody = ApiResponses.OneKey("role", newOrg.toViewDTO());
+        var newOrgRole = this.organizationRolesService.createWithBasicPerms(dto.toModel(), orgId);
+        var respBody = ApiResponses.OneKey("role", newOrgRole.toViewDTO());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
         
     @PutMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UPDATE)")
     public ResponseEntity<Object> updateRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationRoleUpdateDTO dto) {
-        var updatedRole = this.organizationRolesService.findThenUpdate(id, dto.toModel());
+        var orgId = AppUtils.getTenantId();
+        var updatedRole = this.organizationRolesService.findThenUpdate(id, orgId, dto.toModel());
+        if(updatedRole == null) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
+        }
+
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -104,11 +112,11 @@ public class OrganizationDashboardRolesController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
 
-    @DeleteMapping("/un-assign/{id}")
+    @DeleteMapping("/un-assign/{id}/{userId}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UN_ASSIGN)")
-    public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody UnAssignOrganizationRoleDTO dto) {
+    public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Long userId) {
         var tenantId = AppUtils.getTenantId();
-        this.memberShipService.unAssignRole(dto.getRoleId(),tenantId, dto.getUserId());
+        this.memberShipService.unAssignRole(id, tenantId, userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -139,9 +147,8 @@ public class OrganizationDashboardRolesController {
             return ResponseEntity.badRequest().body(errRes);
         }
 
-        var updatedRole = this.organizationRolesService.unAssignPermissionsFromRole(id, dto.getPermissionsIds(), tenantId);
-        var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
+        this.organizationRolesService.unAssignPermissionsFromRole(id, dto.getPermissionsIds(), tenantId);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -82,7 +82,6 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
         }
 
-        System.out.println(securityRepository + " <-----------------------------------------------------------------");
         user.getRoles().add(role);
         var createdUser = this.usersService.create(user);
         var userDTO = createdUser.toViewDTO();

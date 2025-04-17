@@ -26,7 +26,7 @@ import com.example.multitenant.services.security.CustomUserDetailsService;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    
+
     CustomUserDetailsService customUserDetailsService;
     public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;

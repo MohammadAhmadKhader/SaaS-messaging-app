@@ -10,6 +10,19 @@ public enum DefaultOrganizationRole {
 
     private final String roleName;
 
+    public static boolean isDefaultRole(String roleName) {
+        if (
+            DefaultOrganizationRole.ORG_OWNER.getRoleName().equals(roleName) ||
+            DefaultOrganizationRole.ORG_ADMIN.getRoleName().equals(roleName) || 
+            DefaultOrganizationRole.ORG_USER.getRoleName().equals(roleName)
+        ) {
+
+            return true;
+        }
+
+        return false;
+    }
+
     DefaultOrganizationRole(String roleName) {
         this.roleName = roleName;
     }

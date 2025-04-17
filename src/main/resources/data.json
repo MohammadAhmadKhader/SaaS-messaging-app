@@ -159,13 +159,13 @@
       "isDefaultOrgOwner": true
     },
     {
-      "name": "org-dashboard:role:update",
+      "name": "org-dashboard:permission:assign",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
       "isDefaultOrgOwner": true
     },
     {
-      "name": "org-dashboard:role:delete",
+      "name": "org-dashboard:permission:un-assign",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
       "isDefaultOrgOwner": true

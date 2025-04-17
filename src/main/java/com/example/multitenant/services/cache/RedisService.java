@@ -3,6 +3,7 @@ package com.example.multitenant.services.cache;
 import java.time.Duration;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.Session;
@@ -19,6 +20,10 @@ import jakarta.servlet.http.HttpSession;
 
 @Service
 public class RedisService {
+    
+    @Value("${server.servlet.session.timeout}")
+    private Duration timeout;
+    
     private final RedisIndexedSessionRepository redisIndexedSessionRepository;
 
     public RedisService(RedisIndexedSessionRepository redisIndexedSessionRepository) {
@@ -56,6 +61,7 @@ public class RedisService {
 
     public void createSessionWithUser(HttpServletRequest request, UserViewDTO user) {
         var newSession = request.getSession(true);
+        newSession.setMaxInactiveInterval((int) timeout.toSeconds());
         newSession.setAttribute("user", user);
     }
 
