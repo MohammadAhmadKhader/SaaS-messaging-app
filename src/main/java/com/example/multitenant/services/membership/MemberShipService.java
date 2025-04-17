@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
+import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
@@ -155,7 +156,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
             return membership; 
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Error occurred during task execution", e);
+            throw new AsyncOperationException("Error occurred during task execution", e);
         }
     }
 
@@ -183,7 +184,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
             return this.assignRoleToUser(membership, orgRole);
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 
@@ -213,7 +214,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
             this.unAssignRoleToUser(membership, orgRole);
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 

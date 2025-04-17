@@ -128,6 +128,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
     }
+
+    @ExceptionHandler(AsyncOperationException.class)
+    public ResponseEntity<Map<String, Object>> handleAsyncOperationException(AsyncOperationException ex) {
+        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
+    }
     
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Map<String, Object>> handleUnknownErrors(Throwable ex) {

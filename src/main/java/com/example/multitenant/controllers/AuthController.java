@@ -26,6 +26,7 @@ import com.example.multitenant.dtos.auth.LoginDTO;
 import com.example.multitenant.dtos.auth.RegisterDTO;
 import com.example.multitenant.dtos.auth.ResetPasswordDTO;
 import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.security.GlobalRolesService;
@@ -77,7 +78,7 @@ public class AuthController {
         var user = registerDTO.toUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        var role = this.globalRolesService.findByName(DefaultGlobalRole.SUPERADMIN.getRoleName());
+        var role = this.globalRolesService.findByName(DefaultGlobalRole.USER.getRoleName());
         if(role == null) {
             return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
         }
@@ -131,7 +132,7 @@ public class AuthController {
         
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException( "an error has occured during async process");
+            throw new AsyncOperationException( "an error has occured during async process");
         }
     }
 

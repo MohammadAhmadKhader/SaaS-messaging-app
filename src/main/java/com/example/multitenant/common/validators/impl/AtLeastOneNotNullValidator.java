@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import com.example.multitenant.common.validators.contract.AtLeastOneNotNull;
+import com.example.multitenant.exceptions.AsyncOperationException;
 
 public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOneNotNull, Object> {
 
@@ -41,7 +42,7 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
                 }
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new AsyncOperationException(e);
             }
         }
 

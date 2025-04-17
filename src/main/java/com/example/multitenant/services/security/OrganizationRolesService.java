@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
@@ -95,7 +96,7 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
 
             return role;
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 
@@ -128,7 +129,7 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
 
             return this.rolesRepository.save(role);
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 

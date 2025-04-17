@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.example.multitenant.exceptions.AsyncOperationException;
+import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.GlobalRole;
 import com.example.multitenant.repository.GlobalRolesRepository;
@@ -46,11 +48,11 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
             var permissions = permissionsTask.get();
 
             if(role == null) {
-                throw new RuntimeException(String.format("role with id: '%s' was not found", roleId));
+                throw new ResourceNotFoundException("role", roleId);
             }
 
             if(permissions == null || permissions.size() == 0) {
-                throw new RuntimeException(String.format("no permissions were provided to be assigned to the role"));
+                throw new InvalidOperationException("no permissions were provided to be assigned to the role");
             }
 
             role.getPermissions().addAll(permissions);
@@ -58,7 +60,7 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
 
             return role;
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 
@@ -73,11 +75,11 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
             var permissions = permissionsTask.get();
 
             if(role == null) {
-                throw new RuntimeException(String.format("role with id: '%s' was not found", roleId));
+                throw new ResourceNotFoundException("role", roleId);
             }
 
             if(permissions == null || permissions.size() == 0) {
-                throw new RuntimeException(String.format("no permissions were provided to be assigned to the role"));
+                throw new InvalidOperationException("no permissions were provided to be assigned to the role");
             }
 
             role.getPermissions().addAll(permissions);
@@ -85,7 +87,7 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
 
             return role;
         } catch (InterruptedException | ExecutionException ex) {
-            throw new RuntimeException("Error occurred during task execution", ex);
+            throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import com.example.multitenant.exceptions.AsyncOperationException;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -58,7 +60,7 @@ public abstract class ServicesHelper<TModel> {
             
             return new PageImpl<TModel>(list, pageable, count);
         }  catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException("Error occurred during task execution", e);
+            throw new AsyncOperationException("Error occurred during task execution", e);
         }
     }
 

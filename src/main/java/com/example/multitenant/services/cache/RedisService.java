@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.users.UserViewDTO;
+import com.example.multitenant.exceptions.UnauthorizedUserException;
 
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,8 +53,8 @@ public class RedisService {
 
     private HttpSession getSession(HttpServletRequest request) {
         var session = request.getSession(false);
-        if( session == null) {
-            throw new RuntimeException("User session was not found");
+        if(session == null) {
+            throw new UnauthorizedUserException("User session was not found");
         }
 
         return session;
