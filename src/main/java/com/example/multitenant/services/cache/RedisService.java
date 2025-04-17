@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.users.UserViewDTO;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
+import com.example.multitenant.models.User;
 
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class RedisService {
 
     public void storeUserInSession(HttpServletRequest request, UserViewDTO user) {
         var session = getSession(request);
-        session.setAttribute("user", user);
+        this.setSessionAttribute(session, user);
     }
 
     public UserViewDTO getUserFromSession(HttpServletRequest request) {
@@ -62,8 +63,7 @@ public class RedisService {
 
     public void createSessionWithUser(HttpServletRequest request, UserViewDTO user) {
         var newSession = request.getSession(true);
-        newSession.setMaxInactiveInterval((int) timeout.toSeconds());
-        newSession.setAttribute("user", user);
+        this.setSessionAttribute(newSession, user);
     }
 
     public UserPrincipal getUserPrincipal() {
@@ -87,5 +87,10 @@ public class RedisService {
         }
 
         return userPrincipal.getUser().getId();
+    }
+
+    public void setSessionAttribute(HttpSession session, UserViewDTO user) {
+        session.setMaxInactiveInterval((int) timeout.toSeconds());
+        session.setAttribute("user", user);
     }
 }

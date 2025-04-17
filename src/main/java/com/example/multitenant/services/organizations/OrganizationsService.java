@@ -3,6 +3,7 @@ package com.example.multitenant.services.organizations;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.Membership;
@@ -20,7 +21,7 @@ public class OrganizationsService extends GenericService<Organization, Integer> 
     }
 
     public Page<Organization> findAllOrganization(Integer page, Integer size) {
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         var result = this.organizationsRepository.findAll(pageable);
 
         return result;

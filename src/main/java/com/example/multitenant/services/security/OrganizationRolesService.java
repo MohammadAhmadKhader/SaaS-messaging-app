@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.exceptions.AsyncOperationException;
@@ -42,7 +43,7 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
     }
 
     public Page<OrganizationRole> findAllRoles(Integer page, Integer size, Integer organizationId) {
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
         
         if (organizationId == null) {
             return this.rolesRepository.findAll(pageable);

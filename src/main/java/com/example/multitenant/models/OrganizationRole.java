@@ -21,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,6 +59,7 @@ public class OrganizationRole implements Serializable {
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "organization_roles"),
         inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id", table = "organization_permissions")
     )
+    @OrderBy("id ASC")
     private Set<OrganizationPermission> organizationPermissions = new HashSet<>();
 
     public OrganizationRoleViewDTO toViewDTO() {

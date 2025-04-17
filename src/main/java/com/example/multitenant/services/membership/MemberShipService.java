@@ -14,6 +14,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.organizations.OrganizationCreateDTO;
@@ -54,7 +55,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     public Page<Membership> getOrganizaionMemberships(Integer page, Integer size, Integer organizationId) {
         var org = new Organization();
         org.setId(organizationId);
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by("joinedAt","id").descending());
         
         return this.membershipRepository.findByOrganizationAndIsMemberTrue(org, pageable);
     }

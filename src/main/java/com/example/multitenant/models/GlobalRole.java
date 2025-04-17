@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +44,7 @@ public class GlobalRole implements Serializable{
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles"),
         inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id", table = "global_permissions")
     )
+    @OrderBy("id ASC")
     private List<GlobalPermission> permissions = new ArrayList<>();
 
     public GlobalRoleViewDTO toViewDTO() {

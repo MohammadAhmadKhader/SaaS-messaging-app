@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.GlobalPermission;
@@ -22,7 +23,7 @@ public class GlobalPermissionsService extends GenericService<GlobalPermission, I
     }
 
     public Page<GlobalPermission> findAllPermissions(Integer page, Integer size) {
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by( "id").descending());
         var result = this.globalPermissionsRepository.findAll(pageable);
 
         return result;

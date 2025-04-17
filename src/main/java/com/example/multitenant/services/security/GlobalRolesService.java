@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.exceptions.AsyncOperationException;
@@ -27,7 +28,7 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
     }
 
     public Page<GlobalRole> findAllRoles(Integer page, Integer size) {
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
         Page<GlobalRole> result = this.globalRolesRepository.findAll(pageable);
 
         return result;

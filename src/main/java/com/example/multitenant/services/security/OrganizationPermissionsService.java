@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class OrganizationPermissionsService extends GenericService<OrganizationP
     }
 
     public Page<OrganizationPermission> findAllPermissions(Integer page, Integer size) {
-        var pageable = PageRequest.of(page - 1, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
         var result = this.organizationPermissionsRepository.findAll(pageable);
 
         return result;

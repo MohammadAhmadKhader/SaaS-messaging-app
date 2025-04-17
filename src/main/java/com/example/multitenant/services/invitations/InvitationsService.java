@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.shared.CursorPage;
@@ -37,7 +38,7 @@ public class InvitationsService extends GenericService<Invitation, Integer> {
     }
 
     public CursorPage<Invitation, Integer> getUserInvitationsWithCursor(Long userId, Integer cursor ,Integer size) {
-        var pageable = PageRequest.of(0, size + 1);
+        var pageable = PageRequest.of(0, size + 1, Sort.by("createdAt","id").descending());
 
         List<Invitation> invitations;
         if(cursor == null) {
@@ -60,7 +61,7 @@ public class InvitationsService extends GenericService<Invitation, Integer> {
     }
 
     public CursorPage<Invitation, Integer> getOrganizationInvitationsWithCursor(Integer organizationId, Integer cursor ,Integer size) {
-        var pageable = PageRequest.of(0, size + 1);
+        var pageable = PageRequest.of(0, size + 1, Sort.by("createdAt", "id").descending());
 
         List<Invitation> invitations;
         if(cursor == null) {

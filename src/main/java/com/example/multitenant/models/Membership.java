@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -57,6 +58,7 @@ public class Membership {
         },
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @OrderBy("id ASC")
     private List<OrganizationRole> organizationRoles;
 
     @CreationTimestamp

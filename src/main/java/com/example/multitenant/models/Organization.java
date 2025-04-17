@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,14 +45,15 @@ public class Organization implements Serializable {
     private Instant createdAt;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "organization")
+    @OrderBy("createdAt DESC")
     private List<Content> contents = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore()
+    @OrderBy("joinedAt DESC, id.organizationId ASC, id.userId ASC")
     private List<Membership> memberships = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore()
+    @OrderBy("joinedAt DESC, id ASC")
     private List<OrganizationRole> roles = new ArrayList<>();
 
     public OrganizationViewDTO toViewDTO() {
