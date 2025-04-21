@@ -22,6 +22,7 @@ import com.example.multitenant.dtos.organizationroles.AssignOrganizationRoleDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleCreateDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleUpdateDTO;
 import com.example.multitenant.dtos.organizationroles.UnAssignOrganizationPermissionsDTO;
+import com.example.multitenant.services.cache.SessionsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
@@ -36,14 +37,20 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/organizations/dashboard/roles")
 public class OrganizationDashboardRolesController {
+
     private final OrganizationsService organizationsService;
     private final OrganizationRolesService organizationRolesService;
     private final MemberShipService memberShipService;
+    private final SessionsService sessionsService;
 
-    public OrganizationDashboardRolesController(OrganizationsService organizationsService, OrganizationRolesService organizationRolesService, MemberShipService memberShipService) {
+    public OrganizationDashboardRolesController(OrganizationsService organizationsService,
+     OrganizationRolesService organizationRolesService, 
+     MemberShipService memberShipService,
+     SessionsService sessionsService) {
         this.organizationsService = organizationsService;
         this.organizationRolesService = organizationRolesService;
         this.memberShipService = memberShipService;
+        this.sessionsService = sessionsService;
     }
 
     @GetMapping("")
@@ -72,6 +79,8 @@ public class OrganizationDashboardRolesController {
         }
 
         var newOrgRole = this.organizationRolesService.createWithBasicPerms(dto.toModel(), orgId);
+        this.sessionsService.invalidateOrgRolesCache(orgId);
+
         var respBody = ApiResponses.OneKey("role", newOrgRole.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
@@ -86,6 +95,7 @@ public class OrganizationDashboardRolesController {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("role", id));
         }
 
+        this.sessionsService.invalidateOrgRolesCache(orgId);
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -96,7 +106,9 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_DELETE)")
     public ResponseEntity<Object> deleteRole(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
+        
         this.organizationRolesService.deleteRole(id, tenantId);
+        this.sessionsService.invalidateOrgRolesCache(tenantId);
         
         return ResponseEntity.noContent().build();
     }
@@ -107,6 +119,8 @@ public class OrganizationDashboardRolesController {
         var tenantId = AppUtils.getTenantId();
 
         var updatedRole = this.memberShipService.assignRole(dto.getRoleId(), tenantId, dto.getUserId());
+        this.sessionsService.invalidateUserOrgRolesCache(tenantId, dto.getUserId());
+
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -116,7 +130,9 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UN_ASSIGN)")
     public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Long userId) {
         var tenantId = AppUtils.getTenantId();
+
         this.memberShipService.unAssignRole(id, tenantId, userId);
+        this.sessionsService.invalidateUserOrgRolesCache(tenantId, userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -132,6 +148,8 @@ public class OrganizationDashboardRolesController {
         }
 
         var updatedRole = this.organizationRolesService.assignPermissionsToRole(dto.getRoleId(), dto.getPermissionsIds(), tenantId);
+        this.sessionsService.invalidateOrgRolesCache(tenantId);
+
         var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -148,6 +166,7 @@ public class OrganizationDashboardRolesController {
         }
 
         this.organizationRolesService.unAssignPermissionsFromRole(id, dto.getPermissionsIds(), tenantId);
+        this.sessionsService.invalidateOrgRolesCache(tenantId);
 
         return ResponseEntity.noContent().build();
     }

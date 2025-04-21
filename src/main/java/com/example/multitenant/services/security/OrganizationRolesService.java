@@ -1,5 +1,6 @@
 package com.example.multitenant.services.security;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -54,6 +55,10 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
 
         var ex = Example.of(probe);
         return this.rolesRepository.findAll(ex, pageable);
+    }
+
+    public List<OrganizationRole> findAllRolesWithPermissions(Integer organizationId) {
+        return this.rolesRepository.findAllRolesWithPermissions(organizationId);
     }
 
     public OrganizationRole findByNameAndOrganizationId(String name, Integer orgId) {
@@ -173,6 +178,10 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
         var role = this.findOne(orgRoleId, orgId);
         if (role == null) {
             return null;
+        }
+
+        if(DefaultOrganizationRole.isDefaultRole(role.getName())) {
+            throw new InvalidOperationException("can not update default roles names");
         }
 
         this.patcher(role, orgRole);

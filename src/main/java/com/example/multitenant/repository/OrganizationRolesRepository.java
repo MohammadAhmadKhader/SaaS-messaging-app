@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.multitenant.models.OrganizationRole;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,4 +22,11 @@ public interface OrganizationRolesRepository extends GenericRepository<Organizat
         WHERE (r.id = :id AND r.organizationId = :organizationId)
     """)
     OrganizationRole findByIdAndOrgIdWithPermissions(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
+
+    @Query("""
+        SELECT r FROM OrganizationRole r
+        LEFT JOIN FETCH r.organizationPermissions
+        WHERE (r.organizationId = :organizationId)
+    """)
+    List<OrganizationRole> findAllRolesWithPermissions(@Param("organizationId") Integer organizationId);
 }

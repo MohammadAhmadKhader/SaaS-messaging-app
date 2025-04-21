@@ -22,7 +22,7 @@ public class AppUtils {
                 .filter(name -> src.getPropertyValue(name) == null)
                 .toArray(String[]::new);
     }
-    
+
     public static Integer getTenantId() {
         var req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var tenantIdStr = req.getHeader("X-Tenant-ID");

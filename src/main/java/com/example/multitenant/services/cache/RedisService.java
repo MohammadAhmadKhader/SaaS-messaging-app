@@ -89,7 +89,7 @@ public class RedisService {
         return userPrincipal.getUser().getId();
     }
 
-    public void setSessionAttribute(HttpSession session, UserViewDTO user) {
+    private void setSessionAttribute(HttpSession session, UserViewDTO user) {
         session.setMaxInactiveInterval((int) timeout.toSeconds());
         session.setAttribute("user", user);
     }

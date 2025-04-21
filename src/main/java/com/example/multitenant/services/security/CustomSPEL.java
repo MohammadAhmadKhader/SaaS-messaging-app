@@ -6,14 +6,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
-import com.example.multitenant.models.binders.MembershipKey;
-import com.example.multitenant.services.membership.MemberShipService;
+import com.example.multitenant.services.cache.SessionsService;
 import com.example.multitenant.utils.AppUtils;
 
 @Component
 public class CustomSPEL {
+
     @Autowired
-    private MemberShipService memberShipService;
+    private SessionsService sessionsService;
 
     public boolean hasAnyRole(Authentication auth) {
         return auth.getAuthorities().stream()
@@ -29,16 +29,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var membership = this.memberShipService.findUserMembershipWithRolesAndPermissions(tenantId, userId);
-        if(membership == null) {
-            return false;
-        }
-        
-        var perms = membership.getOrganizationRoles().stream().flatMap((role) -> {
-            return role.getOrganizationPermissions().stream().map((perm) -> {
-                return perm.getName();
-            });
-        }).toList();
+        var perms = this.sessionsService.getUserOrgPermissions(tenantId, userId);
 
         return perms.stream().anyMatch((perm) -> perm.equals(permission));
     }
@@ -52,14 +43,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var membership = this.memberShipService.findUserMembershipWithRolesAndPermissions(tenantId, userId);
-        if(membership == null) {
-            return false;
-        }
-        
-        var roles = membership.getOrganizationRoles().stream().map((role) -> {
-            return role.getName();
-        }).toList();
+        var roles = this.sessionsService.getUserOrgRoles(tenantId, userId);
 
         return roles.stream().anyMatch((role) -> role.equals(roleName));
     }
