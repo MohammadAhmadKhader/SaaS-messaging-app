@@ -108,7 +108,7 @@ public class OrganizationDashboardRolesController {
         var tenantId = AppUtils.getTenantId();
         
         this.organizationRolesService.deleteRole(id, tenantId);
-        this.sessionsService.invalidateOrgRolesCache(tenantId);
+        this.sessionsService.handleRoleDeletionInvalidations(tenantId, id);
         
         return ResponseEntity.noContent().build();
     }

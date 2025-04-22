@@ -241,6 +241,10 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return membership;
     }
 
+    public List<Long> findUserIdsByOrgIdAndRoleId(Integer orgId, Integer roleId) {
+        return this.membershipRepository.findUserIdsByOrgIdAndRoleId(orgId, roleId);
+    }
+
     public Membership findUserMembershipWithRoles(Integer orgId, long userId) {
         var organization = new Organization();
         organization.setId(orgId);

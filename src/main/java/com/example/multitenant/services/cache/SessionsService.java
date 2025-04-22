@@ -1,5 +1,6 @@
 package com.example.multitenant.services.cache;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.OrganizationPermission;
@@ -110,11 +112,25 @@ public class SessionsService {
         this.redisTemplate.delete(getUserOrgRolesCacheKey(orgId, userId));
     }
 
-    private String getOrgRolesCacheKey(Integer orgId) {
+    public void handleRoleDeletionInvalidations(Integer orgId, Integer roleId) {
+        this.invalidateOrgRolesCache(orgId);
+
+        var usersIds = this.memberShipService.findUserIdsByOrgIdAndRoleId(orgId, roleId);
+        if(!usersIds.isEmpty()) {
+            var keysToInvalidate = usersIds.stream().map((userId) -> this.getUserOrgRolesCacheKey(orgId, userId)).toList();
+
+            if(!keysToInvalidate.isEmpty()) {
+                this.redisTemplate.delete(keysToInvalidate);
+            }
+        }
+    }
+
+    // we have used 'Serializable' incase we have to use patterns with redis such as "*" (wildcards delete/get as example)
+    private String getOrgRolesCacheKey(Serializable orgId) {
         return "org:roles:" + orgId;
     }
 
-    private String getUserOrgRolesCacheKey(Integer orgId, long userId) {
+    private String getUserOrgRolesCacheKey(Serializable orgId, Serializable userId) {
         return "user:roles:" + orgId + ":" + userId;
     }
 }

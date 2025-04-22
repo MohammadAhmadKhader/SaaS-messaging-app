@@ -1,6 +1,8 @@
 package com.example.multitenant.repository;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,4 +29,12 @@ public interface MembershipRepository extends GenericRepository<Membership, Memb
     @EntityGraph(attributePaths = {"organizationRoles"})
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.user.id = :userId AND m.isMember = true")
     public Membership findUserMembershipWithRoles(@Param("organization") Organization organization, @Param("userId") long userId);
+
+    @Query("""
+        SELECT m.user.id
+        FROM Membership m
+        JOIN m.organizationRoles r
+        WHERE m.id.organizationId = :orgId AND r.id = :roleId
+    """)
+    List<Long> findUserIdsByOrgIdAndRoleId(@Param("orgId") Integer orgId, @Param("roleId") Integer roleId);
 }
