@@ -16,20 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 
-import com.example.multitenant.dtos.shared.IFindAllResult;
-
 import jakarta.servlet.http.HttpServletResponse;
 
 public class ApiResponses {
     private static final Logger logger = LoggerFactory.getLogger(ApiResponses.class);
-
-    public static Map<String, Object> GetAllResponse(IFindAllResult<?> collection, String collectionKey) {
-        return Map.of(
-        collectionKey, collection.getList(), 
-        "count",collection.getCount(),
-        "page",collection.getPage(),
-        "size",collection.getSize());
-    }
 
     public static Map<String, Object> GetAllResponse(String collectionKey, List<?> list, long count, Integer page, Integer size) {
         return Map.of(collectionKey, list, "count", count,"page", page,"size", size);

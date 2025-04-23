@@ -47,4 +47,24 @@ public class CustomSPEL {
 
         return roles.stream().anyMatch((role) -> role.equals(roleName));
     }
+
+    public boolean hasCategoryAccess(Integer categoryId) {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+            return false;
+        }
+
+        var tenantId = AppUtils.getTenantId();
+        var userId = userDetails.getUser().getId();
+
+        var userRolesIds = this.sessionsService.getUserOrgRoles(tenantId, userId)
+                                            .stream()
+                                            .map((role) -> role.getId())
+                                            .toList();
+
+        var authoriedRolesIds = this.sessionsService
+                                    .getOrgCategoryWithAuthorizedRolesList(tenantId, categoryId);
+
+        return authoriedRolesIds.stream().anyMatch((roleId)-> userRolesIds.contains(roleId));
+    }
 }

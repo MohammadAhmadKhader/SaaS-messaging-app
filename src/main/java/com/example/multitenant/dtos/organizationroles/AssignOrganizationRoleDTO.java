@@ -10,7 +10,7 @@ public class AssignOrganizationRoleDTO {
     @Min(value = 1 ,message = "role id can not be less than {value}")
     private Integer roleId;
 
-    @Min(value = 1 ,message = "user id can not be less than {value}")
     @NotNull(message = "user id is required")
+    @Min(value = 1 ,message = "user id can not be less than {value}")
     private Integer userId;
 }

@@ -18,17 +18,16 @@ import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.services.contents.ContentsService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/dashboard/contents")
 public class AppDashboardContentsController {
     private final ContentsService contentsService;
-    public AppDashboardContentsController(ContentsService contentsService) {
-        this.contentsService = contentsService;
-    }
 
     @GetMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_CONTENT_VIEW)")

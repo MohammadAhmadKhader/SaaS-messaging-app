@@ -32,18 +32,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
     private final UsersService usersService;
-
-    public UsersController(UsersService usersService) {
-        this.usersService = usersService;
-    }
 
     @PutMapping("")
     public ResponseEntity<Object> updateUserProfile(@Valid @RequestBody UserUpdateDTO dto) {

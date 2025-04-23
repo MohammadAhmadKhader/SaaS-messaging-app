@@ -56,6 +56,16 @@ public class Organization implements Serializable {
     @OrderBy("joinedAt DESC, id ASC")
     private List<OrganizationRole> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("order ASC")
+    private List<Category> categories = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OrderBy("order ASC")
+    private List<Channel> channels = new ArrayList<>();
+
+
     public OrganizationViewDTO toViewDTO() {
         return new OrganizationViewDTO(this);
     }

@@ -24,21 +24,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/organizations")
 public class OrganizationsController {
     
     private final OrganizationsService organizationsService;
     private final MemberShipService memberShipService;
-    
-    public OrganizationsController(OrganizationsService organizationsService, MemberShipService memberShipService) {
-        this.organizationsService = organizationsService;
-        this.memberShipService = memberShipService;
-    }
 
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")

@@ -41,10 +41,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/dashboard/organizations")
 public class AppDashboardOrganizationsController {
@@ -52,12 +54,6 @@ public class AppDashboardOrganizationsController {
     private final UsersService usersService;
     private final OrganizationsService organizationsService;
     private final MemberShipService memberShipService;
-
-    public AppDashboardOrganizationsController(UsersService usersService, OrganizationsService organizationsService, MemberShipService memberShipService) {
-        this.usersService = usersService;
-        this.organizationsService = organizationsService;
-        this.memberShipService = memberShipService;
-    }
     
     @GetMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_VIEW)")

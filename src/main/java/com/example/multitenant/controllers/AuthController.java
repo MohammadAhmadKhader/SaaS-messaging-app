@@ -43,10 +43,12 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -56,17 +58,6 @@ public class AuthController {
     private final GlobalRolesService globalRolesService;
     private final SecurityContextRepository securityRepository;
     private final RedisService redisService;
-    
-    public AuthController(AuthenticationManager authenticationManager, UsersService usersService,
-     PasswordEncoder passwordEncoder, GlobalRolesService globalRolesService, RedisService redisService,
-     SecurityContextRepository securityRepository) {
-       this.usersService = usersService;
-       this.authenticationManager = authenticationManager;
-       this.passwordEncoder = passwordEncoder;
-       this.globalRolesService = globalRolesService;
-       this.redisService = redisService;
-       this.securityRepository = securityRepository;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest req) {

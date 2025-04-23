@@ -28,20 +28,17 @@ import com.example.multitenant.services.security.GlobalPermissions;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/dashboard/roles")
 public class AppDashboardRolesController {
 
     private final GlobalRolesService globalRolesService;
-
-    public AppDashboardRolesController(GlobalRolesService globalRolesService) {
-        this.globalRolesService = globalRolesService;
-    }
 
     @GetMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_VIEW)")

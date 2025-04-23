@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AtLeastOneNotNull(fields = {"firstName", "lastName", "email"}, message = "ttteest")
+@AtLeastOneNotNull(fields = {"firstName", "lastName", "email"})
 public class UserUpdateDTO {
     @Size(max = 64, message = "lastName must be at most {max}")
     @Size(min = 3, message = "lastName must be at least {min}")

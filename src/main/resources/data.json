@@ -241,6 +241,48 @@
       "isDefaultUser":false,
       "isDefaultAdmin": true,
       "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:category:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:category:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:category:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:category:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:channel:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:channel:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:channel:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
     }
   ],
   "organizationRoles": [

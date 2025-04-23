@@ -1,5 +1,6 @@
 package com.example.multitenant.services.security;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -187,6 +188,18 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
         this.patcher(role, orgRole);
 
         return this.save(role);
+    }
+
+    // TODO: must be made by 1 request rather than 1 request per role.
+    public List<OrganizationRole> findDefaultOrgRoles(Integer orgId) {
+        var defaultOrgRoles = DefaultOrganizationRole.values();
+        var orgRoleList = new ArrayList<OrganizationRole>();
+        for (var role : defaultOrgRoles) {
+            var orgRole = this.rolesRepository.findByNameAndOrganizationId(role.getRoleName(), orgId).get();
+            orgRoleList.add(orgRole);
+        }
+        
+        return orgRoleList;
     }
 
     private void patcher(OrganizationRole target, OrganizationRole source) {

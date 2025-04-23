@@ -34,21 +34,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/contents")
 public class ContentsController {
 
     private final ContentsService contentsService;
     private final UsersService usersService;
-
-    public ContentsController(ContentsService contentsService, UsersService usersService) {
-        this.contentsService = contentsService;
-        this.usersService = usersService;
-    }
 
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_VIEW)")

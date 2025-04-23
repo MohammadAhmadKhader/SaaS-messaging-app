@@ -29,11 +29,12 @@ import com.example.multitenant.services.security.OrganizationRolesService;
 import com.example.multitenant.utils.AppUtils;
 
 import jakarta.validation.Valid;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/organizations/dashboard/roles")
 public class OrganizationDashboardRolesController {
@@ -42,16 +43,6 @@ public class OrganizationDashboardRolesController {
     private final OrganizationRolesService organizationRolesService;
     private final MemberShipService memberShipService;
     private final SessionsService sessionsService;
-
-    public OrganizationDashboardRolesController(OrganizationsService organizationsService,
-     OrganizationRolesService organizationRolesService, 
-     MemberShipService memberShipService,
-     SessionsService sessionsService) {
-        this.organizationsService = organizationsService;
-        this.organizationRolesService = organizationRolesService;
-        this.memberShipService = memberShipService;
-        this.sessionsService = sessionsService;
-    }
 
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_VIEW)")

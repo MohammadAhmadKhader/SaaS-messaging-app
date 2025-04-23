@@ -21,19 +21,16 @@ import com.example.multitenant.models.Organization;
 import com.example.multitenant.services.organizations.OrganizationsService;
 
 import jakarta.validation.Valid;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/organizations/dashboard")
 public class OrganizationDashboardController {
     private final OrganizationsService organizationsService;
-
-    public OrganizationDashboardController(OrganizationsService organizationsService) {
-        this.organizationsService = organizationsService;
-    }
 
     @PutMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")

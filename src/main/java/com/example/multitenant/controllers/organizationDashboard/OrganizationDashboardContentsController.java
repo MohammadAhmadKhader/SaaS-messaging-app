@@ -19,18 +19,16 @@ import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
 import com.example.multitenant.utils.AppUtils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/organizations/dashboard/contents")
 public class OrganizationDashboardContentsController {
     private final ContentsService contentsService;
-
-    public OrganizationDashboardContentsController(ContentsService contentsService) {
-        this.contentsService = contentsService;
-    }
 
     @GetMapping("/users/{userId}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CONTENT_VIEW)")
