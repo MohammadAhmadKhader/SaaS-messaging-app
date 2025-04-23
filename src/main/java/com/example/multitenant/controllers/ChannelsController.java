@@ -39,7 +39,7 @@ public class ChannelsController {
     public ResponseEntity<Object> getChannelById(@PathVariable @ValidateNumberId Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         
-        var channel = this.channelsService.findByIdAndOrganizationId(id, tenantId);
+        var channel = this.channelsService.findByIdAndOrganizationId(id, tenantId, categoryId);
         if(channel == null) {
             var respBody = ApiResponses.GetNotFoundErr("channel", id);
             return ResponseEntity.badRequest().body(respBody);
@@ -70,7 +70,7 @@ public class ChannelsController {
         @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         
-        var updatedChannel = this.channelsService.update(id, dto.toModel(), tenantId);
+        var updatedChannel = this.channelsService.update(id, dto.toModel(), tenantId, categoryId);
         if(updatedChannel == null) {
             var respBody = ApiResponses.GetNotFoundErr("channel", id);
             return ResponseEntity.badRequest().body(respBody);
@@ -85,7 +85,7 @@ public class ChannelsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Void> swapChannelOrder(@RequestBody ChannelOrderSwapDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
-        this.channelsService.swapChannelOrder(dto, tenantId);
+        this.channelsService.swapChannelOrder(dto, tenantId, categoryId);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
@@ -94,7 +94,7 @@ public class ChannelsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_DELETE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> deleteChannel(@ValidateNumberId @PathVariable Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
-        this.channelsService.delete(id, tenantId);
+        this.channelsService.delete(id, tenantId, categoryId);
         return ResponseEntity.noContent().build();
     }
 }

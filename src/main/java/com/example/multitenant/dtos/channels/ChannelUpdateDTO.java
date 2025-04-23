@@ -15,19 +15,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@AtLeastOneNotNull(fields = {"name", "order"})
 public class ChannelUpdateDTO {
+    @NotBlank(message = "name can not be empty")
     @Size(min = 2, message = "name can not be less than {min} characters")
     @Size(max = 32, message = "name can not be more than {max} characters")
     private String name;
     
-    @Min(value = 1, message = "order can not be less than {value}")
-    private Integer displayOrder;
-    
     public Channel toModel() {
         var channel = new Channel();
         channel.setName(this.getName());
-        channel.setDisplayOrder(this.getDisplayOrder());
         
         return channel;
     }

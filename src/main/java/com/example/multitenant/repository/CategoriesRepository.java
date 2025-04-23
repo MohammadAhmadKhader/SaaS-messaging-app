@@ -18,6 +18,7 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
         FROM Category c 
         LEFT JOIN FETCH c.channels 
         WHERE c.organizationId = :organizationId
+        ORDER BY c.displayOrder ASC
     """)
     List<Category> findAllByOrganizationIdWithChannels(@Param("organizationId") Integer organizationId);
 
@@ -26,6 +27,7 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
         FROM Category c 
         LEFT JOIN FETCH c.authorizedRoles
         WHERE (c.organizationId = :organizationId)
+        ORDER BY c.displayOrder ASC
     """)
     List<Category> findAllByOrganizationIdWithAuthorizedRoles(@Param("organizationId") Integer organizationId);
     

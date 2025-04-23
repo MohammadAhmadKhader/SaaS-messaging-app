@@ -50,7 +50,7 @@ public class Channel {
     @Column(name = "organization_id", nullable = false)
     private Integer organizationId;
 
-    @Column(name = "category_id", nullable = false, insertable = false, updatable = false)
+    @Column(name = "category_id", nullable = false)
     private Integer categoryId;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
@@ -58,7 +58,7 @@ public class Channel {
     private Organization organization;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
     @Column(name = "created_by_id", insertable = false, updatable = false)

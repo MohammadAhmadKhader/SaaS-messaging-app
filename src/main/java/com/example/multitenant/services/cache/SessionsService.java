@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleCacheDTO;
+import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.OrganizationPermission;
 import com.example.multitenant.services.categories.CategoriesService;
 import com.example.multitenant.services.membership.MemberShipService;
@@ -138,7 +139,10 @@ public class SessionsService {
     }
 
     private List<Integer> fetchOrgCategoryAndCache(Integer orgId, Integer categoryId) {
-        var category = this.categoriesService.findByIdAndOrganizationIdWithAuthorizedRoles(orgId, categoryId);
+        var category = this.categoriesService.findByIdAndOrganizationIdWithAuthorizedRoles(categoryId, orgId);
+        if (category == null) {
+            throw new ResourceNotFoundException("category", categoryId);
+        }
 
         var rolesList = category.getAuthorizedRoles().stream().map((role) -> role.getId()).toList();
         this.setOrgCategory(orgId, categoryId, rolesList);
