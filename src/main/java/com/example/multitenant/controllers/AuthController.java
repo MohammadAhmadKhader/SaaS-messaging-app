@@ -29,6 +29,7 @@ import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.cache.RedisService;
+import com.example.multitenant.services.cache.SessionsService;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.utils.SecurityUtils;
@@ -57,7 +58,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final GlobalRolesService globalRolesService;
     private final SecurityContextRepository securityRepository;
-    private final RedisService redisService;
+    private final SessionsService sessionsService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest req) {
@@ -78,7 +79,7 @@ public class AuthController {
         var createdUser = this.usersService.create(user);
         var userDTO = createdUser.toViewDTO();
 
-        this.redisService.createSessionWithUser(req, userDTO);
+        this.sessionsService.createSessionWithUser(req, userDTO);
         var respBody = ApiResponses.OneKey("user", userDTO);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
@@ -144,7 +145,7 @@ public class AuthController {
         var userDTO = user.toViewDTO();
         var respBody = ApiResponses.OneKey("user", userDTO);
         
-        this.redisService.storeUserInSession(request, userDTO);
+        this.sessionsService.storeUserInSession(request, userDTO);
 
         return ResponseEntity.ok().body(respBody);
     }
@@ -157,7 +158,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respBody);
         }
 
-        var user = redisService.getUserFromSession(req);
+        var user = this.sessionsService.getUserFromSession(req);
         if(user == null) {
             var respBody = ApiResponses.GetInternalErr();
             return ResponseEntity.internalServerError().body(respBody);

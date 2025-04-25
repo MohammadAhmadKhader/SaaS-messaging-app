@@ -14,6 +14,7 @@ import com.example.multitenant.exceptions.UnauthorizedUserException;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.cache.RedisService;
+import com.example.multitenant.services.cache.SessionsService;
 import com.example.multitenant.services.ownership.contract.OwnershipEntity;
 import com.example.multitenant.services.ownership.contract.OwnershipService;
 import com.example.multitenant.utils.AppUtils;
@@ -32,14 +33,14 @@ public abstract class OwnershipServiceImpl<TModel extends OwnershipEntity<TModel
     
     private final TRepository repository;
     private final Supplier<TModel> modelSupplier;
-    private final RedisService redisService;
+    private final SessionsService sessionsService;
 
     @Autowired
     private UsersRepository usersRepository;
 
-    public OwnershipServiceImpl(TRepository repository, RedisService redisService, Supplier<TModel> modelSupplier) {
+    public OwnershipServiceImpl(TRepository repository, SessionsService sessionsService, Supplier<TModel> modelSupplier) {
         this.repository = repository;
-        this.redisService = redisService;
+        this.sessionsService = sessionsService;
         this.modelSupplier = modelSupplier;
     }
 
@@ -98,7 +99,7 @@ public abstract class OwnershipServiceImpl<TModel extends OwnershipEntity<TModel
     }
 
     private Long userIdGetter() {
-        var principal = this.redisService.getUserPrincipal();
+        var principal = this.sessionsService.getUserPrincipal();
         if(principal == null) {
             return null;
         }

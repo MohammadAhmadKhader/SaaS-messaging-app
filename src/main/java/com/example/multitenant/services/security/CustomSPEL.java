@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.cache.SessionsService;
 import com.example.multitenant.utils.AppUtils;
 
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomSPEL {
 
     @Autowired
-    private SessionsService sessionsService;
+    private RedisService redisService;
 
     public boolean hasAnyRole(Authentication auth) {
         return auth.getAuthorities().stream()
@@ -32,7 +33,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var perms = this.sessionsService.getUserOrgPermissions(tenantId, userId);
+        var perms = this.redisService.getUserOrgPermissions(tenantId, userId);
 
         return perms.stream().anyMatch((perm) -> perm.equals(permission));
     }
@@ -46,7 +47,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var roles = this.sessionsService.getUserOrgRoles(tenantId, userId);
+        var roles = this.redisService.getUserOrgRoles(tenantId, userId);
 
         return roles.stream().anyMatch((role) -> role.equals(roleName));
     }
@@ -60,12 +61,12 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var userRolesIds = this.sessionsService.getUserOrgRoles(tenantId, userId)
+        var userRolesIds = this.redisService.getUserOrgRoles(tenantId, userId)
                                             .stream()
                                             .map((role) -> role.getId())
                                             .toList();
 
-        var authoriedRolesIds = this.sessionsService
+        var authoriedRolesIds = this.redisService
                                     .getOrgCategoryWithAuthorizedRolesList(tenantId, categoryId);
 
         return authoriedRolesIds.stream().anyMatch((roleId)-> userRolesIds.contains(roleId));
