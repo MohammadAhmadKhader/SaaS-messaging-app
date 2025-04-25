@@ -1,7 +1,6 @@
 package com.example.multitenant.dtos.auth;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 public class UserPrincipal implements UserDetails {
+    // we must explicitly declare one, since we using long live sessions
+    private static final long serialVersionUID = 1L;
     final private User user;
 
     @JsonCreator
@@ -28,7 +29,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        for (var role : user.getRoles()) {
+        for (var role : this.user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
 
             for (var perm : role.getPermissions()) {

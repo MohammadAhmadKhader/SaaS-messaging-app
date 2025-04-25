@@ -42,8 +42,8 @@ public class AppUtils {
     }
 
     public static Long getUserIdFromAuth() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
         try {
+            var auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth instanceof Authentication authentication) {
                 var principalObj = authentication.getPrincipal();
                 if (principalObj instanceof UserPrincipal userPrincipal) {
@@ -51,15 +51,15 @@ public class AppUtils {
                 }
             }
 
-            throw new UnknownException("unable to extract user id from principal");
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid user ID in Principal", e);
+            throw new UnknownException("unable to extract user id from auth");
+        } catch (Exception e) {
+            throw new UnknownException("an error has occured durign attempt to fetch user from auth");
         }
     }
 
     public static User getUserFromAuth() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
         try {
+            var auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth instanceof Authentication authentication) {
                 var principalObj = authentication.getPrincipal();
                 if (principalObj instanceof UserPrincipal userPrincipal) {
@@ -67,9 +67,25 @@ public class AppUtils {
                 }
             }
 
-            throw new UnknownException("unable to extract user id from principal");
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid user ID in Principal", e);
+            throw new UnknownException("unable to extract user from auth");
+        } catch (Exception e) {
+            throw new UnknownException("an error has occured durign attempt to fetch user from auth");
+        }
+    }
+
+    public static User getUserFromPrincipal(Principal principal) {
+        try {
+            var auth = (Authentication) principal;
+            if (auth instanceof Authentication authentication) {
+                var principalObj = authentication.getPrincipal();
+                if (principalObj instanceof UserPrincipal userPrincipal) {
+                    return userPrincipal.getUser();
+                }
+            }
+
+            throw new UnknownException("unable to extract user from principal");
+        } catch (Exception e) {
+            throw new UnknownException("an error has occured durign attempt to fetch user from principal");
         }
     }
 }
