@@ -97,7 +97,7 @@ public class GlobalExceptionHandler {
         var errBody = ApiResponses.Unauthorized();
         logger.error("[User Unauthorized]: " +ex.getMessage());
 
-        return ResponseEntity.internalServerError().body(errBody);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errBody);
     }
 
     @ExceptionHandler(UnauthorizedOrganizationException.class)
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
         var errBody = ApiResponses.Unauthorized();
         logger.error("[Organization Unauthorized]: " +ex.getMessage());
 
-        return ResponseEntity.internalServerError().body(errBody);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errBody);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

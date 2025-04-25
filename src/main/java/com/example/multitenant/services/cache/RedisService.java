@@ -48,10 +48,6 @@ public class RedisService {
         return user;
     }
 
-    public Map<String, RedisSession> findSessionsByUserId(String userId) {
-        return redisIndexedSessionRepository.findByIndexNameAndIndexValue("userId", userId);
-    }
-
     private HttpSession getSession(HttpServletRequest request) {
         var session = request.getSession(false);
         if(session == null) {

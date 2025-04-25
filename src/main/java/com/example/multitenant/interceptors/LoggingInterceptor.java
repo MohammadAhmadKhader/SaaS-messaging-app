@@ -31,6 +31,10 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest req, HttpServletResponse res, Object handler, Exception ex) throws Exception {
+        if (req.getRequestURI().startsWith("/ws")) {
+            return;
+        }
+
         if (req instanceof ContentCachingRequestWrapper reqWrapper &&
             res instanceof ContentCachingResponseWrapper resWrapper) {
 

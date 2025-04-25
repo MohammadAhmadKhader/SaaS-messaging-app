@@ -29,6 +29,23 @@ public class ChannelsService {
     
     public Channel findByIdAndOrganizationId(Integer id, Integer organizationId, Integer categoryId) {
         var chan = this.channelsRepository.findByIdAndOrganizationId(id, organizationId);
+        if(chan == null) {
+            throw new ResourceNotFoundException("channel", id);
+        }
+
+        if(!chan.getCategoryId().equals(categoryId)) {
+            throw new UnauthorizedUserException("channel", id);
+        }
+        
+        return chan;
+    }
+
+    public Channel findWithMessagesByIdAndOrganizationId(Integer id, Integer organizationId, Integer categoryId) {
+        var chan = this.channelsRepository.findWithMessagesByIdAndOrganizationId(id, organizationId);
+        if(chan == null) {
+            throw new ResourceNotFoundException("channel", id);
+        }
+        
         if(!chan.getCategoryId().equals(categoryId)) {
             throw new UnauthorizedUserException("channel", id);
         }

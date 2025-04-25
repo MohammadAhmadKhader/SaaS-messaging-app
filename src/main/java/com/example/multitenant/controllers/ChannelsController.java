@@ -39,13 +39,9 @@ public class ChannelsController {
     public ResponseEntity<Object> getChannelById(@PathVariable @ValidateNumberId Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         
-        var channel = this.channelsService.findByIdAndOrganizationId(id, tenantId, categoryId);
-        if(channel == null) {
-            var respBody = ApiResponses.GetNotFoundErr("channel", id);
-            return ResponseEntity.badRequest().body(respBody);
-        }
-        
-        var bodyResponse = ApiResponses.OneKey("channel", channel.toViewDTO());
+        // null case handled inside
+        var channel = this.channelsService.findWithMessagesByIdAndOrganizationId(id, tenantId, categoryId);
+        var bodyResponse = ApiResponses.OneKey("channel", channel.toViewDTOWithMessages());
         
         return ResponseEntity.ok(bodyResponse);
     }

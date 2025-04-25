@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,14 +41,31 @@ public class SecurityConfig {
     }
 
     @Bean
+    CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration corsConfigs = new CorsConfiguration();
+        corsConfigs.setAllowCredentials(true);
+        corsConfigs.setAllowedHeaders(List.of("*"));
+        corsConfigs.setAllowedOrigins(List.of("http://127.0.0.1:5500","http://127.0.0.1:*"));
+        corsConfigs.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH"));
+
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfigs);
+
+        return source;
+    }
+
+    @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()).
+        http.cors((cs) -> {
+            cs.configurationSource(corsConfiguration());
+        }).
         csrf((csrf) -> {
             csrf.disable();
         })
         .authorizeHttpRequests((auth) -> {
             auth.requestMatchers("/api/auth/**").permitAll();
             auth.requestMatchers("/api/auth/login", "/api/auth/register").anonymous();
+            auth.requestMatchers("/**").permitAll();
             auth.anyRequest().authenticated();
         })
         .httpBasic(Customizer.withDefaults())
@@ -68,20 +86,6 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfiguration() {
-        CorsConfiguration corsConfigs = new CorsConfiguration();
-        corsConfigs.setAllowCredentials(true);
-        corsConfigs.setAllowedHeaders(List.of("*"));
-        corsConfigs.addAllowedOrigin("http://localhost:8080/api");
-        corsConfigs.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfigs);
-
-        return source;
     }
 
     @Bean

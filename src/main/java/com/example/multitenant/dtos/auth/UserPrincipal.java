@@ -1,6 +1,7 @@
 package com.example.multitenant.dtos.auth;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

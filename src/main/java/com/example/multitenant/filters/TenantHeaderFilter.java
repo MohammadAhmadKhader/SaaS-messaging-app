@@ -26,7 +26,9 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
         "/api/auth/register",
         "/api/auth/login",
         "/api/auth/user",
-        "/api/auth/logout"
+        "/api/auth/logout",
+        "/ws",
+        "/actuator"
     );
 
     @Override

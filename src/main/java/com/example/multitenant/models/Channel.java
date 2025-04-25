@@ -1,6 +1,7 @@
 package com.example.multitenant.models;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.multitenant.dtos.channels.ChannelViewDTO;
+import com.example.multitenant.dtos.channels.ChannelWithMessagesViewDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -77,6 +80,9 @@ public class Channel {
     @JoinColumn(name = "last_modified_by_id")
     private User lastModifiedBy;
 
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Message> messages; 
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -85,5 +91,9 @@ public class Channel {
 
     public ChannelViewDTO toViewDTO() {
         return new ChannelViewDTO(this);
+    }
+
+    public ChannelWithMessagesViewDTO toViewDTOWithMessages() {
+        return new ChannelWithMessagesViewDTO(this);
     }
 }

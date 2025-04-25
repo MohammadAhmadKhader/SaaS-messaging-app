@@ -19,6 +19,13 @@ public interface ChannelsRepository extends GenericRepository<Channel, Integer> 
     @Query("SELECT c FROM Channel c WHERE c.id = :id AND c.organization.id = :organizationId")
     Channel findByIdAndOrganizationId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
 
+    @Query("""
+        SELECT c FROM Channel c
+        LEFT JOIN FETCH c.messages m
+        WHERE c.id = :id AND c.organization.id = :organizationId
+    """)
+    Channel findWithMessagesByIdAndOrganizationId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
+
     @Transactional
     @Modifying
     @Query("DELETE FROM Channel c WHERE (c.id = :id AND c.organization.id = :organizationId AND c.categoryId = :categoryId)")
