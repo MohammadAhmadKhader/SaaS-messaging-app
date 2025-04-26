@@ -7,9 +7,7 @@ import com.example.multitenant.dtos.users.UserViewDTO;
 import com.example.multitenant.models.Organization;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

@@ -2,8 +2,7 @@ package com.example.multitenant.dtos.organizationroles;
 
 import com.example.multitenant.models.OrganizationRole;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

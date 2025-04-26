@@ -9,14 +9,11 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.example.multitenant.exceptions.ResourceNotFoundException;
-import com.example.multitenant.exceptions.UnauthorizedUserException;
+import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.repository.UsersRepository;
-import com.example.multitenant.services.cache.RedisService;
-import com.example.multitenant.services.cache.SessionsService;
-import com.example.multitenant.services.ownership.contract.OwnershipEntity;
-import com.example.multitenant.services.ownership.contract.OwnershipService;
+import com.example.multitenant.services.cache.*;
+import com.example.multitenant.services.ownership.contract.*;
 import com.example.multitenant.utils.AppUtils;
 
 /**

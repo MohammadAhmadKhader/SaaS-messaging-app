@@ -7,8 +7,7 @@ import java.util.function.Function;
 
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

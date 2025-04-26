@@ -5,19 +5,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.method.P;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import com.example.multitenant.models.OrganizationPermission;
-import com.example.multitenant.models.binders.MembershipKey;
-import com.example.multitenant.models.enums.DefaultOrganizationRole;
-import com.example.multitenant.models.binders.MembershipKey;
-import com.example.multitenant.repository.MembershipRepository;
-import com.example.multitenant.repository.OrganizationPermissionsRepository;
+import com.example.multitenant.models.*;
+import com.example.multitenant.models.binders.*;
+import com.example.multitenant.models.enums.*;
+import com.example.multitenant.repository.*;
 import com.example.multitenant.services.generic.GenericService;
 
 @Service

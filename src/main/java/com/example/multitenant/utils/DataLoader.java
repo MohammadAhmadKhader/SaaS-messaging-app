@@ -17,28 +17,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.example.multitenant.models.Content;
-import com.example.multitenant.models.GlobalPermission;
-import com.example.multitenant.models.GlobalRole;
-import com.example.multitenant.models.Organization;
-import com.example.multitenant.models.OrganizationPermission;
-import com.example.multitenant.models.OrganizationRole;
-import com.example.multitenant.models.User;
-import com.example.multitenant.models.enums.DefaultGlobalRole;
-import com.example.multitenant.models.enums.DefaultOrganizationRole;
-import com.example.multitenant.repository.ContentsRepository;
-import com.example.multitenant.repository.GlobalPermissionsRepository;
-import com.example.multitenant.repository.GlobalRolesRepository;
-import com.example.multitenant.repository.OrganizationPermissionsRepository;
-import com.example.multitenant.repository.OrganizationRolesRepository;
-import com.example.multitenant.repository.OrganizationsRepository;
-import com.example.multitenant.repository.UsersRepository;
+import com.example.multitenant.models.*;
+import com.example.multitenant.models.enums.*;
+import com.example.multitenant.repository.*;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
 

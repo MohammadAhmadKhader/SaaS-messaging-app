@@ -3,11 +3,9 @@ package com.example.multitenant.dtos.contents;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
-import com.example.multitenant.dtos.users.UserViewDTO;
-import com.example.multitenant.dtos.users.UserWithoutPermissionsViewDTO;
+import com.example.multitenant.dtos.users.*;
 import com.example.multitenant.models.Content;
-import com.example.multitenant.models.enums.ContentType;
-import com.example.multitenant.models.enums.Status;
+import com.example.multitenant.models.enums.*;
 
 public record ContentViewDTO( 
     Integer id,

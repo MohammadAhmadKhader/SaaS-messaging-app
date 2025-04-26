@@ -2,10 +2,8 @@ package com.example.multitenant.dtos.organizationpermissions;
 
 import com.example.multitenant.models.OrganizationPermission;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 @Setter

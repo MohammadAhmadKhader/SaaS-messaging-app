@@ -11,10 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.multitenant.dtos.users.UserViewDTO;
 import com.example.multitenant.models.User;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.*;
+import lombok.*;
 
 public class UserPrincipal implements UserDetails {
     // we must explicitly declare one, since we using long live sessions

@@ -2,10 +2,8 @@ package com.example.multitenant.dtos.categories;
 
 import com.example.multitenant.common.validators.contract.AllDifferentIntegerFields;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 @Setter

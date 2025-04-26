@@ -4,9 +4,7 @@ import java.time.Instant;
 
 import com.example.multitenant.models.Channel;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor

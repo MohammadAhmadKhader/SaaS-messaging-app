@@ -5,9 +5,7 @@ import java.time.Instant;
 
 import com.example.multitenant.models.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

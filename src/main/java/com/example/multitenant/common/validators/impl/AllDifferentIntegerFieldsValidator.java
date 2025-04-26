@@ -4,8 +4,7 @@ import java.util.HashSet;
 
 import com.example.multitenant.common.validators.contract.AllDifferentIntegerFields;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.*;
 
 public class AllDifferentIntegerFieldsValidator implements ConstraintValidator<AllDifferentIntegerFields, Object> {
 

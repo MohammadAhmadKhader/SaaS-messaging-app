@@ -1,8 +1,7 @@
 package com.example.multitenant.dtos.organizationroles;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 public class AssignOrganizationRoleDTO {

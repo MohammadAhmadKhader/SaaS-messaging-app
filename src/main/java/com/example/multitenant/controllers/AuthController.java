@@ -18,18 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
-import com.example.multitenant.dtos.auth.LoginDTO;
-import com.example.multitenant.dtos.auth.RegisterDTO;
-import com.example.multitenant.dtos.auth.ResetPasswordDTO;
-import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.dtos.auth.*;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
-import com.example.multitenant.services.cache.RedisService;
-import com.example.multitenant.services.cache.SessionsService;
+import com.example.multitenant.services.cache.*;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.utils.SecurityUtils;
@@ -38,11 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

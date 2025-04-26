@@ -3,9 +3,7 @@ package com.example.multitenant.dtos.users;
 import com.example.multitenant.models.User;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record UserCreateDTO(
     @NotBlank(message = "email can not be empty")

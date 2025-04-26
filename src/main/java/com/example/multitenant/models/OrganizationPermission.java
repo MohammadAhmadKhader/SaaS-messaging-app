@@ -4,19 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.multitenant.dtos.organizationpermissions.OrganizationPermissionViewDTO;
-import com.example.multitenant.dtos.organizationpermissions.OrganizationPermissionWithRolesViewDTO;
+import com.example.multitenant.dtos.organizationpermissions.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter

@@ -1,10 +1,7 @@
 package com.example.multitenant.common.validators.impl;
 
-import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.common.validators.contract.ValidateSize;
-
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
+import com.example.multitenant.common.validators.contract.*;
+import jakarta.validation.*;
 
 public class ValidateSizeValidator implements ConstraintValidator<ValidateSize, Integer> {
     

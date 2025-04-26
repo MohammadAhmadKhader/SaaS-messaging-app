@@ -8,8 +8,7 @@ import java.util.List;
 import com.example.multitenant.dtos.globalroles.GlobalRoleWithoutPermissionsDTO;
 import com.example.multitenant.models.User;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

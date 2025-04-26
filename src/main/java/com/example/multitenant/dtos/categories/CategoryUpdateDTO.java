@@ -3,11 +3,8 @@ package com.example.multitenant.dtos.categories;
 import com.example.multitenant.common.validators.contract.AtLeastOneNotNull;
 import com.example.multitenant.models.Category;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Data
 @NoArgsConstructor

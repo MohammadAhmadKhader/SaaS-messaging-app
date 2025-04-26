@@ -2,7 +2,7 @@ package com.example.multitenant.dtos.organizations;
 
 import com.example.multitenant.models.Organization;
 
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record OrganizationUpdateDTO(
     @Size(max = 128, message = "name must be at most {max}")

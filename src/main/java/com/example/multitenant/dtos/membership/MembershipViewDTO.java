@@ -2,14 +2,11 @@ package com.example.multitenant.dtos.membership;
 
 import java.time.Instant;
 
-import com.example.multitenant.dtos.organizations.OrganizationViewDTO;
-import com.example.multitenant.dtos.users.UserOrganizationViewDTO;
-import com.example.multitenant.dtos.users.UserViewDTO;
+import com.example.multitenant.dtos.organizations.*;
+import com.example.multitenant.dtos.users.*;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.User;
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

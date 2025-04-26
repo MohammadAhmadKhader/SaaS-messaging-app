@@ -2,8 +2,7 @@ package com.example.multitenant.dtos.organizations;
 
 import com.example.multitenant.models.Organization;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record OrganizationCreateDTO(
     @NotBlank(message = "name can not be empty")

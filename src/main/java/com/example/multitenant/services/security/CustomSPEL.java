@@ -6,8 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
-import com.example.multitenant.services.cache.RedisService;
-import com.example.multitenant.services.cache.SessionsService;
+import com.example.multitenant.services.cache.*;
 import com.example.multitenant.utils.AppUtils;
 
 import lombok.extern.slf4j.Slf4j;

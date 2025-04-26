@@ -1,7 +1,6 @@
 package com.example.multitenant.dtos.websocket;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

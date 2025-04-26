@@ -6,12 +6,9 @@ import java.util.List;
 
 import com.example.multitenant.dtos.globalroles.GlobalRoleViewDTO;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleViewDTO;
-import com.example.multitenant.models.Membership;
-import com.example.multitenant.models.OrganizationRole;
-import com.example.multitenant.models.User;
+import com.example.multitenant.models.*;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

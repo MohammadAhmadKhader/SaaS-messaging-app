@@ -1,14 +1,9 @@
 package com.example.multitenant.specifications;
 
 import java.time.LocalDateTime;
-
 import org.springframework.data.jpa.domain.Specification;
-
 import com.example.multitenant.models.Content;
-
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
 public class ContentSpecifications {
     public static Specification<Content> hasStatus(String status) {

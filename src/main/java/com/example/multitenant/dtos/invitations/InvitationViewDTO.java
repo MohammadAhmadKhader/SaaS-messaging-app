@@ -4,9 +4,7 @@ import java.time.Instant;
 
 import com.example.multitenant.models.Invitation;
 import com.example.multitenant.models.enums.InvitationStatus;
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

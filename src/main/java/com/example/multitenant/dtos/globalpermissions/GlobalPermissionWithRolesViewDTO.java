@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 import com.example.multitenant.models.GlobalPermission;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @Getter

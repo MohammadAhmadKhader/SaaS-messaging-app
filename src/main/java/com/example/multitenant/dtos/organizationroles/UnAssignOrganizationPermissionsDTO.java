@@ -2,10 +2,8 @@ package com.example.multitenant.dtos.organizationroles;
 
 import java.util.Set;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import lombok.Getter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 @Getter
 public class UnAssignOrganizationPermissionsDTO {

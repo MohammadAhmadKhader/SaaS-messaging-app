@@ -3,13 +3,10 @@ package com.example.multitenant.dtos.organizations;
 import java.time.Instant;
 import java.util.List;
 
-import com.example.multitenant.dtos.users.UserViewDTO;
-import com.example.multitenant.dtos.users.UserWithoutRolesViewDTO;
+import com.example.multitenant.dtos.users.*;
 import com.example.multitenant.models.Organization;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

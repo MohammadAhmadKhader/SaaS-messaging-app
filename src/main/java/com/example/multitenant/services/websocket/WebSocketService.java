@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.messages.*;
 import com.example.multitenant.dtos.websocket.WebSocketMessage;
-import com.example.multitenant.models.Message;
-import com.example.multitenant.models.OrgMessage;
-import com.example.multitenant.models.enums.MessageAction;
+import com.example.multitenant.models.*;
+import com.example.multitenant.models.enums.*;
 
 import lombok.RequiredArgsConstructor;
 

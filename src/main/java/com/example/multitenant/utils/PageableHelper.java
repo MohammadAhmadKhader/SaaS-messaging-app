@@ -1,8 +1,6 @@
 package com.example.multitenant.utils;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 public class PageableHelper {
     public static Pageable HandleSortWithPagination(String defaultSortBy, String defaultSortDir, String sortBy, String sortDir, Integer page, Integer size) {

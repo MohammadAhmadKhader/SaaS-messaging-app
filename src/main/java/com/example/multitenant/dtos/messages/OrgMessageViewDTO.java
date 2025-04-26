@@ -2,11 +2,10 @@ package com.example.multitenant.dtos.messages;
 
 import java.time.Instant;
 
-import com.example.multitenant.dtos.users.UserMessageViewDTO;
+import com.example.multitenant.dtos.users.*;
 import com.example.multitenant.models.OrgMessage;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

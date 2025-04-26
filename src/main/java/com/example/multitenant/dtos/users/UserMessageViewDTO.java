@@ -2,9 +2,7 @@ package com.example.multitenant.dtos.users;
 
 import com.example.multitenant.models.User;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

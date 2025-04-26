@@ -4,11 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.multitenant.dtos.organizationpermissions.OrganizationPermissionViewDTO;
+import com.example.multitenant.dtos.organizationpermissions.*;
 import com.example.multitenant.models.OrganizationRole;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter

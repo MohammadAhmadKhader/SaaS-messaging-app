@@ -1,16 +1,8 @@
 package com.example.multitenant.dtos.contents;
 
-
-
 import com.example.multitenant.models.Content;
-import com.example.multitenant.models.enums.ContentType;
-import com.example.multitenant.models.enums.Status;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.example.multitenant.models.enums.*;
+import jakarta.validation.constraints.*;
 
 public record ContentCreateDTO(
     @NotBlank(message = "title can not be empty")

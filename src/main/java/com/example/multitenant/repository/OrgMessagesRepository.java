@@ -2,8 +2,7 @@ package com.example.multitenant.repository;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 import com.example.multitenant.models.OrgMessage;
