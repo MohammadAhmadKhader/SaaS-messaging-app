@@ -9,8 +9,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.example.multitenant.dtos.channels.ChannelViewDTO;
-import com.example.multitenant.dtos.channels.ChannelWithMessagesViewDTO;
+import com.example.multitenant.dtos.channels.*;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -81,7 +80,7 @@ public class Channel {
     private User lastModifiedBy;
 
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Message> messages; 
+    private List<OrgMessage> messages; 
 
     @CreationTimestamp
     private Instant createdAt;
@@ -93,7 +92,7 @@ public class Channel {
         return new ChannelViewDTO(this);
     }
 
-    public ChannelWithMessagesViewDTO toViewDTOWithMessages() {
-        return new ChannelWithMessagesViewDTO(this);
+    public ChannelWithOrgMessagesViewDTO toViewDTOWithMessages() {
+        return new ChannelWithOrgMessagesViewDTO(this);
     }
 }

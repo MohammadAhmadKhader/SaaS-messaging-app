@@ -15,11 +15,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
-import com.example.multitenant.dtos.messages.MessageCreateDTO;
+import com.example.multitenant.dtos.messages.*;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
 import com.example.multitenant.models.User;
 import com.example.multitenant.services.cache.RedisService;
-import com.example.multitenant.services.messages.MessagesService;
+import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
@@ -32,11 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Controller
 public class WebSocketMessagesController {
-    private final MessagesService messagesService;
+    private final OrgMessagesService orgMessagesService;
     private final WebSocketService webSocketService;
 
     @MessageMapping("/tenant/{tenantId}/channel/{channelId}/send")
-    public void handleSendMessageToChannel(@Payload @Validated MessageCreateDTO payload,
+    public void handleSendMessageToChannel(@Payload @Validated OrgMessageCreateDTO payload,
         @DestinationVariable Integer tenantId, @DestinationVariable Integer channelId, Principal principal) {
             
         var user = AppUtils.getUserFromPrincipal(principal);
@@ -48,7 +48,7 @@ public class WebSocketMessagesController {
             message.setSender(user);
             message.setIsUpdated(false);
 
-            var createdMsg = this.messagesService.create(message, channelId, tenantId);
+            var createdMsg = this.orgMessagesService.create(message, channelId, tenantId);
             this.webSocketService.publishNewMessage(createdMsg, tenantId);
             
         } else {

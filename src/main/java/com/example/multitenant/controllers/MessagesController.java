@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.messages.MessageUpdateDTO;
-import com.example.multitenant.services.messages.MessagesService;
+import com.example.multitenant.dtos.messages.*;
+import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
 import com.github.javafaker.App;
@@ -29,13 +29,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/categories/{categoryId}/channels/{channelId}/messages")
 public class MessagesController {
 
-    private final MessagesService messagesService;
+    private final OrgMessagesService messagesService;
     private final WebSocketService webSocketService; 
     
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateMessageContent(
         @ValidateNumberId @PathVariable(name = "id") Integer messageId,
-        @Valid @RequestBody MessageUpdateDTO dto) {
+        @Valid @RequestBody OrgMessageUpdateDTO dto) {
 
         var senderId = AppUtils.getUserIdFromAuth();
         var tenantId = AppUtils.getTenantId();

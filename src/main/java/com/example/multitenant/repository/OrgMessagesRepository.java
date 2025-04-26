@@ -6,24 +6,24 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.multitenant.models.Message;
+import com.example.multitenant.models.OrgMessage;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface MessagesRepository extends GenericRepository<Message, Integer> {
-    @Query("SELECT m FROM Message m WHERE m.senderId = :senderId")
-    List<Message> findBySenderId(@Param("senderId") Integer senderId);
+public interface OrgMessagesRepository extends GenericRepository<OrgMessage, Integer> {
+    @Query("SELECT m FROM OrgMessage m WHERE m.senderId = :senderId")
+    List<OrgMessage> findBySenderId(@Param("senderId") Integer senderId);
 
     @Query("""
-        SELECT m FROM Message m 
+        SELECT m FROM OrgMessage m 
         WHERE (m.id = :id AND m.senderId = :senderId)
     """)
-    Message findByIdAndSenderId(@Param("id") Integer id, @Param("senderId") Long senderId);
+    OrgMessage findByIdAndSenderId(@Param("id") Integer id, @Param("senderId") Long senderId);
 
     @Transactional
     @Modifying
-    @Query("DELETE FROM Message m WHERE m.id = :id AND m.senderId = :senderId")
+    @Query("DELETE FROM OrgMessage m WHERE m.id = :id AND m.senderId = :senderId")
     void deleteByIdAndSenderId(@Param("id") Integer id, @Param("senderId") Long senderId);
 }

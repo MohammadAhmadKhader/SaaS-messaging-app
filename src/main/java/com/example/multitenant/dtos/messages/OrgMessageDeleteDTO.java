@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MessageDeleteDTO {
+public class OrgMessageDeleteDTO {
     private Integer id;
 }

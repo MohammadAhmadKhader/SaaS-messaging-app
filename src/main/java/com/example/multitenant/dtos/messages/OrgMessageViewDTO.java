@@ -3,21 +3,22 @@ package com.example.multitenant.dtos.messages;
 import java.time.Instant;
 
 import com.example.multitenant.dtos.users.UserMessageViewDTO;
-import com.example.multitenant.models.Message;
+import com.example.multitenant.models.OrgMessage;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MessageViewDTO {
+public class OrgMessageViewDTO {
     private Integer id;
     private String content;
     private UserMessageViewDTO user;
     private Instant createdAt;
     private Instant updatedAt;
 
-    public MessageViewDTO(Message message) {
+    public OrgMessageViewDTO(OrgMessage message) {
+        message.
         setId(message.getId());
         setContent(message.getContent());
         setUser(message.getSender().toUserMessageViewDTO());

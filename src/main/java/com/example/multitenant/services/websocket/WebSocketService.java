@@ -3,10 +3,10 @@ package com.example.multitenant.services.websocket;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.multitenant.dtos.messages.MessageDeleteDTO;
-import com.example.multitenant.dtos.messages.MessageViewDTO;
+import com.example.multitenant.dtos.messages.*;
 import com.example.multitenant.dtos.websocket.WebSocketMessage;
 import com.example.multitenant.models.Message;
+import com.example.multitenant.models.OrgMessage;
 import com.example.multitenant.models.enums.MessageAction;
 
 import lombok.RequiredArgsConstructor;
@@ -20,20 +20,20 @@ public class WebSocketService {
         return "/topic/tenants/" + tenantId;
     }
 
-    public void publishNewMessage(Message message, Integer tenantId) {
+    public void publishNewMessage(OrgMessage message, Integer tenantId) {
         var topic = getTenantTopic(tenantId);
 
-        var wsMsg = new WebSocketMessage<MessageViewDTO>();
+        var wsMsg = new WebSocketMessage<OrgMessageViewDTO>();
         wsMsg.setPayload(message.toViewDTO());
         wsMsg.setEvent(MessageAction.CREATE.name());
 
         this.messagingTemplate.convertAndSend(topic, wsMsg);
     }
 
-    public void publishUpdatedMessage(Message message, Integer tenantId) {
+    public void publishUpdatedMessage(OrgMessage message, Integer tenantId) {
         var topic = getTenantTopic(tenantId);
         
-        var wsMsg = new WebSocketMessage<MessageViewDTO>();
+        var wsMsg = new WebSocketMessage<OrgMessageViewDTO>();
         wsMsg.setPayload(message.toViewDTO());
         wsMsg.setEvent(MessageAction.UPDATE.name());
 
@@ -43,8 +43,8 @@ public class WebSocketService {
     public void publishDeletedMessage(Integer messageId, Integer tenantId) {
         var topic = getTenantTopic(tenantId);
 
-        var wsMsg = new WebSocketMessage<MessageDeleteDTO>();
-        wsMsg.setPayload(new MessageDeleteDTO(tenantId));
+        var wsMsg = new WebSocketMessage<OrgMessageDeleteDTO>();
+        wsMsg.setPayload(new OrgMessageDeleteDTO(tenantId));
         wsMsg.setEvent(MessageAction.DELETE.name());
         
         this.messagingTemplate.convertAndSend(topic, wsMsg);
