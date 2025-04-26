@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import com.example.multitenant.services.security.OrganizationPermissionsService;
-import com.example.multitenant.services.security.OrganizationRolesService;
+import com.example.multitenant.services.security.*;
 
 import jakarta.transaction.Transactional;
-
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-
 import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.*;
@@ -124,6 +120,47 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return this.membershipRepository.saveAndFlush(membership);
     }
 
+    @Transactional
+    public List<Membership> swapOwnerShip(Integer orgId, User currOwner, Long newOwnerId) {
+        var org = this.organizationsService.findOneWithOwner(orgId);
+        if(org == null) {
+            throw new ResourceNotFoundException("organization", orgId);
+        }
+
+        var newOwnerMembeship = this.findUserMembershipWithRoles(orgId, newOwnerId);
+        if(newOwnerMembeship == null || !newOwnerMembeship.isMember()) {
+            throw new InvalidOperationException("user must be an organization member");
+        }
+        
+        var owner = org.getOwner();
+        if(owner == null || owner.getId() != currOwner.getId()) {
+            throw new InvalidOperationException("user must be the owner");
+        }
+
+        var currOwnerMembership = this.findUserMembershipWithRoles(orgId, currOwner.getId());
+        if(currOwnerMembership == null || !currOwnerMembership.isMember()) {
+            throw new UnknownException("error during fetching current owner membership");
+        }
+
+        var isRemovedOwnerRoole = currOwnerMembership.getOrganizationRoles().
+        removeIf((role) -> role.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName()));
+
+        if(!isRemovedOwnerRoole) {
+            throw new UnknownException("failed to remove owner role during transfering ownership");
+        }
+
+        var ownerRole = this.organizationRolesService.
+        findByNameAndOrganizationId(DefaultOrganizationRole.ORG_OWNER.getRoleName(), orgId);
+
+        var isAddedOwnerRole = newOwnerMembeship.getOrganizationRoles().add(ownerRole);
+        if(!isAddedOwnerRole) {
+            throw new UnknownException("failed to add owner role durinh transfering ownership");
+        }
+
+        this.organizationsService.setOwner(org, newOwnerMembeship.getUser());
+
+        return this.membershipRepository.saveAllAndFlush(List.of(currOwnerMembership, newOwnerMembeship));
+    }
 
     public Membership kickUserFromOrganization(Integer orgId, long userId) {
        try { 
@@ -269,32 +306,50 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return this.membershipRepository.save(membership);
     }
 
-
     public OrganizationRole initializeDefaultRolesAndPermissions(Integer orgId) {
-        var orgOwner = DefaultOrganizationRole.ORG_OWNER;
-        var orgAdmin = DefaultOrganizationRole.ORG_ADMIN;
-        var orgUser = DefaultOrganizationRole.ORG_USER;
-
-        var orgOwnerRole = new OrganizationRole(orgOwner.getRoleName());
-        orgOwnerRole.setOrganizationId(orgId);
-
-        var orgAdminRole = new OrganizationRole(orgAdmin.getRoleName());
-        orgAdminRole.setOrganizationId(orgId);
-
-        var orgUserRole = new OrganizationRole(orgUser.getRoleName());
-        orgUserRole.setOrganizationId(orgId);
-
-        var orgOwnerPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgOwner);
-        var orgAdminPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgAdmin);
-        var orgUserPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgUser);
-
-        orgOwnerRole.setOrganizationPermissions(orgOwnerPerms);
-        orgAdminRole.setOrganizationPermissions(orgAdminPerms);
-        orgUserRole.setOrganizationPermissions(orgUserPerms);
+        var orgOwnerRole = this.createOwnerRole(orgId);
+        var orgAdminRole = this.createAdminRole(orgId);
+        var orgUserRole = this.createUserRole(orgId);
 
         this.organizationRolesService.createMany(List.of(orgOwnerRole, orgAdminRole, orgUserRole));
 
         return orgOwnerRole;
+    }
+
+    private OrganizationRole createOwnerRole(Integer orgId) {
+        var orgOwner = DefaultOrganizationRole.ORG_OWNER;
+        var orgOwnerRole = new OrganizationRole(orgOwner.getRoleName());
+
+        var orgOwnerPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgOwner);
+
+        orgOwnerRole.setOrganizationPermissions(orgOwnerPerms);
+        orgOwnerRole.setOrganizationId(orgId);
+
+        return orgOwnerRole;
+    }
+
+    private OrganizationRole createAdminRole(Integer orgId) {
+        var orgAdmin = DefaultOrganizationRole.ORG_ADMIN;
+        var orgAdminRole = new OrganizationRole(orgAdmin.getRoleName());
+
+        var orgAdminPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgAdmin);
+
+        orgAdminRole.setOrganizationPermissions(orgAdminPerms);
+        orgAdminRole.setOrganizationId(orgId);
+
+        return orgAdminRole;
+    }
+
+    private OrganizationRole createUserRole(Integer orgId) {
+        var orgUser = DefaultOrganizationRole.ORG_USER;
+        var orgUserRole = new OrganizationRole(orgUser.getRoleName());
+
+        var orgUserPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgUser);
+
+        orgUserRole.setOrganizationPermissions(orgUserPerms);
+        orgUserRole.setOrganizationId(orgId);
+
+        return orgUserRole;
     }
 
     // public void delete(Organization org, User user) {

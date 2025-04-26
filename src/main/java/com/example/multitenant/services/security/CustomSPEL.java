@@ -48,7 +48,7 @@ public class CustomSPEL {
 
         var roles = this.redisService.getUserOrgRoles(tenantId, userId);
 
-        return roles.stream().anyMatch((role) -> role.equals(roleName));
+        return roles.stream().anyMatch((role) -> role.getName().equals(roleName));
     }
 
     public boolean hasCategoryAccess(Integer categoryId) {

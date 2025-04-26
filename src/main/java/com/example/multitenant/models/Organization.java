@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.multitenant.dtos.organizations.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,9 +17,10 @@ import lombok.*;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "organizations")
+@Entity
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +36,11 @@ public class Organization implements Serializable {
 
     @CreationTimestamp
     private Instant createdAt;
+
+    @CreatedBy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = true)
+    private User owner;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "organization")
     @OrderBy("createdAt DESC")
