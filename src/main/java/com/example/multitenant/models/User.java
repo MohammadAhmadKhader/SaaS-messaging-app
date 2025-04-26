@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.multitenant.dtos.users.UserMessageViewDTO;
 import com.example.multitenant.dtos.users.UserOrganizationViewDTO;
 import com.example.multitenant.dtos.users.UserViewDTO;
 import com.example.multitenant.dtos.users.UserWithoutPermissionsViewDTO;
@@ -105,5 +106,9 @@ public class User implements Serializable {
 
     public UserWithoutPermissionsViewDTO toUserWithoutPermissionsViewDTO() {
         return new UserWithoutPermissionsViewDTO(this);
+    }
+
+    public UserMessageViewDTO toUserMessageViewDTO() {
+        return new UserMessageViewDTO(this);
     }
 }

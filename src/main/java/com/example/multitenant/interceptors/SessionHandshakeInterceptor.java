@@ -15,6 +15,12 @@ import com.example.multitenant.dtos.auth.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+@Deprecated
+/**
+ * unused so far does not change anything on the current implementation,
+ * 1. we must have one that authorize (tenantId) with the (categoryId)
+ * 2. another interceptor that handles the outgoing messages to ensure only the authorized user on the category will receive the events.
+ *  */ 
 public class SessionHandshakeInterceptor extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
@@ -25,7 +31,7 @@ public class SessionHandshakeInterceptor extends DefaultHandshakeHandler {
             return null;
         }
 
-        return request.getPrincipal(); // fallback
+        return request.getPrincipal();
     }
 
 }
