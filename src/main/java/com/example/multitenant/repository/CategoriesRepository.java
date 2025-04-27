@@ -24,6 +24,16 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
     @Query("""
         SELECT DISTINCT c 
         FROM Category c 
+        LEFT JOIN FETCH c.channels
+        LEFT JOIN FETCH c.authorizedRoles
+        WHERE c.organizationId = :organizationId
+        ORDER BY c.displayOrder ASC
+    """)
+    List<Category> findAllByOrganizationIdWithChannelsAndRoles(@Param("organizationId") Integer organizationId);
+
+    @Query("""
+        SELECT DISTINCT c 
+        FROM Category c 
         LEFT JOIN FETCH c.authorizedRoles
         WHERE (c.organizationId = :organizationId)
         ORDER BY c.displayOrder ASC

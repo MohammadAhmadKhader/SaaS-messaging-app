@@ -31,9 +31,10 @@ public class WebSocketMessagesController {
     private final OrgMessagesService orgMessagesService;
     private final WebSocketService webSocketService;
 
-    @MessageMapping("/tenant/{tenantId}/channel/{channelId}/send")
+    @MessageMapping("/tenants/{tenantId}/categories/{categoryId}/channels/{channelId}/send")
     public void handleSendMessageToChannel(@Payload @Validated OrgMessageCreateDTO payload,
-        @DestinationVariable Integer tenantId, @DestinationVariable Integer channelId, Principal principal) {
+        @DestinationVariable Integer tenantId, @DestinationVariable Integer channelId, 
+        @DestinationVariable Integer categoryId, Principal principal) {
             
         var user = AppUtils.getUserFromPrincipal(principal);
         if(user != null) {
@@ -45,7 +46,7 @@ public class WebSocketMessagesController {
             message.setIsUpdated(false);
 
             var createdMsg = this.orgMessagesService.create(message, channelId, tenantId);
-            this.webSocketService.publishNewMessage(createdMsg, tenantId);
+            this.webSocketService.publishNewMessage(createdMsg, tenantId, categoryId);
             
         } else {
             log.error("user was not found during attempt to fetch it from principal");

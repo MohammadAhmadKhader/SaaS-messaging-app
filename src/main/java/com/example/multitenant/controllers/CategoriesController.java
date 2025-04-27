@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.categories.*;
+import com.example.multitenant.services.cache.CategoriesCacheService;
 import com.example.multitenant.services.categories.CategoriesService;
+import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.utils.AppUtils;
 
 import jakarta.validation.Valid;
@@ -24,18 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 public class CategoriesController {
     
     private final CategoriesService categoriesService;
+    private final CategoriesCacheService categoriesCacheService;
     
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)")
     public ResponseEntity<Object> getAllCategories() {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
         
-        var categories = this.categoriesService.findAllWithChannels(tenantId);
-        var categoriesViews = categories.stream().map((category) -> {
-            return category.toViewDTO();
-        }).toList();
-        
-        var bodyResponse = ApiResponses.OneKey("categories", categoriesViews);
+        var filteredCategoriesViews = this.categoriesCacheService.getCategories(tenantId, user.getId());
+        var bodyResponse = ApiResponses.OneKey("categories", filteredCategoriesViews);
         
         return ResponseEntity.ok(bodyResponse);
     }
@@ -48,6 +48,8 @@ public class CategoriesController {
         var category = this.categoriesService.create(dto.toModel(), tenantId);
         var categoryView = category.toViewDTO();
 
+        this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+
         var responseBody = ApiResponses.OneKey("category", categoryView);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
@@ -57,7 +59,12 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
     public ResponseEntity<Void> swapCategoryOrder(@RequestBody CategoryOrderSwapDTO dto) {
         var tenantId = AppUtils.getTenantId();
+        
         this.categoriesService.swapCategoryOrder(dto, tenantId);
+        this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+        this.categoriesCacheService.invalidateOrgCategories(tenantId, dto.getCategoryId1());
+        this.categoriesCacheService.invalidateOrgCategories(tenantId, dto.getCategoryId2());
+        
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
@@ -74,6 +81,8 @@ public class CategoriesController {
         }
         
         var responseBody = ApiResponses.OneKey("category", updatedCategory.toViewDTO());
+        this.categoriesCacheService.invalidateOrgCategories(tenantId, id);
+        this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
     }
@@ -82,7 +91,11 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_DELETE)")
     public ResponseEntity<Object> deleteCategory(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
+
         this.categoriesService.delete(id, tenantId);
+        this.categoriesCacheService.invalidateOrgCategories(tenantId, id);
+        this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+
         return ResponseEntity.noContent().build();
     }
 }

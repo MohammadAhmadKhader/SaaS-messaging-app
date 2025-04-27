@@ -1,6 +1,10 @@
 package com.example.multitenant.services.websocket;
 
+import java.util.List;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.messages.*;
@@ -15,12 +19,12 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
 
-    private String getTenantTopic(Integer tenantId) {
-        return "/topic/tenants/" + tenantId;
+    private String getTenantTopic(Integer tenantId, Integer categoryId) {
+        return "/topic/tenants/" + tenantId + "/categories/" +categoryId;
     }
 
-    public void publishNewMessage(OrgMessage message, Integer tenantId) {
-        var topic = getTenantTopic(tenantId);
+    public void publishNewMessage(OrgMessage message, Integer tenantId, Integer categoryId) {
+        var topic = getTenantTopic(tenantId, categoryId);
 
         var wsMsg = new WebSocketMessage<OrgMessageViewDTO>();
         wsMsg.setPayload(message.toViewDTO());
@@ -29,8 +33,8 @@ public class WebSocketService {
         this.messagingTemplate.convertAndSend(topic, wsMsg);
     }
 
-    public void publishUpdatedMessage(OrgMessage message, Integer tenantId) {
-        var topic = getTenantTopic(tenantId);
+    public void publishUpdatedMessage(OrgMessage message, Integer tenantId, Integer categoryId) {
+        var topic = getTenantTopic(tenantId, categoryId);
         
         var wsMsg = new WebSocketMessage<OrgMessageViewDTO>();
         wsMsg.setPayload(message.toViewDTO());
@@ -39,8 +43,8 @@ public class WebSocketService {
         this.messagingTemplate.convertAndSend(topic, wsMsg);
     }
 
-    public void publishDeletedMessage(Integer messageId, Integer tenantId) {
-        var topic = getTenantTopic(tenantId);
+    public void publishDeletedMessage(Integer messageId, Integer tenantId, Integer categoryId) {
+        var topic = getTenantTopic(tenantId, categoryId);
 
         var wsMsg = new WebSocketMessage<OrgMessageDeleteDTO>();
         wsMsg.setPayload(new OrgMessageDeleteDTO(tenantId));

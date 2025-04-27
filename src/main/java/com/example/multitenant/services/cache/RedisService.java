@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleCacheDTO;
@@ -49,6 +50,7 @@ public class RedisService {
         return permsList;
     }
     
+    @SuppressWarnings("unchecked")
     public List<OrganizationRoleCacheDTO> getUserOrgRoles(Integer orgId, long userId) {
         var key = this.getUserOrgRolesCacheKey(orgId, userId);
         var cached = this.redisTemplate.opsForValue().get(key);
@@ -57,9 +59,9 @@ public class RedisService {
         }
 
         return (List<OrganizationRoleCacheDTO>) cached;
-    } 
-    
+    }   
 
+    @SuppressWarnings("unchecked")
     public Map<String, List<String>> getOrgRolesWithPermissions(Integer orgId) {
         var cacheKey = this.getOrgRolesCacheKey(orgId);
         var cached = redisTemplate.opsForValue().get(cacheKey);
@@ -71,6 +73,7 @@ public class RedisService {
         return (Map<String, List<String>>) cached;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Integer> getOrgCategoryWithAuthorizedRolesList(Integer orgId, Integer categoryId) {
         var cacheKey = this.getOrgCategoriesCacheKey(orgId, categoryId);
         var cached = redisTemplate.opsForValue().get(cacheKey);
@@ -82,6 +85,7 @@ public class RedisService {
         return (List<Integer>) cached;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<Integer, List<Integer>> getOrgCategoriesWithAuthorizedRolesList(Integer orgId, Integer categoryId) {
         var cacheKey = this.getOrgCategoriesCacheKey(orgId, categoryId);
         var cached = redisTemplate.opsForValue().get(cacheKey);
@@ -160,7 +164,7 @@ public class RedisService {
         this.redisTemplate.opsForValue().set(key, roles, CACHE_TTL);
     }
 
-    private void setOrgCategory(Integer orgId, Integer categoryId ,List<Integer> rolesIds) {
+    private void setOrgCategory(Integer orgId, Integer categoryId, List<Integer> rolesIds) {
         var key = this.getOrgCategoriesCacheKey(orgId, categoryId);
         this.redisTemplate.opsForValue().set(key, rolesIds, CACHE_TTL);
     }

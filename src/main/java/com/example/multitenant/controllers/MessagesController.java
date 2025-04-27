@@ -32,26 +32,29 @@ public class MessagesController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateMessageContent(
         @ValidateNumberId @PathVariable(name = "id") Integer messageId,
-        @Valid @RequestBody OrgMessageUpdateDTO dto) {
+        @Valid @RequestBody OrgMessageUpdateDTO dto,
+        @ValidateNumberId @PathVariable Integer categotyId
+        ) {
 
         var senderId = AppUtils.getUserIdFromAuth();
         var tenantId = AppUtils.getTenantId();
 
         var updatedMsg = this.messagesService.updateContent(messageId, dto.getContent(), senderId);
-        this.webSocketService.publishUpdatedMessage(updatedMsg, tenantId);
+        this.webSocketService.publishUpdatedMessage(updatedMsg, tenantId, categotyId);
        
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteMessage(
-        @ValidateNumberId @PathVariable(name = "id") Integer messageId) {
+        @ValidateNumberId @PathVariable(name = "id") Integer messageId,
+        @ValidateNumberId @PathVariable Integer categotyId) {
         
         var senderId = AppUtils.getUserIdFromAuth();
         var tenantId = AppUtils.getTenantId();
 
         this.messagesService.deleteUserMessage(messageId, senderId);
-        this.webSocketService.publishDeletedMessage(messageId, tenantId);
+        this.webSocketService.publishDeletedMessage(messageId, tenantId, categotyId);
        
         return ResponseEntity.noContent().build();
     }

@@ -17,7 +17,6 @@ public class OrgMessageViewDTO {
     private Instant updatedAt;
 
     public OrgMessageViewDTO(OrgMessage message) {
-        message.
         setId(message.getId());
         setContent(message.getContent());
         setUser(message.getSender().toUserMessageViewDTO());

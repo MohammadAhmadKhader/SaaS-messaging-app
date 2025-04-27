@@ -26,6 +26,10 @@ public class CategoriesService {
     public List<Category> findAllWithChannels(Integer organizationId) {
         return this.categoriesRepository.findAllByOrganizationIdWithChannels(organizationId);
     }
+
+    public List<Category> findAllWithChannelsAndRoles(Integer organizationId) {
+        return this.categoriesRepository.findAllByOrganizationIdWithChannelsAndRoles(organizationId);
+    }
     
     public List<Category> findAllWithAuthorizedRoles(Integer organizationId) {
         return this.categoriesRepository.findAllByOrganizationIdWithAuthorizedRoles(organizationId);

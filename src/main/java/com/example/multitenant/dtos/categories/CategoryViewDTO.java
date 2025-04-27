@@ -1,15 +1,19 @@
 package com.example.multitenant.dtos.categories;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 import com.example.multitenant.models.Category;
 
 import lombok.*;
 
+// has "Serializable" for caching purposes
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryViewDTO {
+public class CategoryViewDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Integer id;
     private String name;
     private Integer organizationId;
