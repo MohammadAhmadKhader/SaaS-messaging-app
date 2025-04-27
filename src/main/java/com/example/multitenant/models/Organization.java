@@ -28,10 +28,10 @@ public class Organization implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 128)
     private String name;
 
-    @Column(name = "industry", nullable = false)
+    @Column(name = "industry", nullable = false, length = 128)
     private String industry;
 
     @CreationTimestamp

@@ -25,10 +25,10 @@ public class OrganizationRole implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 64)
     String name;
 
-    @Column(name = "display_name", nullable = false)
+    @Column(name = "display_name", nullable = false, length = 64)
     String displayName;
 
     @Column(name = "organization_id", nullable = true)

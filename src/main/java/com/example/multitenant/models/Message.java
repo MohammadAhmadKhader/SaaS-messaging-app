@@ -19,7 +19,7 @@ public abstract class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 256)
     private String content;
 
     @CreatedBy

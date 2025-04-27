@@ -27,7 +27,7 @@ public class Channel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 32)
     private String name;
 
     @Column(name = "display_order", nullable = false)

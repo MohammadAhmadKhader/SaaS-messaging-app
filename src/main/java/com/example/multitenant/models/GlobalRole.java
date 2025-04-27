@@ -19,10 +19,10 @@ public class GlobalRole implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 64)
     String name;
 
-    @Column(name = "displayName", nullable = false)
+    @Column(name = "displayName", nullable = false, length = 64)
     String displayName;
 
     @ManyToMany(mappedBy = "roles")
