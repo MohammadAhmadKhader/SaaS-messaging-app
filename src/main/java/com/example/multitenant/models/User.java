@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -65,6 +67,20 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_friends", 
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id"),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "friend_id"})
+    )
+    private Set<User> friends = new HashSet<User>();
+    
+    // this is the other side of the relation of user - friends
+    // think of this as "who considers me as a friend" thats why its called "friendOf"
+    @ManyToMany(mappedBy = "friends", fetch = FetchType.LAZY)
+    private Set<User> friendOf = new HashSet<User>();
 
     public User(String email, String firstName, String lastName, String password) {
         setEmail(email);

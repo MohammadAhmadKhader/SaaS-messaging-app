@@ -22,4 +22,17 @@ public interface UsersRepository extends GenericRepository<User, Long>, JpaSpeci
 
     @Query("SELECT u FROM User u JOIN FETCH u.roles r JOIN FETCH r.permissions p WHERE u.email = :email")
     User findByEmailWithPermissions(@Param("email") String email);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(uf) > 0 THEN true ELSE false END FROM User u  
+        JOIN u.friends uf WHERE u.id = :userId AND uf.id = :friendId           
+    """)
+    boolean isFriend(@Param("userId") Long userId, @Param("friendId") Long friendId);
+
+    @Query("""
+        SELECT u FROM User u
+        LEFT JOIN u.friends f
+        WHERE u.id IN :ids
+    """)
+    List<User> findAllByIdsWithFriends(@Param("ids") List<Long> ids);
 }
