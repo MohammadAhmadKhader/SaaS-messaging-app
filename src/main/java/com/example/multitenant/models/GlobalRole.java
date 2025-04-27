@@ -22,6 +22,9 @@ public class GlobalRole implements Serializable{
     @Column(name = "name", nullable = false)
     String name;
 
+    @Column(name = "displayName", nullable = false)
+    String displayName;
+
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
 
@@ -42,7 +45,8 @@ public class GlobalRole implements Serializable{
         return new GlobalRoleWithoutPermissionsDTO(this);
     }
 
-    public GlobalRole(String name) {
+    public GlobalRole(String name,String displayName) {
         setName(name);
+        setDisplayName(displayName);
     }
 }

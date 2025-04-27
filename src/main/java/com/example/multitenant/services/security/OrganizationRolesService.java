@@ -198,9 +198,14 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
 
     private void patcher(OrganizationRole target, OrganizationRole source) {
         var newName = source.getName();
+        var newDisplayName = source.getDisplayName();
 
         if (newName != null) {
-            target.setName(newName);
+            target.setName(newName);  
+        }
+
+        if(newDisplayName != null) {
+            target.setDisplayName(newDisplayName);
         }
     }
 }

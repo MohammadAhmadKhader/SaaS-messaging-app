@@ -107,9 +107,14 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
 
     public void patcher(GlobalRole target, GlobalRole source) {
         var newName = source.getName();
+        var newDisplayName = source.getDisplayName();
 
         if(newName != null) {
             target.setName(newName);
+        }
+
+        if(newDisplayName != null) {
+            target.setDisplayName(newDisplayName);
         }
     }
 }

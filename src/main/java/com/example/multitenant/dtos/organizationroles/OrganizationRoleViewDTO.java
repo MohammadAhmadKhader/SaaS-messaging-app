@@ -15,9 +15,8 @@ public class OrganizationRoleViewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
-
     private String name;
-
+    private String displayName;
     private List<OrganizationPermissionViewDTO> permissions = new ArrayList<>();
 
     public OrganizationRoleViewDTO(OrganizationRole role) {
@@ -29,6 +28,7 @@ public class OrganizationRoleViewDTO implements Serializable {
         }).toList();
 
         setPermissions(permsView);
+        setDisplayName(role.getDisplayName());
     }
 }
 

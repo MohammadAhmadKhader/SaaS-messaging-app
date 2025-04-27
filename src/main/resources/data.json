@@ -287,24 +287,30 @@
   ],
   "organizationRoles": [
     {
-      "name": "Org-User"
+      "name": "Org-User",
+      "displayName:":"User"
     },
     {
-      "name": "Org-Admin"
+      "name": "Org-Admin",
+      "displayName:":"Admin"
     },
     {
-      "name": "Org-Owner"
+      "name": "Org-Owner",
+      "displayName:":"Owner"
     }
   ],
   "globalRoles": [
     {
-      "name": "User"
+      "name": "User",
+      "displayName":"User"
     },
     {
-      "name": "Admin"
+      "name": "Admin",
+      "displayName":"Admin"
     },
     {
-      "name": "SuperAdmin"
+      "name": "SuperAdmin",
+      "displayName":"SuperAdmin"
     }
   ],
   "contents": [

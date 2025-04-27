@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.multitenant.dtos.organizationroles.*;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,6 +27,9 @@ public class OrganizationRole implements Serializable {
 
     @Column(name = "name", nullable = false)
     String name;
+
+    @Column(name = "display_name", nullable = false)
+    String displayName;
 
     @Column(name = "organization_id", nullable = true)
     Integer organizationId;
@@ -52,6 +56,11 @@ public class OrganizationRole implements Serializable {
 
     public OrganizationRoleWithoutPermissionsDTO toViewWithoutPermissionsDTO() {
         return new OrganizationRoleWithoutPermissionsDTO(this);
+    }
+
+    public OrganizationRole(String name, String displayName) {
+        setName(name);
+        setDisplayName(displayName);
     }
 
     public OrganizationRole(String name) {

@@ -14,7 +14,12 @@ public class GlobalRoleCreateDTO {
     @Size(min = 2, message = "name must be at least {min}")
     private String name;
 
+    @NotBlank(message = "display name can not be empty")
+    @Size(max = 64, message = "display name must be at most {max}")
+    @Size(min = 2, message = "display name must be at least {min}")
+    private String displayName;
+
     public GlobalRole toModel() {
-        return new GlobalRole(this.name);
+        return new GlobalRole(this.getName(), this.getDisplayName());
     }
 }

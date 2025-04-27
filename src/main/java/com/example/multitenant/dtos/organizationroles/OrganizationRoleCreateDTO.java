@@ -14,7 +14,12 @@ public class OrganizationRoleCreateDTO {
     @Size(min = 2, message = "name must be at least {min}")
     private String name;
 
+    @NotBlank(message = "display name can not be empty")
+    @Size(max = 64, message = "display name must be at most {max}")
+    @Size(min = 2, message = "display name must be at least {min}")
+    private String displayName;
+
     public OrganizationRole toModel() {
-        return new OrganizationRole(this.name);
+        return new OrganizationRole(this.getName(), this.getDisplayName());
     }
 }

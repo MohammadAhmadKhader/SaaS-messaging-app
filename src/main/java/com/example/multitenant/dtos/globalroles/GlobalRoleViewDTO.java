@@ -15,9 +15,8 @@ public class GlobalRoleViewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
-
     private String name;
-
+    private String displayName;
     private List<GlobalPermissionViewDTO> permissions = new ArrayList<>();
 
     public GlobalRoleViewDTO(GlobalRole globalRole) {
@@ -29,6 +28,7 @@ public class GlobalRoleViewDTO implements Serializable {
         }).toList();
 
         setPermissions(permsView);
+        setDisplayName(globalRole.getDisplayName());
     }
 }
 
