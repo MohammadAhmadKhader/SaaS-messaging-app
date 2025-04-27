@@ -32,8 +32,7 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Email
-    @Column(nullable = false)
+    @Column(name ="email", nullable = false)
     private String email;
 
     @JsonIgnore
@@ -61,6 +60,7 @@ public class User implements Serializable {
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles")
     )
+    @OrderBy("id ASC")
     List<GlobalRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)

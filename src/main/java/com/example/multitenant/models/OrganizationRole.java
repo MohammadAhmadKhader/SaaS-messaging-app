@@ -13,6 +13,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "organization_roles",indexes = {
     @Index(name = "idx_name_organizationid", columnList = "name, organization_id", unique = true)
 })
@@ -55,9 +56,5 @@ public class OrganizationRole implements Serializable {
 
     public OrganizationRole(String name) {
         setName(name);
-    }
-
-    public OrganizationRole() {
-        
     }
 }

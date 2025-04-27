@@ -11,6 +11,7 @@ import lombok.*;
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "global_roles")
 public class GlobalRole implements Serializable{
     private static final long serialVersionUID = 1L;
@@ -43,9 +44,5 @@ public class GlobalRole implements Serializable{
 
     public GlobalRole(String name) {
         setName(name);
-    }
-
-    public GlobalRole() {
-        
     }
 }

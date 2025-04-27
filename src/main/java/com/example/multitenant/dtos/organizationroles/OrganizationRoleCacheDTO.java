@@ -8,6 +8,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 public class OrganizationRoleCacheDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     

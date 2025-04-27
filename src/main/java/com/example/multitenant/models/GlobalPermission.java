@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "global_permissions")
 public class GlobalPermission implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -48,9 +49,5 @@ public class GlobalPermission implements Serializable {
 
     public GlobalPermission(String name) {
         setName(name);
-    }
-    
-    public GlobalPermission() {
-        
     }
 }

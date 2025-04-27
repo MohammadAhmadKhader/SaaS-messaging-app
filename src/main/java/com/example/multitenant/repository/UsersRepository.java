@@ -16,12 +16,8 @@ public interface UsersRepository extends GenericRepository<User, Long>, JpaSpeci
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 
-    // // this solves the issue of N + 1 query
-    // @EntityGraph(attributePaths = {"contents"})
-    // List<User> findAll();
-
-    @EntityGraph(attributePaths = {"contents"}) // Eagerly load contents
-    @Query("SELECT u FROM User u") // Explicit query to select all users
+    @EntityGraph(attributePaths = {"contents"})
+    @Query("SELECT u FROM User u")
     List<User> findAllWithContents();
 
     @Query("SELECT u FROM User u JOIN FETCH u.roles r JOIN FETCH r.permissions p WHERE u.email = :email")

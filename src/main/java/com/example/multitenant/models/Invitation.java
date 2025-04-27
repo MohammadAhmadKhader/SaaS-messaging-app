@@ -15,6 +15,7 @@ import lombok.*;
 @Setter
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "invitations")
 public class Invitation {
     @Id
@@ -48,10 +49,6 @@ public class Invitation {
 
     @CreationTimestamp
     private Instant createdAt;
-
-    public Invitation() {
-        
-    }
 
     public void loadDefaults() {
         setStatus(InvitationStatus.PENDING);

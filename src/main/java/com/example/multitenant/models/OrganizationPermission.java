@@ -12,6 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "organization_permission")
 public class OrganizationPermission implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -48,9 +49,5 @@ public class OrganizationPermission implements Serializable {
 
     public OrganizationPermission(String name) {
         setName(name);
-    }
-    
-    public OrganizationPermission() {
-        
     }
 }

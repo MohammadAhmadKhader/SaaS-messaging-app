@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.stereotype.Service;
 
+import com.example.multitenant.common.annotations.contract.LogMethod;
 import com.example.multitenant.dtos.organizationroles.OrganizationRoleCacheDTO;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.OrganizationPermission;
@@ -22,6 +23,7 @@ import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.security.OrganizationRolesService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * methods starting with 'fetch' meant to fetch directly from database and only for internal use inside this service
@@ -37,6 +39,7 @@ public class RedisService {
 
     private static final Duration CACHE_TTL = Duration.ofMinutes(30);
 
+    @LogMethod
     public List<String> getUserOrgPermissions(Integer orgId, long userId) {
         var cachedRolesWithPermissions = this.getOrgRolesWithPermissions(orgId);
         var userRoles = this.getUserOrgRoles(orgId, userId);
@@ -49,7 +52,8 @@ public class RedisService {
 
         return permsList;
     }
-    
+   
+    @LogMethod
     @SuppressWarnings("unchecked")
     public List<OrganizationRoleCacheDTO> getUserOrgRoles(Integer orgId, long userId) {
         var key = this.getUserOrgRolesCacheKey(orgId, userId);
@@ -61,6 +65,7 @@ public class RedisService {
         return (List<OrganizationRoleCacheDTO>) cached;
     }   
 
+    @LogMethod
     @SuppressWarnings("unchecked")
     public Map<String, List<String>> getOrgRolesWithPermissions(Integer orgId) {
         var cacheKey = this.getOrgRolesCacheKey(orgId);
@@ -73,6 +78,7 @@ public class RedisService {
         return (Map<String, List<String>>) cached;
     }
 
+    @LogMethod
     @SuppressWarnings("unchecked")
     public List<Integer> getOrgCategoryWithAuthorizedRolesList(Integer orgId, Integer categoryId) {
         var cacheKey = this.getOrgCategoriesCacheKey(orgId, categoryId);
@@ -85,6 +91,7 @@ public class RedisService {
         return (List<Integer>) cached;
     }
 
+    @LogMethod
     @SuppressWarnings("unchecked")
     public Map<Integer, List<Integer>> getOrgCategoriesWithAuthorizedRolesList(Integer orgId, Integer categoryId) {
         var cacheKey = this.getOrgCategoriesCacheKey(orgId, categoryId);
