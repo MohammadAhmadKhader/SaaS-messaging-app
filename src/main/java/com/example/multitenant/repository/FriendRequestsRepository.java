@@ -37,12 +37,11 @@ public interface FriendRequestsRepository extends GenericRepository<FriendReques
     """)
     FriendRequest findOneWithUsers(@Param("id") Integer id);
 
-      @Query("""
+    @Query("""
         SELECT COUNT(fr) > 0 
         FROM FriendRequest fr 
-        WHERE (fr.sender.id = :senderId AND fr.receiver.id = :receiverId)
-        OR (fr.sender.id = :receiverId AND fr.receiver.id = :senderId)
-        AND fr.status != :status
+        WHERE (fr.sender.id = :senderId AND fr.receiver.id = :receiverId AND fr.status = :status)
+        OR (fr.sender.id = :receiverId AND fr.receiver.id = :senderId AND fr.status = :status)
     """)
     boolean existsFriendRequest(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId, @Param("status") FriendRequestStatus status);
 }

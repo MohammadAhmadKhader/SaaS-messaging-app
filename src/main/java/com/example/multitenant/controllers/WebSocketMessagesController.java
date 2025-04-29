@@ -11,16 +11,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.dtos.conversationmessages.ConversationMessageCreateDTO;
 import com.example.multitenant.dtos.messages.*;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
 import com.example.multitenant.models.User;
 import com.example.multitenant.services.cache.RedisService;
+import com.example.multitenant.services.conversations.ConversationsService;
 import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSocketMessagesController {
     private final OrgMessagesService orgMessagesService;
     private final WebSocketService webSocketService;
+    private final ConversationsService conversationsService;
 
     @MessageMapping("/tenants/{tenantId}/categories/{categoryId}/channels/{channelId}/send")
     public void handleSendMessageToChannel(@Payload @Validated OrgMessageCreateDTO payload,
@@ -43,10 +47,32 @@ public class WebSocketMessagesController {
 
             var message = payload.toModel();
             message.setSender(user);
-            message.setIsUpdated(false);
 
             var createdMsg = this.orgMessagesService.create(message, channelId, tenantId);
-            this.webSocketService.publishNewMessage(createdMsg, tenantId, categoryId);
+            this.webSocketService.publishNewOrgMessage(createdMsg, tenantId, categoryId);
+            
+        } else {
+            log.error("user was not found during attempt to fetch it from principal");
+            throw new UnauthorizedUserException("unauthorized");
+        }
+    }
+
+    @MessageMapping("/conversations/{conversationId}")
+    public void handleSendMessageToUser(@Payload @Validated ConversationMessageCreateDTO payload,
+        @DestinationVariable Integer conversationId, Principal principal) {
+            
+        var user = AppUtils.getUserFromPrincipal(principal);
+        if(user != null) {
+            log.info("received message {}", payload.getContent());
+            log.info("principal {}", user.getFirstName());
+
+            var message = payload.toModel();
+            message.setSender(user);
+
+            var conv = this.conversationsService.addMessageToConv(user ,conversationId, message);
+            var target = AppUtils.getWsTarget(user, conv);
+
+            this.webSocketService.publishNewConvMessage(conv.getLastMessage(), target);
             
         } else {
             log.error("user was not found during attempt to fetch it from principal");

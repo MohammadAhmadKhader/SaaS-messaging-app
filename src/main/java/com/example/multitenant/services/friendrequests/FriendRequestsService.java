@@ -14,23 +14,28 @@ import com.example.multitenant.models.FriendRequest;
 import com.example.multitenant.models.enums.FriendRequestStatus;
 import com.example.multitenant.repository.FriendRequestsRepository;
 import com.example.multitenant.repository.GenericRepository;
+import com.example.multitenant.services.conversations.ConversationsService;
 import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class FriendRequestsService extends GenericService<FriendRequest, Integer> {
 
     private FriendRequestsRepository friendRequestsRepository;
     private UsersService usersService;
+    private ConversationsService conversationsService;
 
-    public FriendRequestsService(FriendRequestsRepository friendRequestsRepository, UsersService usersService) {
+    public FriendRequestsService(FriendRequestsRepository friendRequestsRepository, UsersService usersService, ConversationsService conversationsService) {
         super(friendRequestsRepository);
 
         this.friendRequestsRepository = friendRequestsRepository;
         this.usersService = usersService;
+        this.conversationsService = conversationsService;
     }
 
     public void deleteFriendRequest(Integer requestId, Long currentUserId) {
@@ -102,6 +107,8 @@ public class FriendRequestsService extends GenericService<FriendRequest, Integer
         this.usersService.save(receiver);
         this.usersService.save(sender);
         this.friendRequestsRepository.save(request);
+
+        this.conversationsService.initConversation(sender, receiver);
     }
 
     public FriendRequest sendFriendRequest(Long senderId, Long receiverId) {

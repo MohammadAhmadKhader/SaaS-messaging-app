@@ -45,7 +45,7 @@ public class SecurityConfig {
         CorsConfiguration corsConfigs = new CorsConfiguration();
         corsConfigs.setAllowCredentials(true);
         corsConfigs.setAllowedHeaders(List.of("*"));
-        corsConfigs.setAllowedOrigins(List.of("http://127.0.0.1:5500","http://127.0.0.1:*"));
+        corsConfigs.setAllowedOrigins(List.of("http://localhost:5500","http://127.0.0.1:5500","http://127.0.0.1:*"));
         corsConfigs.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH"));
 
         var source = new UrlBasedCorsConfigurationSource();
@@ -65,6 +65,8 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) -> {
             auth.requestMatchers("/api/auth/**").permitAll();
             auth.requestMatchers("/api/auth/login", "/api/auth/register").anonymous();
+
+            // we are using `PreAuthorize` instead
             auth.requestMatchers("/**").permitAll();
             auth.anyRequest().authenticated();
         })

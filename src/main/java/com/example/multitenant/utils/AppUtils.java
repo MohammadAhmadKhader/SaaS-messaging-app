@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.exceptions.UnknownException;
+import com.example.multitenant.models.Conversation;
 import com.example.multitenant.models.User;
 import com.example.multitenant.services.cache.RedisService;
 
@@ -87,5 +88,29 @@ public class AppUtils {
         } catch (Exception e) {
             throw new UnknownException("an error has occured durign attempt to fetch user from principal");
         }
+    }
+
+    public static User getWsTarget(User sender, Conversation conv) {
+        if(conv == null) {
+            throw new IllegalStateException("conversation was received as null");
+        }
+
+        if(conv.getUser1() == null) {
+            throw new IllegalStateException("user1 was received as null");
+        }
+
+        if(conv.getUser2() == null) {
+            throw new IllegalStateException("user2 was received as null");
+        }
+
+        if(sender == null) {
+            throw new IllegalStateException("sender was received as null");
+        }
+
+        if(conv.getUser1().getId() != sender.getId()) {
+            return conv.getUser1();
+        }
+        
+        return conv.getUser2();
     }
 }

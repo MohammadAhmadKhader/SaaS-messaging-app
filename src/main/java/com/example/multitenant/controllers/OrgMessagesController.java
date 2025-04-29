@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/categories/{categoryId}/channels/{channelId}/messages")
-public class MessagesController {
+public class OrgMessagesController {
 
     private final OrgMessagesService messagesService;
     private final WebSocketService webSocketService; 
@@ -40,7 +40,7 @@ public class MessagesController {
         var tenantId = AppUtils.getTenantId();
 
         var updatedMsg = this.messagesService.updateContent(messageId, dto.getContent(), senderId);
-        this.webSocketService.publishUpdatedMessage(updatedMsg, tenantId, categotyId);
+        this.webSocketService.publishUpdatedOrgMessage(updatedMsg, tenantId, categotyId);
        
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
@@ -54,7 +54,7 @@ public class MessagesController {
         var tenantId = AppUtils.getTenantId();
 
         this.messagesService.deleteUserMessage(messageId, senderId);
-        this.webSocketService.publishDeletedMessage(messageId, tenantId, categotyId);
+        this.webSocketService.publishDeletedOrgMessage(messageId, tenantId, categotyId);
        
         return ResponseEntity.noContent().build();
     }

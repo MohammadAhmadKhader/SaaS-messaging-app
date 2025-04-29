@@ -15,6 +15,7 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "conversations", uniqueConstraints = {
     @UniqueConstraint(name = "unique_user_pairs", columnNames = {"user_1_id","user_2_id"})
@@ -22,12 +23,13 @@ import lombok.*;
 indexes = {
     @Index(name = "idx_user_1_id", columnList = "user_1_id"),
     @Index(name = "idx_user_2_id", columnList = "user_2_id"),
+    @Index(name = "idx_last_message_id", columnList = "last_message_id"),
 })
 @Check(constraints = "user_1_id < user_2_id")  
 public class Conversation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_1_id")
@@ -40,7 +42,7 @@ public class Conversation {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "conversation", cascade = CascadeType.REMOVE)
     private List<ConversationMessage> messages;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
     private ConversationMessage lastMessage;
 
     @Column(name = "is_hidden", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")

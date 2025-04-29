@@ -25,7 +25,10 @@ public class WebSocketEventListener {
         var sessionId = accessor.getSessionId();
 
         if (user != null) {
+            log.info("[Principal] principal name is  " + principal.getName());
             log.info("user '{}' connected (sessionId: {})", user.getFirstName(), sessionId);
+        } else {
+            log.warn("user was received as null wiht prinicpal: " + principal.getName());
         }
     }
 

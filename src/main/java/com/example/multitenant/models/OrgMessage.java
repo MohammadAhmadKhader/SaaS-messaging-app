@@ -34,6 +34,11 @@ public class OrgMessage extends Message {
     @Column(name = "channel_id",nullable = false)
     private Integer channelId;
 
+    @PrePersist
+    private void loadDefaults() {
+        this.setIsUpdated(false);
+    }
+
     public OrgMessageViewDTO toViewDTO() {
         return new OrgMessageViewDTO(this);
     }
