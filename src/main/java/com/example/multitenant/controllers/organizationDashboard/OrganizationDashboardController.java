@@ -62,7 +62,6 @@ public class OrganizationDashboardController {
         @Valid MembershipFilter filters
     ) {
         var tenantId = AppUtils.getTenantId();
-        log.info("received this tenantId {}", tenantId);
 
         var memberships = this.memberShipService.findActiveOrgMemberShips(tenantId, page, size, sortBy, sortDir, filters);
         var count = memberships.getTotalElements();

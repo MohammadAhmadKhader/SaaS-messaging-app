@@ -42,7 +42,6 @@ public abstract class ServicesHelper<TModel> {
             }
         }  
 
-        System.out.println("Sort: " + pageable.getSort());
         var orders = new ArrayList<Order>();
         for (Sort.Order order : pageable.getSort()) {
             Path<Object> path = root.get(order.getProperty());

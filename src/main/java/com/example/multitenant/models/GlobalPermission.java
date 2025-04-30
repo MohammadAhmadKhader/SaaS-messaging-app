@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.multitenant.dtos.globalpermissions.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,15 +26,12 @@ public class GlobalPermission implements Serializable {
     @ManyToMany(mappedBy = "permissions")
     private List<GlobalRole> roles = new ArrayList<>();
 
-    @JsonProperty("isDefaultUser")
     @Column(name = "is_default_user")
     private Boolean isDefaultUser;
 
-    @JsonProperty("isDefaultAdmin")
     @Column(name = "is_default_admin")
     private Boolean isDefaultAdmin;
 
-    @JsonProperty("isDefaultSuperAdmin")
     @Column(name = "is_default_superAdmin")
     private Boolean isDefaultSuperAdmin;
 

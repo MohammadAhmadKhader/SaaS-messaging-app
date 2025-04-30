@@ -31,4 +31,8 @@ public class RegisterDTO {
     public User toUser() {
         return new User(email, firstName, lastName ,password);
     }
+
+    public String getEmail() {
+        return this.email.toLowerCase();
+    }
 }

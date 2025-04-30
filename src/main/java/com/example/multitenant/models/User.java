@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,6 +24,7 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "users")
+@Check(constraints = "email = lower(email)")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -49,14 +51,14 @@ public class User implements Serializable {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "users_global_roles",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id", table = "users"),
         inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles")
     )
     @OrderBy("id ASC")
-    List<GlobalRole> roles = new ArrayList<>();
+    private Set<GlobalRole> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Membership> memberships = new ArrayList<>();
@@ -88,6 +90,15 @@ public class User implements Serializable {
     
     public UserViewDTO toViewDTO() {
         return new UserViewDTO(this);
+    }
+
+    public void setEmail(String email) {
+        this.email = email != null ? email.toLowerCase() : null;
+    }
+
+    @PrePersist
+    private void loadDefaults() {
+        this.email = this.email.toLowerCase();
     }
 
     public UserOrganizationViewDTO toOrganizationViewDTO(Membership membership) {

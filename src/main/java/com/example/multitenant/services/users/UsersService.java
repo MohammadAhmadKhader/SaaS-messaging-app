@@ -34,19 +34,6 @@ public class UsersService extends GenericService<User, Long> {
         return result;
     }
 
-    public User findByEmail(String email) {
-        var optional = this.usersRepository.findByEmail(email);
-        if(!optional.isPresent()) {
-            return null;
-        }
-
-        return optional.get();
-    }
-
-    public boolean isUserFriend(Long userId, Long friendId) {
-        return this.usersRepository.isFriend(userId, friendId);
-    }
-
     // curr user always assumed to be there because its authenticated
     public List<User> removeFriend(Long currUserId, Long userIdToUnFriend) {
         var userToRemove = this.findById(userIdToUnFriend);
@@ -78,6 +65,26 @@ public class UsersService extends GenericService<User, Long> {
         userToUnFriend.getFriends().remove(currUser);
 
         return this.usersRepository.saveAll(List.of(currUser, userToUnFriend));
+    }
+
+    public User findByEmail(String email) {
+        return this.usersRepository.findByEmail(email);
+    }
+
+    public User findOneByEmailWithRolesAndPermissions(String email) {
+        return this.usersRepository.findOneByEmailWithRolesAndPermissions(email);
+    }
+
+    public boolean isUserFriend(Long userId, Long friendId) {
+        return this.usersRepository.isFriend(userId, friendId);
+    }
+
+    public User findUserWithRolesAndPermissions(Long id) {
+        return this.usersRepository.findOneByIdWithRolesAndPermissions(id);
+    }
+
+    public User findUserWithRoles(Long id) {
+        return this.usersRepository.findOneByIdWithRoles(id);
     }
 
     public User save(User user) {

@@ -1,7 +1,6 @@
 package com.example.multitenant.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.springframework.data.jpa.repository.*;
@@ -13,11 +12,31 @@ import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface UsersRepository extends GenericRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+    User findByEmail(String email);
     Boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM User u JOIN FETCH u.roles r JOIN FETCH r.permissions p WHERE u.email = :email")
-    User findByEmailWithPermissions(@Param("email") String email);
+    @Query("""
+        SELECT u FROM User u 
+        LEFT JOIN FETCH u.roles r 
+        LEFT JOIN FETCH r.permissions p 
+        WHERE u.email = :email
+    """)
+    User findOneByEmailWithRolesAndPermissions(@Param("email") String email);
+
+    @Query("""
+        SELECT u FROM User u 
+        LEFT JOIN FETCH u.roles r 
+        LEFT JOIN FETCH r.permissions p 
+        WHERE u.id = :id
+    """)
+    User findOneByIdWithRolesAndPermissions(@Param("id") Long id);
+
+    @Query("""
+        SELECT u FROM User u 
+        LEFT JOIN FETCH u.roles r 
+        WHERE u.id = :id
+    """)
+    User findOneByIdWithRoles(@Param("email") Long id);
 
     @Query("""
         SELECT CASE WHEN COUNT(uf) > 0 THEN true ELSE false END FROM User u  

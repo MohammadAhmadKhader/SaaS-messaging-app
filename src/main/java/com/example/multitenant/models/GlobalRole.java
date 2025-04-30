@@ -28,7 +28,7 @@ public class GlobalRole implements Serializable{
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "global_roles_global_permissions",
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "global_roles"),

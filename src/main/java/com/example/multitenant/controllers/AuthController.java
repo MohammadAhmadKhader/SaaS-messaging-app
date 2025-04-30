@@ -76,7 +76,8 @@ public class AuthController {
 
         user.getRoles().add(role);
         var createdUser = this.usersService.create(user);
-        var userDTO = createdUser.toViewDTO();
+        var populatedUser = this.usersService.findUserWithRolesAndPermissions(createdUser.getId());
+        var userDTO = populatedUser.toViewDTO();
 
         this.sessionsService.createSessionWithUser(req, userDTO);
         var respBody = ApiResponses.OneKey("user", userDTO);

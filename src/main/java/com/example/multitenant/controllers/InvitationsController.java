@@ -81,8 +81,8 @@ public class InvitationsController {
 
         var isCancelAction = dto.getAction() != InvitiationAction.CANCEL;
         var isRejectAction = dto.getAction() != InvitiationAction.REJECT;
-        var reqBySender = inv.getSenderId() == user.getId();
-        var reqByRecipient = inv.getRecipientId() == user.getId();
+        var reqBySender = inv.getSenderId().equals(user.getId());
+        var reqByRecipient = inv.getRecipientId().equals(user.getId());
 
         if(!reqBySender && isCancelAction || !reqByRecipient && isRejectAction) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponses.Forbidden());
@@ -105,8 +105,10 @@ public class InvitationsController {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("pending invitation"));
         }
 
-        var reqBySender = inv.getRecipientId() == user.getId();
-        if(!reqBySender) {
+        var reqByRecipient = inv.getRecipientId().equals(user.getId());
+        if(!reqByRecipient) {
+            System.out.println("rejected");
+            System.out.println(inv.getSenderId() +" <----------------------------> "+inv.getRecipientId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponses.Forbidden());
         }
 

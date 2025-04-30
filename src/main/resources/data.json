@@ -95,18 +95,6 @@
       "isDefaultUser": true,
       "isDefaultAdmin": true,
       "isDefaultSuperAdmin": true
-    },
-    {
-      "name":"invitation:view",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
-    },
-    {
-      "name":"invitation:reject",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
     }
   ],
   "organizationPermissions":[
