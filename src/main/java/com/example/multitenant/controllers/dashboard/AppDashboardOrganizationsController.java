@@ -39,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/dashboard/organizations")
 public class AppDashboardOrganizationsController {
 
-    private final UsersService usersService;
     private final OrganizationsService organizationsService;
     private final MemberShipService memberShipService;
     
@@ -102,7 +101,7 @@ public class AppDashboardOrganizationsController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_DELETE)")
     public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
-        var isDeleted = this.organizationsService.findThenDeleteById(id);
+        var isDeleted = this.organizationsService.findByIdThenDelete(id);
         if(!isDeleted) {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
         }

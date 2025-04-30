@@ -1,4 +1,4 @@
-package com.example.multitenant.utils;
+package com.example.multitenant.services.helperservices;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -16,12 +16,12 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.EntityType;
 
 @Component
-public abstract class ServicesHelper<TModel> {
+public abstract class ServiceSpecifications<TModel> {
     @PersistenceContext
     private EntityManager entityManager; 
     private final Class<TModel> modelClass;
 
-    public ServicesHelper(Class<TModel> modelClass) {
+    public ServiceSpecifications(Class<TModel> modelClass) {
         this.modelClass = modelClass;
     }
 

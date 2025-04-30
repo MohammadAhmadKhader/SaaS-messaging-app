@@ -77,7 +77,7 @@ public class OrganizationDashboardController {
     @DeleteMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgRole('Org-Owner')")
     public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
-        var isDeleted = this.organizationsService.findThenDeleteById(id);
+        var isDeleted = this.organizationsService.findByIdThenDelete(id);
         if(!isDeleted) {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
         }

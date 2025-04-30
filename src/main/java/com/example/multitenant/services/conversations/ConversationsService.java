@@ -10,21 +10,15 @@ import com.example.multitenant.models.ConversationMessage;
 import com.example.multitenant.models.User;
 import com.example.multitenant.repository.ConversationMessagesRepository;
 import com.example.multitenant.repository.ConversationsRepository;
-import com.example.multitenant.services.generic.GenericService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Service
-public class ConversationsService extends GenericService<Conversation, Integer> {
-    private ConversationsRepository conversationsRepository;
-    private ConversationMessagesRepository conversationMessagesRepository;
-    
-    public ConversationsService(ConversationsRepository conversationsRepository,  ConversationMessagesRepository conversationMessagesRepository) {
-        super(conversationsRepository);
-
-        this.conversationsRepository = conversationsRepository;
-        this.conversationMessagesRepository = conversationMessagesRepository;
-    }
+public class ConversationsService {
+    private final ConversationsRepository conversationsRepository;
+    private final ConversationMessagesRepository conversationMessagesRepository;
     
     // creates a new conversation if there is none, if there is returns null
     public Conversation initConversation(User firstUser, User secondUser) {

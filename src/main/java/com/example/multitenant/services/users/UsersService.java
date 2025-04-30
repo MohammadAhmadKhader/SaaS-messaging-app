@@ -10,33 +10,30 @@ import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.User;
 import com.example.multitenant.repository.UsersRepository;
-import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.utils.PageableHelper;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class UsersService extends GenericService<User, Long> {
+public class UsersService {
     private static String defaultSortBy = "createdAt";
     private static String defaultSortDir = "DESC";
 
-    private UsersRepository usersRepository;
-    private UsersServicesHelper usersServicesHelper;
-
-    public UsersService(UsersRepository usersRepository, UsersServicesHelper usersServicesHelper) {
-        super(usersRepository);
-        this.usersRepository = usersRepository;
-        this.usersServicesHelper = usersServicesHelper;
-    }
+    private final UsersRepository usersRepository;
+    private final UsersSpecificationsService usersSpecificationsService;
+    private final UsersCrudService usersCrudService;
 
     public Page<User> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
-        var result = this.usersServicesHelper.findAllWithSpecifications(pageable, null, null);
+        var result = this.usersSpecificationsService.findAllWithSpecifications(pageable, null, null);
         
         return result;
     }
 
     // curr user always assumed to be there because its authenticated
     public List<User> removeFriend(Long currUserId, Long userIdToUnFriend) {
-        var userToRemove = this.findById(userIdToUnFriend);
+        var userToRemove = this.usersCrudService.findById(userIdToUnFriend);
         if(userToRemove == null) {
             throw new ResourceNotFoundException("user", userIdToUnFriend);
         }
@@ -100,7 +97,18 @@ public class UsersService extends GenericService<User, Long> {
     }
 
     public User findThenUpdate(long id, User user) {
-        return this.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
+        return this.usersCrudService.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
+    }
+
+    public User findById(long id) {
+        return this.usersCrudService.findById(id);
+    }
+
+    public User create(User user) {
+        return this.usersCrudService.create(user);
+    }
+    public boolean findThenDeleteById(Long id) {
+        return this.usersCrudService.findThenDeleteById(id);
     }
 
     private void patcher(User target, User source) {

@@ -15,31 +15,24 @@ import com.example.multitenant.models.enums.FriendRequestStatus;
 import com.example.multitenant.repository.FriendRequestsRepository;
 import com.example.multitenant.repository.GenericRepository;
 import com.example.multitenant.services.conversations.ConversationsService;
-import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
-public class FriendRequestsService extends GenericService<FriendRequest, Integer> {
+public class FriendRequestsService  {
 
-    private FriendRequestsRepository friendRequestsRepository;
-    private UsersService usersService;
-    private ConversationsService conversationsService;
-
-    public FriendRequestsService(FriendRequestsRepository friendRequestsRepository, UsersService usersService, ConversationsService conversationsService) {
-        super(friendRequestsRepository);
-
-        this.friendRequestsRepository = friendRequestsRepository;
-        this.usersService = usersService;
-        this.conversationsService = conversationsService;
-    }
+    private final FriendRequestsRepository friendRequestsRepository;
+    private final UsersService usersService;
+    private final ConversationsService conversationsService;
+    private final FriendRequestsCrudService friendRequestsCrudService;
 
     public void deleteFriendRequest(Integer requestId, Long currentUserId) {
-        var request = this.findById(requestId);
+        var request = this.friendRequestsCrudService.findById(requestId);
         if (request == null) { 
             throw new ResourceNotFoundException("request", requestId);
         }

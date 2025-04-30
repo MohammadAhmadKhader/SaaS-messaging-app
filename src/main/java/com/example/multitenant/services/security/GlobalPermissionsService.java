@@ -8,17 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.multitenant.models.GlobalPermission;
 import com.example.multitenant.repository.GlobalPermissionsRepository;
-import com.example.multitenant.services.generic.GenericService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class GlobalPermissionsService extends GenericService<GlobalPermission, Integer> {
-    
+public class GlobalPermissionsService {
     private final GlobalPermissionsRepository globalPermissionsRepository;
-
-    public GlobalPermissionsService(GlobalPermissionsRepository globalPermissionsRepository) {
-        super(globalPermissionsRepository);
-        this.globalPermissionsRepository = globalPermissionsRepository;
-    }
 
     public Page<GlobalPermission> findAllPermissions(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by( "id").descending());

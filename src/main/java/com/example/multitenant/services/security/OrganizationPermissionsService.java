@@ -12,19 +12,15 @@ import com.example.multitenant.models.*;
 import com.example.multitenant.models.binders.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.*;
-import com.example.multitenant.services.generic.GenericService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class OrganizationPermissionsService extends GenericService<OrganizationPermission, Integer> {
+public class OrganizationPermissionsService {
     
     private final OrganizationPermissionsRepository organizationPermissionsRepository;
     private final MembershipRepository organizationsMembershipRepository;
-
-    public OrganizationPermissionsService(OrganizationPermissionsRepository organizationPermissionsRepository, MembershipRepository organizationsMembershipRepository ) {
-        super(organizationPermissionsRepository);
-        this.organizationPermissionsRepository = organizationPermissionsRepository;
-        this.organizationsMembershipRepository = organizationsMembershipRepository;
-    }
 
     public Page<OrganizationPermission> findAllPermissions(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());

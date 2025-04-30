@@ -10,25 +10,19 @@ import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.InvitationsRepository;
-import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.users.UsersService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Service
-public class InvitationsService extends GenericService<Invitation, Integer> {
+public class InvitationsService {
 
     private final InvitationsRepository invitationsRepository;
     private final UsersService usersService;
     private final MemberShipService memberShipService;
-
-    public InvitationsService(InvitationsRepository invitationsRepository, UsersService usersService, MemberShipService memberShipService) {
-        super(invitationsRepository);
-        this.invitationsRepository = invitationsRepository;
-        this.usersService = usersService;
-        this.memberShipService = memberShipService;
-    }
 
     public CursorPage<Invitation, Integer> getUserInvitationsWithCursor(Long userId, Integer cursor ,Integer size) {
         var pageable = PageRequest.of(0, size + 1, Sort.by("createdAt","id").descending());

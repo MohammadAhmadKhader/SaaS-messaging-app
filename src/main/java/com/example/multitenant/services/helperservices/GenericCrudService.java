@@ -1,4 +1,4 @@
-package com.example.multitenant.services.generic;
+package com.example.multitenant.services.helperservices;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,11 +12,11 @@ import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.repository.GenericRepository;
 
-public abstract class GenericService<TModel, ID extends Serializable> {
+public abstract class GenericCrudService<TModel, ID extends Serializable> {
 
     protected final GenericRepository<TModel, ID> repository;
 
-    protected GenericService(GenericRepository<TModel, ID> repository) {
+    protected GenericCrudService(GenericRepository<TModel, ID> repository) {
         this.repository = repository;
     }
 

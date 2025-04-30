@@ -7,17 +7,15 @@ import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.User;
 import com.example.multitenant.repository.OrganizationsRepository;
-import com.example.multitenant.services.generic.GenericService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class OrganizationsService extends GenericService<Organization, Integer> {
+public class OrganizationsService {
 
     private final OrganizationsRepository organizationsRepository;
-    
-    public OrganizationsService(OrganizationsRepository organizationsRepository) {
-        super(organizationsRepository);
-        this.organizationsRepository = organizationsRepository;
-    }
+    private final OrganizationsCrudService organizationsCrudService;
 
     public Page<Organization> findAllOrganization(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
@@ -49,9 +47,21 @@ public class OrganizationsService extends GenericService<Organization, Integer> 
 
         return null;
     }
+    
+    public boolean findByIdThenDelete(Integer id) {
+        return this.organizationsCrudService.findThenDeleteById(id);
+    }
 
     public Organization findThenUpdate(Integer id, Organization org) {
-        return this.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
+        return this.organizationsCrudService.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
+    }
+
+    public Organization findById(Integer id) {
+        return this.organizationsCrudService.findById(id);
+    }
+
+    public Organization create(Organization org) {
+        return this.organizationsCrudService.create(org);
     }
     
     private void patcher(Organization target, Organization source) {

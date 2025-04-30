@@ -10,18 +10,16 @@ import org.springframework.stereotype.Service;
 import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.GlobalRole;
 import com.example.multitenant.repository.GlobalRolesRepository;
-import com.example.multitenant.services.generic.GenericService;
+import com.example.multitenant.services.security.helperservices.GlobalRolesCrudService;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
-public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
+public class GlobalRolesService {
     private final GlobalRolesRepository globalRolesRepository;
     private final GlobalPermissionsService globalPermissionsService;
-
-    public GlobalRolesService(GlobalRolesRepository globalRolesRepository, GlobalPermissionsService globalPermissionsService) {
-        super(globalRolesRepository);
-        this.globalRolesRepository = globalRolesRepository;
-        this.globalPermissionsService = globalPermissionsService;
-    }
+    private final GlobalRolesCrudService globalRolesCrudService;
 
     public Page<GlobalRole> findAllRoles(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by("id").descending());
@@ -97,12 +95,20 @@ public class GlobalRolesService extends GenericService<GlobalRole, Integer> {
         this.globalRolesRepository.delete(role);
     }
 
-    public GlobalRole findOne(Integer roleId) {
-        return this.globalRolesRepository.findById(roleId).orElse(null);
+    public GlobalRole findById(Integer roleId) {
+        return this.globalRolesCrudService.findById(roleId);
+    }
+
+    public void deleteById(Integer roleId) {
+        this.globalRolesCrudService.deleteById(roleId);
     }
 
     public GlobalRole findThenUpdate(Integer roleId, GlobalRole globalRole) {
-        return this.findThenUpdate(roleId, (existingRole) -> patcher(existingRole, globalRole));
+        return this.globalRolesCrudService.findThenUpdate(roleId, (existingRole) -> patcher(existingRole, globalRole));
+    }
+
+    public GlobalRole create(GlobalRole role) {
+        return this.globalRolesCrudService.create(role);
     }
 
     public void patcher(GlobalRole target, GlobalRole source) {

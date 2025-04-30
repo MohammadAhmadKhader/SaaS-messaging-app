@@ -11,6 +11,8 @@ import com.example.multitenant.specificationsbuilders.MembershipSpecificationsBu
 import com.example.multitenant.utils.*;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -22,11 +24,11 @@ import com.example.multitenant.models.*;
 import com.example.multitenant.models.binders.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.MembershipRepository;
-import com.example.multitenant.services.generic.GenericService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 
+@RequiredArgsConstructor
 @Service
-public class MemberShipService extends GenericService<Membership, MembershipKey> {
+public class MemberShipService {
     private static String defaultSortBy = "joinedAt";
     private static String defaultSortDir = "DESC";
 
@@ -34,21 +36,8 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     private final OrganizationPermissionsService organizationsPermissionsService;
     private final MembershipRepository membershipRepository;
     private final OrganizationsService organizationsService;
-    private final MemberShipServiceHelper memberShipServiceHelper;
-
-    public MemberShipService(MembershipRepository membershipRepository, 
-        OrganizationsService organizationsService, 
-        OrganizationRolesService organizationRolesService,
-        OrganizationPermissionsService organizationsPermissionsService,
-        MemberShipServiceHelper memberShipServiceHelper) {
-
-        super(membershipRepository);
-        this.membershipRepository = membershipRepository;
-        this.organizationsService = organizationsService;
-        this.organizationRolesService = organizationRolesService;
-        this.organizationsPermissionsService = organizationsPermissionsService;
-        this.memberShipServiceHelper = memberShipServiceHelper;
-    }
+    private final MemberShipSpecificationsService memberShipSpecificationsService;
+    private final MemberShipCrudService memberShipCrudService;
 
     public Page<Membership> getOrganizaionMemberships(Integer page, Integer size, Integer organizationId) {
         var org = new Organization();
@@ -60,7 +49,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     
     public boolean hasUserJoined(Integer orgId, long userId) {
         var membershipKey = new MembershipKey(orgId, userId);
-        var memebership = this.findById(membershipKey);
+        var memebership = this.memberShipCrudService.findById(membershipKey);
         if(memebership == null) {
             return false;
         }
@@ -175,7 +164,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
             var membershipKey = new MembershipKey(orgId, userId);
 
             var orgFuture = CompletableFuture.supplyAsync(() -> this.organizationsService.findById(orgId));
-            var membershipFuture = CompletableFuture.supplyAsync(() -> this.findById(membershipKey));
+            var membershipFuture = CompletableFuture.supplyAsync(() -> this.memberShipCrudService.findById(membershipKey));
 
             var membership = membershipFuture.get();
             var organization = orgFuture.get();
@@ -258,7 +247,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
     public Membership findOne(Integer orgId, long userId) {
         var membershipKey = new MembershipKey(orgId, userId);
-        return this.findById(membershipKey);
+        return this.memberShipCrudService.findById(membershipKey);
     }
 
     public boolean isMember(Integer orgId, long userId) {
@@ -320,7 +309,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
         var spec = MembershipSpecificationsBuilder.build(filter, orgId, true);
 
-        return this.memberShipServiceHelper.findAllWithSpecifications(pageable, spec,null);
+        return this.memberShipSpecificationsService.findAllWithSpecifications(pageable, spec,null);
     }
 
 
@@ -333,7 +322,6 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
         return orgOwnerRole;
     }
-
 
     // * private methods below
     private OrganizationRole createOwnerRole(Integer orgId) {

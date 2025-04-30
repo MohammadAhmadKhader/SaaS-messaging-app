@@ -14,20 +14,17 @@ import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.OrganizationRolesRepository;
-import com.example.multitenant.services.generic.GenericService;
+import com.example.multitenant.services.security.helperservices.OrganizationRolesCrudService;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Service
-public class OrganizationRolesService extends GenericService<OrganizationRole, Integer> {
+public class OrganizationRolesService {
     private final OrganizationRolesRepository rolesRepository;
     private final OrganizationPermissionsService organizationPermissionsService;
-
-    public OrganizationRolesService(OrganizationRolesRepository rolesRepository, OrganizationPermissionsService organizationPermissionsService) {
-        super(rolesRepository);
-        this.rolesRepository = rolesRepository;
-        this.organizationPermissionsService = organizationPermissionsService;
-    }
+    private final OrganizationRolesCrudService organizationRolesCrudService;
 
     @Transactional
     public OrganizationRole createWithBasicPerms(OrganizationRole orgRole, Integer orgId) {
@@ -182,6 +179,14 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
         this.patcher(role, orgRole);
 
         return this.rolesRepository.save(role);
+    }
+
+    public OrganizationRole create(OrganizationRole role) {
+        return this.organizationRolesCrudService.create(role);
+    }
+
+    public List<OrganizationRole> createMany(List<OrganizationRole> roles) {
+        return this.organizationRolesCrudService.createMany(roles);
     }
 
     // TODO: must be made by 1 request rather than 1 request per role.
