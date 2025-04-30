@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.channels.*;
+import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.channels.ChannelsService;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.utils.AppUtils;
 
 import jakarta.validation.Valid;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/categories/{categoryId}/channels")
 public class ChannelsController {
     private final ChannelsService channelsService;
+    private final LogsService logsService;
 
     @GetMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
@@ -40,8 +43,11 @@ public class ChannelsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_CREATE)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> createChannel(@Valid @RequestBody ChannelCreateDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
         
         var channel = this.channelsService.create(dto.toModel(), tenantId, categoryId);
+        this.logsService.createChannelsLog(user, channel, tenantId, LogEventType.ORG_CHANNEL_CREATED);
+
         var channelView = channel.toViewDTO();
         var responseBody = ApiResponses.OneKey("channel", channelView);
         
@@ -55,12 +61,14 @@ public class ChannelsController {
         @Valid @RequestBody ChannelUpdateDTO dto,
         @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
         
         var updatedChannel = this.channelsService.update(id, dto.toModel(), tenantId, categoryId);
         if(updatedChannel == null) {
             var respBody = ApiResponses.GetNotFoundErr("channel", id);
             return ResponseEntity.badRequest().body(respBody);
         }
+        this.logsService.createChannelsLog(user, updatedChannel, tenantId, LogEventType.ORG_CATEGORY_UPDATED);
         
         var responseBody = ApiResponses.OneKey("channel", updatedChannel.toViewDTO());
         

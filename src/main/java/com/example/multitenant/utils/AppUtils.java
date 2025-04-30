@@ -18,6 +18,7 @@ import com.example.multitenant.models.Conversation;
 import com.example.multitenant.models.User;
 import com.example.multitenant.services.cache.RedisService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 public class AppUtils {
@@ -36,6 +37,7 @@ public class AppUtils {
     }
 
     public static Integer getTenantId() {
+        @SuppressWarnings("null")
         var req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         var tenantIdStr = req.getHeader("X-Tenant-ID");
         
@@ -112,5 +114,20 @@ public class AppUtils {
         }
         
         return conv.getUser2();
+    }
+
+    public static String getClientIp(HttpServletRequest request) {
+        var ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        } else {
+            ip = ip.split(",")[0];
+        }
+
+        return ip;
+    }
+
+    public static String getUserAgrent(HttpServletRequest request) {
+        return request.getHeader("User-Agent");
     }
 }

@@ -6,6 +6,8 @@ import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.organizations.*;
+import com.example.multitenant.models.enums.LogEventType;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.utils.AppUtils;
@@ -32,6 +34,7 @@ public class OrganizationsController {
     
     private final OrganizationsService organizationsService;
     private final MemberShipService memberShipService;
+    private final LogsService logsService;
 
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")
@@ -52,12 +55,36 @@ public class OrganizationsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.USER_KICK)")
     public ResponseEntity<Object> kickUser(@ValidateNumberId @PathVariable long userId) {
         var orgId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
+
         var membership = this.memberShipService.findOne(orgId, userId);
         if(!membership.isMember()) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
         }
 
+        this.logsService.createKickLog(user, userId, orgId, LogEventType.KICK);
         this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @PatchMapping("/leave/{organizationId}")
+    public ResponseEntity<Object> leaveOrganization() {
+        var orgId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
+
+        var membership = this.memberShipService.findOne(orgId, user.getId());
+        if(!membership.isMember()) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
+        }
+
+        var org = this.organizationsService.findOneWithOwner(orgId);
+        if(org.getOwner().getId() == user.getId()) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("can not leave an owned organization you have to delete it, or transfer ownership first"));
+        }
+
+        this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
+        this.logsService.createKickLog(user, user.getId(), orgId, LogEventType.LEAVE);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

@@ -11,5 +11,5 @@ public class AssignOrganizationRoleDTO {
 
     @NotNull(message = "user id is required")
     @Min(value = 1 ,message = "user id can not be less than {value}")
-    private Integer userId;
+    private Long userId;
 }

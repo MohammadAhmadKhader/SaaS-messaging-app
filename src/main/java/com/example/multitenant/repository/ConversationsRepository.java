@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.multitenant.models.Conversation;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface ConversationsRepository extends GenericRepository<Conversation, Integer> {

@@ -11,7 +11,7 @@ import lombok.*;
 @Table(name = "conversation_messages")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConversationMessage extends Message {
+public class ConversationMessage extends BaseMessage {
 
     @Column(name = "conversation_id", updatable = false, insertable = false)
     private Integer conversationId;

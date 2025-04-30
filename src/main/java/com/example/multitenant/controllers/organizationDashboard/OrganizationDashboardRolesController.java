@@ -9,7 +9,9 @@ import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.organizationroles.*;
+import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.cache.*;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
@@ -30,6 +32,7 @@ public class OrganizationDashboardRolesController {
     private final OrganizationRolesService organizationRolesService;
     private final MemberShipService memberShipService;
     private final RedisService redisService;
+    private final LogsService logsService;
 
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_VIEW)")
@@ -95,11 +98,13 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_ASSIGN)")
     public ResponseEntity<Object> assignRole(@Valid @RequestBody AssignOrganizationRoleDTO dto) {  
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
 
-        var updatedRole = this.memberShipService.assignRole(dto.getRoleId(), tenantId, dto.getUserId());
+        var orgRole = this.memberShipService.assignRole(dto.getRoleId(), tenantId, dto.getUserId());
         this.redisService.invalidateUserOrgRolesCache(tenantId, dto.getUserId());
+        this.logsService.createRolesAssignmentsLog(user, orgRole, dto.getUserId(), tenantId, LogEventType.ROLE_ASSIGN);
 
-        var respBody = ApiResponses.OneKey("role", updatedRole.toViewDTO());
+        var respBody = ApiResponses.OneKey("role", orgRole.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
     }
@@ -108,9 +113,11 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UN_ASSIGN)")
     public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Long userId) {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
 
-        this.memberShipService.unAssignRole(id, tenantId, userId);
+        var orgRole = this.memberShipService.unAssignRole(id, tenantId, userId);
         this.redisService.invalidateUserOrgRolesCache(tenantId, userId);
+        this.logsService.createRolesAssignmentsLog(user, orgRole, userId, tenantId, LogEventType.ROLE_UNASSIGN);
 
         return ResponseEntity.noContent().build();
     }

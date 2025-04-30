@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.categories.*;
+import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.cache.CategoriesCacheService;
 import com.example.multitenant.services.categories.CategoriesService;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.utils.AppUtils;
 
@@ -27,6 +29,7 @@ public class CategoriesController {
     
     private final CategoriesService categoriesService;
     private final CategoriesCacheService categoriesCacheService;
+    private final LogsService logsService;
     
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)")
@@ -44,12 +47,13 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_CREATE)")
     public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
         
         var category = this.categoriesService.create(dto.toModel(), tenantId);
-        var categoryView = category.toViewDTO();
-
         this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+        this.logsService.createCategoriesLog(user, category, tenantId, LogEventType.ORG_CATEGORY_CREATED);
 
+        var categoryView = category.toViewDTO();
         var responseBody = ApiResponses.OneKey("category", categoryView);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
@@ -65,7 +69,6 @@ public class CategoriesController {
         this.categoriesCacheService.invalidateOrgCategories(tenantId, dto.getCategoryId1());
         this.categoriesCacheService.invalidateOrgCategories(tenantId, dto.getCategoryId2());
         
-        
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
     
@@ -73,6 +76,7 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
     public ResponseEntity<Object> updateCategory(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody CategoryUpdateDTO dto) {
         var tenantId = AppUtils.getTenantId();
+        var user = AppUtils.getUserFromAuth();
         
         var updatedCategory = this.categoriesService.update(id, dto.toModel(), tenantId);
         if(updatedCategory == null) {
@@ -83,6 +87,7 @@ public class CategoriesController {
         var responseBody = ApiResponses.OneKey("category", updatedCategory.toViewDTO());
         this.categoriesCacheService.invalidateOrgCategories(tenantId, id);
         this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+        this.logsService.createCategoriesLog(user, updatedCategory, tenantId, LogEventType.ORG_CATEGORY_UPDATED);
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseBody);
     }

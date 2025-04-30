@@ -1,6 +1,5 @@
 package com.example.multitenant.dtos.messages;
 
-import com.example.multitenant.models.Message;
 import com.example.multitenant.models.OrgMessage;
 
 import jakarta.validation.constraints.*;

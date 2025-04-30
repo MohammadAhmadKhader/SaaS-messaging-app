@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.multitenant.models.User;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface UsersRepository extends GenericRepository<User, Long>, JpaSpecificationExecutor<User> {

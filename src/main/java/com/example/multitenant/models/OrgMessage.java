@@ -18,7 +18,7 @@ import lombok.*;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "organization_messages")
-public class OrgMessage extends Message {
+public class OrgMessage extends BaseMessage {
 
     @Column(name = "organization_id", nullable = false)
     private Integer organizationId;

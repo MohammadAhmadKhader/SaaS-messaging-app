@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.example.multitenant.models.FriendRequest;
 import com.example.multitenant.models.enums.FriendRequestStatus;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface FriendRequestsRepository extends GenericRepository<FriendRequest, Integer> {

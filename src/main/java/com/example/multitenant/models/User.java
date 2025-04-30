@@ -22,11 +22,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(
-name = "users",
-indexes = {
-    @Index(name = "idx_email_organizationid", columnList = "email, organization_id", unique = true)
-})
+@Table(name = "users")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -87,6 +83,10 @@ public class User implements Serializable {
         setFirstName(firstName);
         setLastName(lastName);
         setPassword(password);
+    }
+
+    public String getFullName() {
+        return this.getFirstName()+ " " + this.getLastName();
     }
     
     public UserViewDTO toViewDTO() {

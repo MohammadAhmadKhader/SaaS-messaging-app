@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.messages.*;
+import com.example.multitenant.models.enums.LogEventType;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
@@ -27,7 +29,8 @@ import org.springframework.web.bind.annotation.*;
 public class OrgMessagesController {
 
     private final OrgMessagesService messagesService;
-    private final WebSocketService webSocketService; 
+    private final WebSocketService webSocketService;
+    private final LogsService logsService;
     
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateMessageContent(
@@ -36,11 +39,12 @@ public class OrgMessagesController {
         @ValidateNumberId @PathVariable Integer categotyId
         ) {
 
-        var senderId = AppUtils.getUserIdFromAuth();
+        var sender = AppUtils.getUserFromAuth();;
         var tenantId = AppUtils.getTenantId();
 
-        var updatedMsg = this.messagesService.updateContent(messageId, dto.getContent(), senderId);
+        var updatedMsg = this.messagesService.updateContent(messageId, dto.getContent(), sender.getId());
         this.webSocketService.publishUpdatedOrgMessage(updatedMsg, tenantId, categotyId);
+        this.logsService.createOrgMessagesLog(sender, updatedMsg, tenantId, LogEventType.ORG_MESSAGE_UPDATED);
        
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

@@ -3,14 +3,14 @@ package com.example.multitenant.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.validators.contract.*;
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.invitations.*;
 import com.example.multitenant.models.enums.InvitiationAction;
+import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.invitations.InvitationsService;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.utils.AppUtils;
 import com.example.multitenant.utils.SecurityUtils;
 
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/invitations")
 public class InvitationsController {
     private final InvitationsService invitationsService;
+    private final LogsService logsService;
 
     @GetMapping("")
     public ResponseEntity<Object> getYourInvitiations(Integer cursor, @ValidateSize Integer size) {
@@ -57,6 +58,8 @@ public class InvitationsController {
         var sender = principal.getUser();
 
         var inviation = this.invitationsService.sendInviteToUser(sender, orgId, dto.toModel());
+        this.logsService.createInvitationLog(sender, inviation.getRecipientId(), orgId, LogEventType.INVITE_SENT);
+
         var res = ApiResponses.OneKey("invitation", inviation.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
@@ -86,6 +89,7 @@ public class InvitationsController {
         }
 
         this.invitationsService.cancelOrRejectInvitation(inv, dto.getAction());
+        this.logsService.createInvitationLog(user, inv.getRecipientId(), orgId, LogEventType.INVITE_CANCELLED);
 
         return ResponseEntity.accepted().build();
     }
@@ -107,6 +111,7 @@ public class InvitationsController {
         }
 
         this.invitationsService.acceptInvitationAndCreateMembership(inv);
+        this.logsService.createInvitationLog(user, inv.getRecipientId(), orgId, LogEventType.INVITE_ACCEPTED);
 
         return ResponseEntity.accepted().build();
     }

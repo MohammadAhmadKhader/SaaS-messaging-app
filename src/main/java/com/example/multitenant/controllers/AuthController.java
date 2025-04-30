@@ -22,11 +22,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.multitenant.dtos.apiResponse.ApiResponses;
 import com.example.multitenant.dtos.auth.*;
+import com.example.multitenant.dtos.logs.LogsViewDTO;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
+import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.cache.*;
+import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
+import com.example.multitenant.utils.AppUtils;
 import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +41,9 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Slf4j
 @Validated
@@ -50,6 +57,7 @@ public class AuthController {
     private final GlobalRolesService globalRolesService;
     private final SecurityContextRepository securityRepository;
     private final SessionsService sessionsService;
+    private final LogsService logsService;
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterDTO registerDTO, HttpServletRequest req) {
@@ -72,6 +80,10 @@ public class AuthController {
 
         this.sessionsService.createSessionWithUser(req, userDTO);
         var respBody = ApiResponses.OneKey("user", userDTO);
+
+        var userAgent = AppUtils.getUserAgrent(req);
+        var ipAddress = AppUtils.getClientIp(req);
+        this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.REGISTER);
         
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
@@ -112,6 +124,10 @@ public class AuthController {
             var encodedNewPassword = this.passwordEncoder.encode(dto.getNewPassword());
             user.setPassword(encodedNewPassword);
             this.usersService.save(user);
+
+            var userAgent = AppUtils.getUserAgrent(req);
+            var ipAddress = AppUtils.getClientIp(req);
+            this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.RESET_PASSWORD);
         
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         } catch (InterruptedException | ExecutionException e) {
@@ -137,6 +153,10 @@ public class AuthController {
         var respBody = ApiResponses.OneKey("user", userDTO);
         
         this.sessionsService.storeUserInSession(request, userDTO);
+
+        var userAgent = AppUtils.getUserAgrent(request);
+        var ipAddress = AppUtils.getClientIp(request);
+        this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.LOGIN);
 
         return ResponseEntity.ok().body(respBody);
     }
@@ -165,12 +185,17 @@ public class AuthController {
             var respBody = ApiResponses.GetErrResponse("cookie was not found");
             return ResponseEntity.badRequest().body(respBody);
         }
+        var user = AppUtils.getUserFromAuth();
 
         try {
             session.invalidate();
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }
+
+        var userAgent = AppUtils.getUserAgrent(req);
+        var ipAddress = AppUtils.getClientIp(req);
+        this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.LOGOUT);
 
         return ResponseEntity.noContent().build();
     }

@@ -188,7 +188,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         }
     }
 
-    public Membership assignRole(Integer orgRoleId, Integer orgId, long userId) {
+    public OrganizationRole assignRole(Integer orgRoleId, Integer orgId, long userId) {
         try {
             var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
             var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
@@ -210,13 +210,14 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
                 }
             });
 
-            return this.assignRoleToUser(membership, orgRole);
+            this.assignRoleToUser(membership, orgRole);
+            return orgRole;
         } catch (InterruptedException | ExecutionException ex) {
             throw new AsyncOperationException("Error occurred during task execution", ex);
         }
     }
 
-    public void unAssignRole(Integer orgRoleId, Integer orgId, long userId) {
+    public OrganizationRole unAssignRole(Integer orgRoleId, Integer orgId, long userId) {
         try {
             var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
             var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
@@ -241,6 +242,7 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
             }
 
             this.unAssignRoleToUser(membership, orgRole);
+            return orgRole;
         } catch (InterruptedException | ExecutionException ex) {
             throw new AsyncOperationException("Error occurred during task execution", ex);
         }

@@ -3,7 +3,6 @@ package com.example.multitenant.dtos.messages;
 import java.time.Instant;
 
 import com.example.multitenant.dtos.users.*;
-import com.example.multitenant.models.Message;
 import com.example.multitenant.models.OrgMessage;
 
 import lombok.*;

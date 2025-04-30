@@ -1,6 +1,7 @@
 package com.example.multitenant.models.binders;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,8 @@ import lombok.*;
 @Getter
 @Setter
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class MembershipKey implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -17,12 +20,17 @@ public class MembershipKey implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    public MembershipKey(Integer organizationId, Long userId) {
-        this.organizationId = organizationId;
-        this.userId = userId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MembershipKey that = (MembershipKey) o;
+        return Objects.equals(userId, that.userId) && 
+               Objects.equals(organizationId, that.organizationId);
     }
-
-    public MembershipKey() {
-        
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, organizationId);
     }
 }
