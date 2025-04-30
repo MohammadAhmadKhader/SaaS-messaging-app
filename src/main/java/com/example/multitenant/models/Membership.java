@@ -65,6 +65,7 @@ public class Membership {
         this.organization.setId(orgId);
     }
 
+    @PrePersist
     public void loadDefaults() {
         this.isMember = true;
     }

@@ -95,7 +95,6 @@ public class InvitationsService extends GenericService<Invitation, Integer> {
         invitation.setRecipient(user);
         invitation.setSender(sender);
         invitation.setOrganization(org);
-        invitation.loadDefaults();
         
         return this.invitationsRepository.save(invitation);
     }

@@ -50,8 +50,9 @@ public class Invitation {
     @CreationTimestamp
     private Instant createdAt;
 
+    @PrePersist
     public void loadDefaults() {
-        setStatus(InvitationStatus.PENDING);
+        this.status = InvitationStatus.PENDING;
     }
 
     public InvitationViewDTO toViewDTO() {

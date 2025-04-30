@@ -2,13 +2,20 @@ package com.example.multitenant.services.membership;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import com.example.multitenant.services.security.*;
+import com.example.multitenant.specifications.MembershipSpecifications;
+import com.example.multitenant.specificationsbuilders.MembershipSpecificationsBuilder;
+import com.example.multitenant.utils.*;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import com.example.multitenant.dtos.membership.MembershipFilter;
 import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.*;
@@ -20,22 +27,27 @@ import com.example.multitenant.services.organizations.OrganizationsService;
 
 @Service
 public class MemberShipService extends GenericService<Membership, MembershipKey> {
+    private static String defaultSortBy = "joinedAt";
+    private static String defaultSortDir = "DESC";
 
     private final OrganizationRolesService organizationRolesService;
     private final OrganizationPermissionsService organizationsPermissionsService;
     private final MembershipRepository membershipRepository;
     private final OrganizationsService organizationsService;
+    private final MemberShipServiceHelper memberShipServiceHelper;
 
     public MemberShipService(MembershipRepository membershipRepository, 
         OrganizationsService organizationsService, 
         OrganizationRolesService organizationRolesService,
-        OrganizationPermissionsService organizationsPermissionsService) {
+        OrganizationPermissionsService organizationsPermissionsService,
+        MemberShipServiceHelper memberShipServiceHelper) {
 
         super(membershipRepository);
         this.membershipRepository = membershipRepository;
         this.organizationsService = organizationsService;
         this.organizationRolesService = organizationRolesService;
         this.organizationsPermissionsService = organizationsPermissionsService;
+        this.memberShipServiceHelper = memberShipServiceHelper;
     }
 
     public Page<Membership> getOrganizaionMemberships(Integer page, Integer size, Integer organizationId) {
@@ -68,7 +80,6 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         }
 
         var membership = oldMembership == null ? new Membership(orgId, userId) : oldMembership;
-        membership.loadDefaults();
 
         var orgUserRole = this.organizationRolesService.
         findByNameAndOrganizationId(DefaultOrganizationRole.ORG_USER.getRoleName(), orgId);
@@ -84,11 +95,9 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     @Transactional
     public Membership createOwnerMembership(Organization org, User user) {
         var membership = new Membership(org.getId(), user.getId());
-        membership.loadDefaults();
 
         var ownerRole = this.initializeDefaultRolesAndPermissions(org.getId());
-        var membershipList = new ArrayList<Membership>();
-        ownerRole.setMemberships(membershipList);
+        ownerRole.setMemberships(List.of(membership));
 
         this.organizationRolesService.create(ownerRole);
         
@@ -104,7 +113,6 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
     public Membership createOrganizationWithOwnerMembership(OrganizationCreateDTO dto, User user) {
         var org = this.organizationsService.create(dto.toModel());
         var membership = new Membership(org.getId(), user.getId());
-        membership.loadDefaults();
 
         var ownerRole = this.initializeDefaultRolesAndPermissions(org.getId());
         var membershipList = new ArrayList<Membership>();
@@ -308,6 +316,14 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return this.membershipRepository.save(membership);
     }
 
+    public Page<Membership> findActiveOrgMemberShips(Integer orgId, Integer page, Integer size, String sortBy, String sortDir, MembershipFilter filter) {
+        var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
+        var spec = MembershipSpecificationsBuilder.build(filter, orgId, true);
+
+        return this.memberShipServiceHelper.findAllWithSpecifications(pageable, spec,null);
+    }
+
+
     public OrganizationRole initializeDefaultRolesAndPermissions(Integer orgId) {
         var orgOwnerRole = this.createOwnerRole(orgId);
         var orgAdminRole = this.createAdminRole(orgId);
@@ -318,6 +334,8 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
         return orgOwnerRole;
     }
 
+
+    // * private methods below
     private OrganizationRole createOwnerRole(Integer orgId) {
         var orgOwner = DefaultOrganizationRole.ORG_OWNER;
         var orgOwnerRole = new OrganizationRole(orgOwner.getRoleName());
@@ -353,13 +371,4 @@ public class MemberShipService extends GenericService<Membership, MembershipKey>
 
         return orgUserRole;
     }
-
-    // public void delete(Organization org, User user) {
-    //     var membershipKey = new MembershipKey(org.getId(), user.getId());
-    //     var membership = this.findById(membershipKey);
-
-    //     membership.getOrganizationRoles().clear();
-    //     this.membershipRepository.save(membership);
-    //     this.membershipRepository.delete(membership);
-    // }
 }

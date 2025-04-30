@@ -1,5 +1,6 @@
 package com.example.multitenant.utils;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
@@ -39,6 +40,17 @@ public abstract class ServicesHelper<TModel> {
             if(predicate != null) {
                 query.where(predicate);
             }
+        }  
+
+        System.out.println("Sort: " + pageable.getSort());
+        var orders = new ArrayList<Order>();
+        for (Sort.Order order : pageable.getSort()) {
+            Path<Object> path = root.get(order.getProperty());
+            orders.add(order.isAscending() ? cb.asc(path) : cb.desc(path));
+        }
+        
+        if (!orders.isEmpty()) {
+            query.orderBy(orders);
         }
 
         TypedQuery<TModel> typedQuery = entityManager.createQuery(query)

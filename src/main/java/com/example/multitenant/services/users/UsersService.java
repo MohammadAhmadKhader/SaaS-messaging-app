@@ -28,16 +28,9 @@ public class UsersService extends GenericService<User, Long> {
     }
 
     public Page<User> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
-        var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
+        var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
         var result = this.usersServicesHelper.findAllWithSpecifications(pageable, null, null);
         
-        return result;
-    }
-
-    public Page<User> findAllWithContents(Integer page, Integer size, String sortBy, String sortDir) {
-        var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir,sortBy, sortDir, page, size);
-        var result = this.usersRepository.findAll(pageable);
-    
         return result;
     }
 
