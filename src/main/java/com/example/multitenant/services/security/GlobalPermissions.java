@@ -21,7 +21,5 @@ public class GlobalPermissions {
     public static final String DASH_ORGANIZATION_DELETE = "app-dashboard:organization:delete";
     public static final String DASH_ORGANIZATION_REMOVE_OWNERSHIP = "app-dashboard:organization:remove-ownership";
     public static final String DASH_ORGANIZATION_ASSIGN_OWNERSHIP = "app-dashboard:organization:assign-ownership";
-    public static final String DASH_CONTENT_VIEW = "app-dashboard:content:view";
-    public static final String DASH_CONTENT_DELETE = "app-dashboard:content:delete";
     public static final String ORG_CREATE = "organization:create";
 }

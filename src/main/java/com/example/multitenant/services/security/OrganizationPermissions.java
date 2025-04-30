@@ -13,14 +13,7 @@ public class OrganizationPermissions {
 
     public static final String PERMISSION_ASSIGN = "org-dashboard:permission:assign";
     public static final String PERMISSION_UN_ASSIGN = "org-dashboard:permission:un-assign";
-
-    public static final String CONTENT_VIEW = "organization:content:view";
-    public static final String CONTENT_CREATE = "organization:content:create";
-    public static final String CONTENT_UPDATE = "organization:content:update";
-    public static final String CONTENT_DELETE = "organization:content:delete";
-
-    public static final String DASH_CONTENT_VIEW = "org-dashboard:content:view"; // new
-    public static final String DASH_CONTENT_DELETE = "org-dashboard:content:delete"; // new
+    
     public static final String DASH_ORGANIZATION_UPDATE = "org-dashboard:organization:update"; // new
 
     public static final String USER_INVITE = "organization:user:invite";

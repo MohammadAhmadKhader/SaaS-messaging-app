@@ -10,7 +10,6 @@ import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.binders.MembershipKey;
-import com.example.multitenant.services.contents.ContentsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.GlobalPermissions;

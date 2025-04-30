@@ -27,37 +27,20 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Component
 public class DataLoader {
 
     @PersistenceContext
-    private EntityManager entityManager;
-
-    private OrganizationPermissionsRepository organizationPermissionsRepository;
-
-    private OrganizationRolesRepository organizationRolesRepository;
-    private ContentsRepository contentsRepository;
-
-    private OrganizationsRepository organizationsRepository;
-    private UsersRepository usersRepository;
-
-    private GlobalRolesRepository globalRolesRepository;
-    private GlobalPermissionsRepository globalPermissionsRepository;
-
-    public DataLoader(OrganizationPermissionsRepository organizationPermissionsRepository, OrganizationRolesRepository organizationRolesRepository,
-    ContentsRepository contentsRepository, OrganizationsRepository organizationsRepository, UsersRepository usersRepository,
-    GlobalRolesRepository globalRolesRepository, GlobalPermissionsRepository globalPermissionsRepository
-    ) {
-        this.organizationPermissionsRepository = organizationPermissionsRepository;
-        this.organizationRolesRepository = organizationRolesRepository;
-        this.contentsRepository = contentsRepository;
-        this.organizationsRepository =organizationsRepository;
-        this.usersRepository = usersRepository;
-        this.globalRolesRepository = globalRolesRepository;
-        this.globalPermissionsRepository = globalPermissionsRepository;
-    }
-
+    private final EntityManager entityManager;
+    private final OrganizationPermissionsRepository organizationPermissionsRepository;
+    private final OrganizationRolesRepository organizationRolesRepository;
+    private final OrganizationsRepository organizationsRepository;
+    private final UsersRepository usersRepository;
+    private final GlobalRolesRepository globalRolesRepository;
+    private final GlobalPermissionsRepository globalPermissionsRepository;
     private JsonData data;
 
     @Transactional
@@ -68,7 +51,6 @@ public class DataLoader {
 
         loadOrganizationPermissions();
         loadGlobalPermissions();
-        loadContents();
         loadOrganizationRoles();
         loadOrganizations();
         loadUsersData();
@@ -186,18 +168,6 @@ public class DataLoader {
         }
     }
 
-    private void loadContents() {
-        if (contentsRepository.count() == 0) {
-
-            var contents = this.data.getContents();
-            this.contentsRepository.saveAll(contents);
-            
-            System.out.println("contents Loaded Successfully");
-        } else {
-            System.out.println("contents already exists, skipping.");
-        }
-    }
-
     private void loadOrganizations() {
         if (this.organizationsRepository.count() == 0) {
             var orgs = this.data.getOrganizations();
@@ -310,7 +280,6 @@ class JsonData {
     List<OrganizationRole> organizationRoles;
     List<GlobalRole> globalRoles;
     List<GlobalPermission> globalPermissions;
-    List<Content> contents;
     List<Organization> organizations;
     List<User> users;
 }

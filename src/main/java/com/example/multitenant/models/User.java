@@ -49,9 +49,6 @@ public class User implements Serializable {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    List<Content> contents = new ArrayList<>();
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "users_global_roles",

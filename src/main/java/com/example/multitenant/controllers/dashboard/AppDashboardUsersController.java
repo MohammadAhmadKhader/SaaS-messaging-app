@@ -72,22 +72,6 @@ public class AppDashboardUsersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
 
-    @GetMapping("/contents")
-    @PreAuthorize("hasAuthority(@globalPermissions.DASH_USER_VIEW)" +" and hasAuthority(@globalPermissions.DASH_CONTENT_VIEW)")
-    public ResponseEntity<Object> getAllUsersWithContents(@HandlePage Integer page, @HandleSize Integer size,
-        @RequestParam(defaultValue = "createdAt") String sortBy, @RequestParam(defaultValue = "DESC") String sortDir
-    ) {
-        var users = this.usersService.findAllWithContents(page, size, sortBy, sortDir);
-        var count = users.getTotalElements();
-        var usersView = users.map((user) -> {
-            return user.toViewDTO();
-        }).toList();
-
-        var res = ApiResponses.GetAllResponse("users", usersView, count, page, size);
-
-        return ResponseEntity.ok().body(res);
-    }
-    
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_USER_DELETE)")
     public ResponseEntity<Object> deleteUser(@ValidateNumberId @PathVariable Long id) {

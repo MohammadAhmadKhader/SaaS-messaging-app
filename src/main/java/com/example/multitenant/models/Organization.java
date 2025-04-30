@@ -42,10 +42,6 @@ public class Organization implements Serializable {
     @JoinColumn(name = "owner_id", nullable = true)
     private User owner;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "organization")
-    @OrderBy("createdAt DESC")
-    private List<Content> contents = new ArrayList<>();
-
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("joinedAt DESC, id.organizationId ASC, id.userId ASC")
     private List<Membership> memberships = new ArrayList<>();

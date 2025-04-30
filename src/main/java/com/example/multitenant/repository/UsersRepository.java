@@ -16,10 +16,6 @@ public interface UsersRepository extends GenericRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 
-    @EntityGraph(attributePaths = {"contents"})
-    @Query("SELECT u FROM User u")
-    List<User> findAllWithContents();
-
     @Query("SELECT u FROM User u JOIN FETCH u.roles r JOIN FETCH r.permissions p WHERE u.email = :email")
     User findByEmailWithPermissions(@Param("email") String email);
 

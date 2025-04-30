@@ -91,18 +91,6 @@
       "isDefaultSuperAdmin": true
     },
     {
-      "name": "app-dashboard:content:view",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
-    },
-    {
-      "name": "app-dashboard:content:delete",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultSuperAdmin": true
-    },
-    {
       "name": "organization:create",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
@@ -171,45 +159,9 @@
       "isDefaultOrgOwner": true
     },
     {
-      "name": "org-dashboard:content:view",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultOrgOwner": true
-    },
-    {
-      "name": "org-dashboard:content:delete",
-      "isDefaultUser":false,
-      "isDefaultAdmin": true,
-      "isDefaultOrgOwner": true
-    },
-    {
       "name": "org-dashboard:organization:update",
       "isDefaultUser":false,
       "isDefaultAdmin": false,
-      "isDefaultOrgOwner": true
-    },
-    {
-      "name": "organization:content:view",
-      "isDefaultUser": true,
-      "isDefaultAdmin": true,
-      "isDefaultOrgOwner": true
-    },
-    {
-      "name": "organization:content:create",
-      "isDefaultUser": true,
-      "isDefaultAdmin": true,
-      "isDefaultOrgOwner": true
-    },
-    {
-      "name": "organization:content:update",
-      "isDefaultUser": true,
-      "isDefaultAdmin": true,
-      "isDefaultOrgOwner": true
-    },
-    {
-      "name": "organization:content:delete",
-      "isDefaultUser": false,
-      "isDefaultAdmin": true,
       "isDefaultOrgOwner": true
     },
     {
@@ -311,168 +263,6 @@
     {
       "name": "SuperAdmin",
       "displayName":"SuperAdmin"
-    }
-  ],
-  "contents": [
-    {
-      "title": "Understanding Java Streams",
-      "description": "A deep dive into Java Streams.",
-      "status": "IDEA",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Spring Boot Microservices",
-      "description": "Building scalable microservices with Spring Boot.",
-      "status": "IN_PROGRESS",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "Introduction to Docker",
-      "description": "Learn the basics of Docker.",
-      "status": "COMPLETED",
-      "userId": null,
-      "contentType": "VIDEO",
-      "url": ""
-    },
-    {
-      "title": "Mastering Hibernate",
-      "description": "A guide to advanced Hibernate usage.",
-      "status": "PUBLISHED",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Kubernetes for Developers",
-      "description": "An introduction to Kubernetes.",
-      "status": "IDEA",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "Spring Security Best Practices",
-      "description": "Secure your Spring applications.",
-      "status": "IN_PROGRESS",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Effective Database Design",
-      "description": "Key principles for relational databases.",
-      "status": "COMPLETED",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "REST API Design Principles",
-      "description": "Best practices for designing REST APIs.",
-      "status": "PUBLISHED",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Mastering GraphQL",
-      "description": "Learn GraphQL fundamentals.",
-      "status": "IDEA",
-      "userId": null,
-      "contentType": "VIDEO",
-      "url": ""
-    },
-    {
-      "title": "Spring Boot Testing Strategies",
-      "description": "Unit and integration testing in Spring Boot.",
-      "status": "IN_PROGRESS",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "Scaling Java Applications",
-      "description": "How to scale Java applications effectively.",
-      "status": "COMPLETED",
-      "userId": null,
-      "contentType": "CONFERENCE_TALK",
-      "url": ""
-    },
-    {
-      "title": "Clean Architecture in Java",
-      "description": "A guide to clean architecture principles.",
-      "status": "PUBLISHED",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Event-Driven Architecture",
-      "description": "How to design event-driven systems.",
-      "status": "IDEA",
-      "userId": null,
-      "contentType": "CONFERENCE_TALK",
-      "url": ""
-    },
-    {
-      "title": "Building Reactive Applications",
-      "description": "Introduction to reactive programming.",
-      "status": "IN_PROGRESS",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "Machine Learning for Developers",
-      "description": "Practical ML techniques for software engineers.",
-      "status": "COMPLETED",
-      "userId": null,
-      "contentType": "VIDEO",
-      "url": ""
-    },
-    {
-      "title": "Serverless Java Applications",
-      "description": "Deploying Java applications on serverless platforms.",
-      "status": "PUBLISHED",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Advanced SQL Optimization",
-      "description": "Optimizing SQL queries for performance.",
-      "status": "IDEA",
-      "userId": null,
-      "contentType": "COURSE",
-      "url": ""
-    },
-    {
-      "title": "API Gateway Patterns",
-      "description": "How to implement API gateways effectively.",
-      "status": "IN_PROGRESS",
-      "userId": null,
-      "contentType": "CONFERENCE_TALK",
-      "url": ""
-    },
-    {
-      "title": "Building Secure APIs",
-      "description": "Security best practices for API development.",
-      "status": "COMPLETED",
-      "userId": null,
-      "contentType": "ARTICLE",
-      "url": ""
-    },
-    {
-      "title": "Deploying Java Apps with CI/CD",
-      "description": "Automating deployment with CI/CD pipelines.",
-      "status": "PUBLISHED",
-      "userId": null,
-      "contentType": "VIDEO",
-      "url": ""
     }
   ],
   "organizations": [
