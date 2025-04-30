@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrganizationRolesRepository extends GenericRepository<OrganizationRole, Integer>, JpaSpecificationExecutor<OrganizationRole> {
+public interface OrganizationRolesRepository extends GenericRepository<OrganizationRole, Integer> {
     public Optional<OrganizationRole> findByNameAndOrganizationId(String name, Integer organizationId);
 
     @Query("""

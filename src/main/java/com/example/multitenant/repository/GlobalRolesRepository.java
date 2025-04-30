@@ -9,6 +9,6 @@ import java.util.Optional;
 
 
 @Repository
-public interface GlobalRolesRepository extends GenericRepository<GlobalRole, Integer>, JpaSpecificationExecutor<GlobalRole> {
+public interface GlobalRolesRepository extends GenericRepository<GlobalRole, Integer> {
     public Optional<GlobalRole> findByName(String name);
 }

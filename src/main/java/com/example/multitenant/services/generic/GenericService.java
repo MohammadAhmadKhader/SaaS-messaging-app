@@ -33,7 +33,7 @@ public abstract class GenericService<TModel, ID extends Serializable> {
         return this.repository.save(model);
     }
 
-    public TModel save(TModel model) {
+    private TModel save(TModel model) {
         return this.repository.save(model);
     }
 

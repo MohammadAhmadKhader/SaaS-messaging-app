@@ -8,6 +8,6 @@ import com.example.multitenant.models.OrganizationPermission;
 import java.util.Optional;
 
 @Repository
-public interface OrganizationPermissionsRepository extends GenericRepository<OrganizationPermission, Integer>, JpaSpecificationExecutor<OrganizationPermission> {
+public interface OrganizationPermissionsRepository extends GenericRepository<OrganizationPermission, Integer> {
     Optional<OrganizationPermission> findByName(String name);
 } 

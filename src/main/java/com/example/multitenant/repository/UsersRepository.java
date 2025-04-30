@@ -12,7 +12,7 @@ import com.example.multitenant.models.User;
 import org.springframework.data.repository.query.Param;
 
 @Repository
-public interface UsersRepository extends GenericRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UsersRepository extends GenericRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
 

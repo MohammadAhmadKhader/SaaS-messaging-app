@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Repository
-public interface ContentsRepository extends GenericRepository<Content, Integer>, JpaSpecificationExecutor<Content> {
+public interface ContentsRepository extends GenericRepository<Content, Integer> {
     @Query("SELECT c FROM Content c LEFT JOIN c.user u WHERE u.id = :userId")
     Page<Content> findContentsByUserId(@Param("userId") Long userId, Pageable pageable);
 

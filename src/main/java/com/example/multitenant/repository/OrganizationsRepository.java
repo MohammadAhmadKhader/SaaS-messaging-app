@@ -8,7 +8,7 @@ import com.example.multitenant.models.Organization;
 import org.springframework.data.repository.query.Param;
 
 @Repository
-public interface OrganizationsRepository extends GenericRepository<Organization, Integer>, JpaSpecificationExecutor<Organization> {
+public interface OrganizationsRepository extends GenericRepository<Organization, Integer> {
     @Query("""
         SELECT o 
         FROM Organization o

@@ -288,15 +288,15 @@
   "organizationRoles": [
     {
       "name": "Org-User",
-      "displayName:":"User"
+      "displayName":"User"
     },
     {
       "name": "Org-Admin",
-      "displayName:":"Admin"
+      "displayName":"Admin"
     },
     {
       "name": "Org-Owner",
-      "displayName:":"Owner"
+      "displayName":"Owner"
     }
   ],
   "globalRoles": [

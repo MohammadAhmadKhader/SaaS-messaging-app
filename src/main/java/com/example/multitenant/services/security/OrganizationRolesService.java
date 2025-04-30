@@ -181,7 +181,7 @@ public class OrganizationRolesService extends GenericService<OrganizationRole, I
 
         this.patcher(role, orgRole);
 
-        return this.save(role);
+        return this.rolesRepository.save(role);
     }
 
     // TODO: must be made by 1 request rather than 1 request per role.
