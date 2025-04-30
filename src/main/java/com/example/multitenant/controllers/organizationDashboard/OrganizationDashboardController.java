@@ -1,4 +1,4 @@
-package com.example.multitenant.controllers.organizationDashboard;
+package com.example.multitenant.controllers.organizationdashboard;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.common.resolvers.contract.HandlePage;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.membership.MembershipFilter;
 import com.example.multitenant.dtos.organizations.OrganizationTransferOwnershipDTO;
 import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;

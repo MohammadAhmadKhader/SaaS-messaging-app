@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.services.security.RateLimiterService;
 
 

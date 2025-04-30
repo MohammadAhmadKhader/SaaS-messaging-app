@@ -1,4 +1,4 @@
-package com.example.multitenant.controllers.organizationDashboard;
+package com.example.multitenant.controllers.organizationdashboard;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.organizationroles.*;
 import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.cache.*;

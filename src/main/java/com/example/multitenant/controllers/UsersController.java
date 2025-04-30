@@ -3,7 +3,7 @@ package com.example.multitenant.controllers;
 import com.example.multitenant.common.resolvers.contract.HandlePage;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.friendrequests.FriendRequestSendDTO;
 import com.example.multitenant.dtos.friendrequests.FriendRequestViewDTO;
 import com.example.multitenant.dtos.users.*;

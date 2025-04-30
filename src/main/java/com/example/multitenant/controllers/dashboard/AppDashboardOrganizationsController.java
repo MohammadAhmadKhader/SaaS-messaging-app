@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
@@ -63,7 +63,6 @@ public class AppDashboardOrganizationsController {
     public ResponseEntity<Object> getOrganizationWithUsersById(@HandlePage Integer page, @HandleSize Integer size, @PathVariable(name = "id") Integer organizationId) {
         var memberships = this.memberShipService.getOrganizaionMemberships(page, size, organizationId);
         var count = memberships.getTotalElements();
-        System.out.println(memberships);
         
         var firstMemberShip = memberships.getContent().get(0);
         if(firstMemberShip == null) {

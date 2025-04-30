@@ -3,7 +3,7 @@ package com.example.multitenant.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.models.enums.LogEventType;

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import com.example.multitenant.common.validators.contract.*;
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.invitations.*;
 import com.example.multitenant.models.enums.InvitiationAction;
 import com.example.multitenant.models.enums.LogEventType;
@@ -107,8 +107,6 @@ public class InvitationsController {
 
         var reqByRecipient = inv.getRecipientId().equals(user.getId());
         if(!reqByRecipient) {
-            System.out.println("rejected");
-            System.out.println(inv.getSenderId() +" <----------------------------> "+inv.getRecipientId());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponses.Forbidden());
         }
 

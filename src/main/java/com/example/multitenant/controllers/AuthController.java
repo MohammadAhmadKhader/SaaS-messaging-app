@@ -20,7 +20,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.multitenant.dtos.apiResponse.ApiResponses;
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.*;
 import com.example.multitenant.dtos.logs.LogsViewDTO;
 import com.example.multitenant.exceptions.AsyncOperationException;

@@ -1,4 +1,4 @@
-package com.example.multitenant.dtos.apiResponse;
+package com.example.multitenant.dtos.apiresponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;

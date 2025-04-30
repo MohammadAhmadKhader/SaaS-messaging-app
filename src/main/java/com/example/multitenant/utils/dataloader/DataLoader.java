@@ -1,4 +1,4 @@
-package com.example.multitenant.utils;
+package com.example.multitenant.utils.dataloader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Example;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,8 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @RequiredArgsConstructor
 @Component
@@ -270,50 +268,6 @@ public class DataLoader {
             }
         } else {
             System.out.println("loading global roles was skipped.");
-        }
-    }
-}
-
-@Getter
-class JsonData {
-    List<OrganizationPermission> organizationPermissions;
-    List<OrganizationRole> organizationRoles;
-    List<GlobalRole> globalRoles;
-    List<GlobalPermission> globalPermissions;
-    List<Organization> organizations;
-    List<User> users;
-}
-
-@Component
-class DataLoaderInitCaller {
-
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired 
-    DataLoader dataLoader;
-
-    @PostConstruct
-    public void Init() {
-        try {
-            dataLoader.loadData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-class DataLoaderHelper {
-    static void addNewOrganizationPermissions(OrganizationRolesRepository repo, 
-    List<OrganizationPermission> newPerms, DefaultOrganizationRole role) {
-        var probe = new OrganizationRole();
-        probe.setName(role.getRoleName());
-
-        var ownerRoles = repo.findAll(Example.of(probe));
-
-        for (OrganizationRole organizationRole : ownerRoles) {
-           organizationRole.getOrganizationPermissions().addAll(newPerms);
-           repo.save(organizationRole);
         }
     }
 }
