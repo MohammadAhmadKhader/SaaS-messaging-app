@@ -32,5 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 /frontend
-**/src/main/resources/application-prod.properties
+**/src/main/resources/**.properties
+!**/src/main/resources/**.example**
 **/src/main/resources/stashed
