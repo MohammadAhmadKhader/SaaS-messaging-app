@@ -8,14 +8,16 @@ import org.springframework.stereotype.Component;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.exceptions.GlobalExceptionHandler;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class SecurityUtils {
-    private static final Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
     public static UserPrincipal getPrincipal() {
         try {
             var auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null) {
-                logger.info("user unathorized");
+                log.info("user unathorized");
                 return null;
             }
             
@@ -26,7 +28,7 @@ public class SecurityUtils {
             
             return null;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return null;
         }
     }

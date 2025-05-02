@@ -59,7 +59,7 @@ public class StripeConfig {
     @PostConstruct
     public void validateKeys() {
         if (this.getSecret() == null || this.getSecret().isBlank()) {
-            var errMsg = "[Stripe Error] missing stripe secret key";
+            var errMsg = "missing stripe secret key";
             log.error(errMsg);
             throw new AppStripeException(errMsg);
         }

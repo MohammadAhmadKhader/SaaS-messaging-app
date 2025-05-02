@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 
+import com.example.multitenant.utils.ConsoleColorUtils;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
@@ -112,7 +114,7 @@ public class ApiResponses {
     }
 
     public static Map<String, Object> StripeError(String message) {
-        log.error("[Stripe Error] : {}", message);
+        log.error(ConsoleColorUtils.red("[Stripe Error] : {}"), message);
 
         return Map.of("error", "Internal server error");
     }

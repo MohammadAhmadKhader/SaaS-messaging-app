@@ -11,6 +11,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import com.example.multitenant.config.StripeConfig;
 import com.example.multitenant.models.enums.StripeMode;
+import com.example.multitenant.utils.ConsoleColorUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,17 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Configuration
 public class LoggingInterceptor implements HandlerInterceptor {
-    private static final String BLUE = "\u001B[34m";
-    private static final String GREEN = "\u001B[32m";
-    private static final String RESET = "\u001B[0m";
-    private static final String CYAN = "\u001B[36m";
-    private static final String YELLOW = "\u001B[33m";
-    private static final String RED = "\u001B[31m";
     private final StripeConfig stripeConfig;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info(BLUE + "Incoming request:" + RESET + " {} {}", GREEN + request.getMethod(), request.getRequestURI() + RESET);
+        log.info(ConsoleColorUtils.blue("Incoming request:") + " {} {}", ConsoleColorUtils.greenNoReset(request.getMethod()), ConsoleColorUtils.reset(request.getRequestURI()));
         return true;
     }
 
@@ -50,22 +45,22 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
             String statusColor;
             if (status >= 200 && status < 300) {
-                statusColor = GREEN;
+                statusColor = ConsoleColorUtils.GREEN;
             } else if (status >= 400 && status < 500) {
-                statusColor = YELLOW;
+                statusColor = ConsoleColorUtils.YELLOW;
             } else if (status >= 500) {
-                statusColor = RED;
+                statusColor = ConsoleColorUtils.RED;
             } else {
-                statusColor = BLUE;
+                statusColor = ConsoleColorUtils.BLUE;
             }
 
             if(!this.stripeConfig.getStripeMode().equals(StripeMode.TEST)) {
-                log.info(CYAN + "Request body:" + " {}", reqBody + RESET);
+                log.info(ConsoleColorUtils.cyan("Request body:") + " {}", reqBody);
                 // TODO: implement redacting for the response body
-                log.info(YELLOW + "Response body:" + RESET + " {}", resBody);
-                log.info(statusColor + "Response status:" + " {}", status + RESET);
+                log.info(ConsoleColorUtils.yellow("Request body:") + " {}", reqBody);
+                log.info(statusColor + "Response status:" + " {}", status + ConsoleColorUtils.RESET);
             } else {
-                log.warn(YELLOW + "logging was ignored because stripe mode is test" + RESET);
+                log.warn(ConsoleColorUtils.yellow("logging was ignored because stripe mode is test"));
             }
             
         } else {
