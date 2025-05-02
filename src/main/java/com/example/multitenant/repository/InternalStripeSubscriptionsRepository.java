@@ -7,26 +7,26 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.multitenant.models.StripeSubscription;
+import com.example.multitenant.models.InternalStripeSubscription;
 
 @Repository
-public interface StripeSubscriptionsRepository extends GenericRepository<StripeSubscription, UUID> {
+public interface InternalStripeSubscriptionsRepository extends GenericRepository<InternalStripeSubscription, UUID> {
     @Query("""
-        SELECT s FROM StripeSubscription s
+        SELECT s FROM InternalStripeSubscription s
         WHERE s.organization.id = :organizationId
         ORDER BY s.createdAt DESC
     """)
-    List<StripeSubscription> getSubsecriptionsByOrgId(@Param("organizationId") Integer organizationId);
+    List<InternalStripeSubscription> findSubsecriptionsByOrgId(@Param("organizationId") Integer organizationId);
 
     @Query("""
-        SELECT s FROM StripeSubscription s
+        SELECT s FROM InternalStripeSubscription s
         WHERE s.user.id = :userId
         ORDER BY s.createdAt DESC
     """)
-    List<StripeSubscription> getSubsecriptionsByUserId(@Param("userId") Integer userId);
+    List<InternalStripeSubscription> findSubsecriptionsByUserId(@Param("userId") Integer userId);
 
     @Query("""
-        SELECT COUNT(s) > 0 FROM StripeSubscription s
+        SELECT COUNT(s) > 0 FROM InternalStripeSubscription s
         WHERE (s.organizationId = :organizationId AND s.status = 'active' 
         AND s.currentPeriodEnd > CURRENT_TIMESTAMP)
     """)

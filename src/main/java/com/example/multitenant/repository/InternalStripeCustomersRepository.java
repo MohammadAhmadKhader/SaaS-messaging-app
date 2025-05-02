@@ -6,13 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.example.multitenant.models.StripeCustomer;
+import com.example.multitenant.models.InternalStripeCustomer;
 
 @Repository
-public interface StripeCustomersRepository extends GenericRepository<StripeCustomer, UUID> {
+public interface InternalStripeCustomersRepository extends GenericRepository<InternalStripeCustomer, UUID> {
     @Query("""
-        SELECT s FROM StripeCustomer s
+        SELECT s FROM InternalStripeCustomer s
         WHERE s.user.id = :userId
     """)
-    StripeCustomer findCustomerByUserId(@Param("userId") Long userId);
+    InternalStripeCustomer findCustomerByUserId(@Param("userId") Long userId);
 }

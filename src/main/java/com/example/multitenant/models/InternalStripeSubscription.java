@@ -16,12 +16,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "stripe_subscriptions", indexes = {
-    @Index(name = "idx_stripe_sub_stripe_subscription_id", columnList = "stripe_subscription_id"),
-    @Index(name = "idx_stripe_sub_organization_id", columnList = "organization_id"),
-    @Index(name = "idx_stripe_sub_user_id", columnList = "user_id")
+@Table(name = "internal_stripe_subscriptions", indexes = {
+    @Index(name = "idx_internal_stripe_sub_stripe_subscription_id", columnList = "stripe_subscription_id"),
+    @Index(name = "idx_internal_stripe_sub_organization_id", columnList = "organization_id"),
+    @Index(name = "idx_internal_stripe_sub_user_id", columnList = "user_id")
 })
-public class StripeSubscription {
+public class InternalStripeSubscription {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", columnDefinition = "UUID")
@@ -48,7 +48,7 @@ public class StripeSubscription {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "internal_customer_id", updatable = false, insertable = false, nullable = false)
-    private StripeCustomer internalStripeCustomer;
+    private InternalStripeCustomer internalStripeCustomer;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;

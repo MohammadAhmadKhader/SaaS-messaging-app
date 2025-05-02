@@ -16,11 +16,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "stripe_customers", indexes = {
-    @Index(name = "idx_stripe_customer_stripe_customer_id", columnList = "stripe_customer_id"),
-    @Index(name = "idx_stripe_customer_user_id", columnList = "user_id")
+@Table(name = "internal_stripe_customers", indexes = {
+    @Index(name = "idx_internal_stripe_customer_stripe_customer_id", columnList = "stripe_customer_id"),
+    @Index(name = "idx_internal_stripe_customer_user_id", columnList = "user_id")
 })
-public class StripeCustomer {
+public class InternalStripeCustomer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", columnDefinition = "UUID")
@@ -34,7 +34,7 @@ public class StripeCustomer {
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "internalStripeCustomer")
-    private List<StripeSubscription> subscriptions;
+    private List<InternalStripeSubscription> subscriptions;
 
     @CreationTimestamp
     @Column(name = "created_at")

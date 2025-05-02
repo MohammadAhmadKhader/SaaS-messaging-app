@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.multitenant.config.StripeConfig;
 import com.example.multitenant.exceptions.AppStripeException;
-import com.example.multitenant.models.StripeCustomer;
-import com.example.multitenant.models.StripeSubscription;
+import com.example.multitenant.models.InternalStripeCustomer;
+import com.example.multitenant.models.InternalStripeSubscription;
 import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.StripeEventType;
-import com.example.multitenant.repository.StripeCustomersRepository;
-import com.example.multitenant.repository.StripeSubscriptionsRepository;
+import com.example.multitenant.repository.InternalStripeCustomersRepository;
+import com.example.multitenant.repository.InternalStripeSubscriptionsRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -39,8 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class StripeService {
-    private final StripeCustomersRepository stripeCustomersRepository;
-    private final StripeSubscriptionsRepository stripeSubscriptionsRepository;
+    private final InternalStripeCustomersRepository internalStripeCustomersRepository;
+    private final InternalStripeSubscriptionsRepository internalStripeSubscriptionsRepository;
     private final StripeConfig stripeConfig;
 
     @PostConstruct
@@ -51,7 +51,7 @@ public class StripeService {
     // frontend will hit backend on this
     // this method will ensure we always have customer before checking out and its set to the checkout session
     public Session createCheckoutSession(User user, String priceId, Integer tenantId) throws StripeException {
-        if(this.stripeSubscriptionsRepository.hasValidActiveSubscription(tenantId)) {
+        if(this.internalStripeSubscriptionsRepository.hasValidActiveSubscription(tenantId)) {
             throw new AppStripeException("organization has already an active subscription");
         }
 
@@ -64,7 +64,7 @@ public class StripeService {
             throw new AppStripeException(String.format("invalid priceId received: %s", priceId));
         }
 
-        var stripeCustomer = this.stripeCustomersRepository.findCustomerByUserId(user.getId());
+        var stripeCustomer = this.internalStripeCustomersRepository.findCustomerByUserId(user.getId());
         if(stripeCustomer == null) {
             stripeCustomer = this.createStripeCustomer(user);
         }
@@ -86,7 +86,7 @@ public class StripeService {
         return Session.create(params);
     }
 
-    public StripeCustomer createStripeCustomer(User user) throws StripeException {
+    public InternalStripeCustomer createStripeCustomer(User user) throws StripeException {
         var metadata = new HashMap<String, String>();
         metadata.put("user_id", String.valueOf(user.getId()));
 
@@ -99,16 +99,16 @@ public class StripeService {
         var stripeCustomer = Customer.create(customerParams);
 
         // customer in our db
-        var localCustomer = new StripeCustomer();
+        var localCustomer = new InternalStripeCustomer();
         localCustomer.setUser(user);
         localCustomer.setStripeCustomerId(stripeCustomer.getId());
-        this.stripeCustomersRepository.save(localCustomer);
+        this.internalStripeCustomersRepository.save(localCustomer);
 
         return localCustomer;
     }
 
-    public StripeSubscription createInternalSubscription(Subscription stripeSub, Integer organizationId, Long userId) throws StripeException {
-        var intenralCustomer = this.stripeCustomersRepository.findCustomerByUserId(userId);
+    public InternalStripeSubscription createInternalSubscription(Subscription stripeSub, Integer organizationId, Long userId) throws StripeException {
+        var intenralCustomer = this.internalStripeCustomersRepository.findCustomerByUserId(userId);
         if(intenralCustomer == null) {
             throw new AppStripeException(String.format("""
                 internal customer for user with id '%s' is null during chechkout session that was completed successfully
@@ -117,7 +117,7 @@ public class StripeService {
 
         var item = stripeSub.getItems().getData().get(0);
         var cancelAt = stripeSub.getCancelAt() == null ? null : Instant.ofEpochMilli(stripeSub.getCancelAt());
-        var internalSub = StripeSubscription.builder()
+        var internalSub = InternalStripeSubscription.builder()
                 .stripeSubscriptionId(stripeSub.getId())
                 .stripeCustomerId(stripeSub.getCustomer())
                 .stripePriceId(item.getPrice().getId())
@@ -131,7 +131,7 @@ public class StripeService {
                 .status(stripeSub.getStatus())
                 .build();
 
-        this.stripeSubscriptionsRepository.save(internalSub);
+        this.internalStripeSubscriptionsRepository.save(internalSub);
 
         return internalSub;
     }
