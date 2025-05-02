@@ -64,6 +64,7 @@ public class SecurityConfig {
         })
         .authorizeHttpRequests((auth) -> {
             auth.requestMatchers("/api/auth/**").permitAll();
+            auth.requestMatchers("/webhook").permitAll();
             auth.requestMatchers("/api/auth/login", "/api/auth/register").anonymous();
 
             // we are using `PreAuthorize` instead

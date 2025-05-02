@@ -122,6 +122,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponses.InvalidEmailOrPassword());
     }
 
+    @ExceptionHandler(AppStripeException.class)
+    public ResponseEntity<Map<String, Object>> handleAppStripeException(AppStripeException ex) {
+        return ResponseEntity.internalServerError().body(ApiResponses.StripeError(ex.getMessage()));
+    }
+
     @ExceptionHandler(UnknownException.class)
     public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));

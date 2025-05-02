@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationContext;
 
-import jakarta.annotation.PostConstruct;
-
 @Component
 public class DataLoaderInitCaller {
 
@@ -17,8 +15,7 @@ public class DataLoaderInitCaller {
     @Autowired 
     DataLoader dataLoader;
 
-    @PostConstruct
-    public void Init() {
+    public void init() {
         try {
             dataLoader.loadData();
         } catch (IOException e) {

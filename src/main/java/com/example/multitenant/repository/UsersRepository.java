@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 public interface UsersRepository extends GenericRepository<User, Long> {
     User findByEmail(String email);
     Boolean existsByEmail(String email);
+    Boolean existsById(long id);
 
     @Query("""
         SELECT u FROM User u 
@@ -48,6 +49,7 @@ public interface UsersRepository extends GenericRepository<User, Long> {
         SELECT u FROM User u
         LEFT JOIN u.friends f
         WHERE u.id IN :ids
+        ORDER BY u.createdAt DESC
     """)
     List<User> findAllByIdsWithFriends(@Param("ids") List<Long> ids);
 }

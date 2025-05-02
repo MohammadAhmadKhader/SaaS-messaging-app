@@ -16,7 +16,6 @@ import com.example.multitenant.dtos.users.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
 
 @Entity
@@ -32,7 +31,7 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name ="email", nullable = false, length = 64)
+    @Column(name ="email", nullable = false, length = 64, unique = true)
     private String email;
 
     @JsonIgnore

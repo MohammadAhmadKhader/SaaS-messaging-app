@@ -17,10 +17,10 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ApiResponses {
-    private static final Logger logger = LoggerFactory.getLogger(ApiResponses.class);
-
     public static Map<String, Object> GetAllResponse(String collectionKey, List<?> list, long count, Integer page, Integer size) {
         return Map.of(collectionKey, list, "count", count,"page", page,"size", size);
     }
@@ -106,7 +106,13 @@ public class ApiResponses {
     }
 
     public static Map<String, Object> GetInternalErr(String message) {
-        logger.error("[Internal server error] : {}", message);
+        log.error("[Internal server error] : {}", message);
+
+        return Map.of("error", "Internal server error");
+    }
+
+    public static Map<String, Object> StripeError(String message) {
+        log.error("[Stripe Error] : {}", message);
 
         return Map.of("error", "Internal server error");
     }

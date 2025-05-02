@@ -9,9 +9,16 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import com.example.multitenant.config.StripeConfig;
+import com.example.multitenant.models.enums.StripeMode;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@RequiredArgsConstructor
 @Configuration
 public class LoggingInterceptor implements HandlerInterceptor {
     private static final String BLUE = "\u001B[34m";
@@ -20,8 +27,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
     private static final String CYAN = "\u001B[36m";
     private static final String YELLOW = "\u001B[33m";
     private static final String RED = "\u001B[31m";
-
-    private static final Logger log = LoggerFactory.getLogger(LoggingInterceptor.class);
+    private final StripeConfig stripeConfig;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -53,10 +59,15 @@ public class LoggingInterceptor implements HandlerInterceptor {
                 statusColor = BLUE;
             }
 
-            log.info(CYAN + "Request body:" + " {}", reqBody + RESET);
-            // TODO: implement redacting for the response bodt
-            log.info(YELLOW + "Response body:" + RESET + " {}", resBody);
-            log.info(statusColor + "Response status:" + " {}", status + RESET);
+            if(!this.stripeConfig.getStripeMode().equals(StripeMode.TEST)) {
+                log.info(CYAN + "Request body:" + " {}", reqBody + RESET);
+                // TODO: implement redacting for the response body
+                log.info(YELLOW + "Response body:" + RESET + " {}", resBody);
+                log.info(statusColor + "Response status:" + " {}", status + RESET);
+            } else {
+                log.warn(YELLOW + "logging was ignored because stripe mode is test" + RESET);
+            }
+            
         } else {
             log.warn("Request or Response is not wrapped properly. Skipping body logging.");
         }

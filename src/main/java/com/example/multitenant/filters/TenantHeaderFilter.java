@@ -28,6 +28,7 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
         "/api/auth/user",
         "/api/auth/logout",
         "/ws",
+        "/webhook",
         "/actuator"
     );
 

@@ -96,6 +96,10 @@ public class UsersService {
         return this.usersRepository.existsByEmail(email);
     }
 
+    public Boolean existsById(Long userId) {
+        return this.usersRepository.existsById(userId);
+    }
+
     public User findThenUpdate(long id, User user) {
         return this.usersCrudService.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
     }
