@@ -19,6 +19,7 @@ public class UserOrganizationViewDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String avatarUrl;
     private Instant createdAt;
     private Instant updatedAt;
     private List<OrganizationRoleViewDTO> roles;
@@ -31,6 +32,7 @@ public class UserOrganizationViewDTO implements Serializable {
         setCreatedAt(user.getCreatedAt());
         setUpdatedAt(user.getUpdatedAt());
         setRoles(membership.getOrganizationRoles().stream().map((r) -> r.toViewDTO()).toList());
+        setAvatarUrl(user.getAvatarUrl());
     }
 
     public UserOrganizationViewDTO() {

@@ -44,6 +44,9 @@ public class User implements Serializable {
     @Column(name = "last_name",  nullable = false, length = 64)
     private String lastName;
 
+    @Column(name = "avatar_url", nullable = true, length = 256)
+    private String avatarUrl;
+
     @CreationTimestamp
     private Instant createdAt;
 

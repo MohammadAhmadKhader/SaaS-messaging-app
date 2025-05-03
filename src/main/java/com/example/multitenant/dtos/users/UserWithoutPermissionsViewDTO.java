@@ -17,6 +17,7 @@ public class UserWithoutPermissionsViewDTO {
     private String firstName;
     private String lastName;
     private String email;
+    private String avatarUrl;
     private Instant createdAt;
     private Instant updatedAt;
     private List<GlobalRoleWithoutPermissionsDTO> roles;
@@ -36,7 +37,8 @@ public class UserWithoutPermissionsViewDTO {
             }
         });
         setRoles(rolesView);
-
+        setAvatarUrl(user.getAvatarUrl());
+        
         setCreatedAt(user.getCreatedAt());
         setUpdatedAt(user.getUpdatedAt());
     }

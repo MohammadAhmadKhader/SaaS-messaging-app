@@ -1,4 +1,4 @@
-package com.example.multitenant.exceptions;
+package com.example.multitenant.advices;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
+import com.example.multitenant.exceptions.*;
 
 import jakarta.validation.*;
 

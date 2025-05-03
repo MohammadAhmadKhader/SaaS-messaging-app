@@ -113,9 +113,14 @@ public class FilesService {
         }
     }
 
-    public FileResponse updateFile(MultipartFile newFile, FilesPath path, String existingFileName) {
+    public FileResponse updateFile(MultipartFile newFile, FilesPath path, String fileUrl) {
         try {
-            var fullPath = path.getValue() + "/" + existingFileName;
+            if(!fileUrl.contains(storageConfig.getBucketName())) {
+                throw new AppFilesException(String.format("invalid file url received '%s'", fileUrl));
+            }
+
+            var fileName = this.getFileNameFromUrl(fileUrl);
+            var fullPath = path.getValue() + "/" + fileName;
 
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 var updateUrl = storageConfig.getSupabaseUrl()+ "/storage/v1/object/" + storageConfig.getBucketName() + fullPath;
@@ -134,8 +139,9 @@ public class FilesService {
                     if (statusCode >= 200 && statusCode < 300) {
                         var publicUrl = storageConfig.getSupabaseUrl() + "/storage/v1/object/public/" + storageConfig.getBucketName() + fullPath;
                         
+                        log.info("[Files Service] response: {}, status: {}", responseBody, statusCode);
                         return new FileResponse(
-                            existingFileName,
+                            fileUrl,
                             newFile.getContentType(),
                             newFile.getSize(),
                             publicUrl
@@ -146,7 +152,7 @@ public class FilesService {
                 }
             }
         } catch (IOException e) {
-            throw new AppFilesException("failed to update file " + existingFileName, e);
+            throw new AppFilesException("failed to update file " + fileUrl, e);
         }
     }
 

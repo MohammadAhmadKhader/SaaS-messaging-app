@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.User;
+import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.UsersRepository;
+import com.example.multitenant.services.files.FilesService;
 import com.example.multitenant.utils.PageableHelper;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final UsersSpecificationsService usersSpecificationsService;
     private final UsersCrudService usersCrudService;
+    private final FilesService filesService;
 
     public Page<User> findAllUsers(Integer page, Integer size, String sortBy, String sortDir) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
@@ -100,8 +104,24 @@ public class UsersService {
         return this.usersRepository.existsById(userId);
     }
 
-    public User findThenUpdate(long id, User user) {
-        return this.usersCrudService.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
+    public User findThenUpdate(long id, User user, MultipartFile avatar) {
+        var updatedUser = this.usersCrudService.findThenUpdate(id, (existingUser) -> patcher(existingUser, user));
+        if(updatedUser == null) {
+            throw new ResourceNotFoundException("user");
+        }
+
+        if(avatar != null && updatedUser.getAvatarUrl() == null) {
+            var fileResponse = this.filesService.uploadFile(avatar, FilesPath.USERS_AVATARS);
+            updatedUser.setAvatarUrl(fileResponse.getUrl());
+            return this.usersRepository.save(updatedUser);
+
+        } else if(avatar != null && updatedUser.getAvatarUrl() != null) {
+            var fileResponse = this.filesService.updateFile(avatar, FilesPath.USERS_AVATARS, updatedUser.getAvatarUrl());
+            updatedUser.setAvatarUrl(fileResponse.getUrl());
+            return this.usersRepository.save(updatedUser);
+        }
+
+        return updatedUser;
     }
 
     public User findById(long id) {

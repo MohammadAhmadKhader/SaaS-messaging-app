@@ -1,5 +1,7 @@
 package com.example.multitenant.dtos.users;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.multitenant.common.validators.contract.AtLeastOneNotNull;
 import com.example.multitenant.models.User;
 
@@ -18,10 +20,12 @@ public class UserUpdateDTO {
     @Size(min = 3, message = "firstName must be at least {min}")
     private String firstName;
 
-    @Email
+    @Email(message = "invalid email address")
     @Size(max = 64, message = "email must be at most {max}")
     @Size(min = 6, message = "email must be at least {min}")
     private String email;
+
+    private MultipartFile avatar;
 
     public User toModel() {
         return new User(email, firstName, lastName, null);

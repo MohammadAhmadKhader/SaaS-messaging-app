@@ -2,14 +2,11 @@ package com.example.multitenant.utils;
 
 import java.security.Principal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
-import com.example.multitenant.exceptions.GlobalExceptionHandler;
 import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.User;
 

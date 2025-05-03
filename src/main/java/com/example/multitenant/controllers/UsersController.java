@@ -37,14 +37,14 @@ public class UsersController {
     private final FriendRequestsService friendRequestsService;
 
     @PutMapping("")
-    public ResponseEntity<Object> updateUserProfile(@Valid @RequestBody UserUpdateDTO dto) {
+    public ResponseEntity<Object> updateUserProfile(@Valid @ModelAttribute UserUpdateDTO dto) {
         var principal = SecurityUtils.getPrincipal();
         if(principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
         var userId = principal.getUser().getId();;
-        var updatedUser = this.usersService.findThenUpdate(userId, dto.toModel());
+        var updatedUser = this.usersService.findThenUpdate(userId, dto.toModel(), dto.getAvatar());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUser.toViewDTO());
     }
 

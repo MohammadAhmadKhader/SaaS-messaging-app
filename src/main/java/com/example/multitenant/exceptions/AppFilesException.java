@@ -4,6 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AppFilesException extends RuntimeException {
+    public AppFilesException(String message) {
+        super(message);
+        log.error("[Files Exception] message: {}", message);
+    }
+
     public AppFilesException(String message, int statusCode, String responseBody) {
         super(message);
         log.error("[Files Exception] message: {}, status-code: {}, response-body: {}", message, statusCode, responseBody);

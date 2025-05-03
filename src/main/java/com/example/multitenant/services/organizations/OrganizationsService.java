@@ -47,13 +47,13 @@ public class OrganizationsService {
         return this.organizationsRepository.exists(Example.of(org));
     }
 
-    public Object deleteOrganizationById(Integer orgId) {
+    public Organization deleteOrganizationById(Integer orgId) {
         var org = this.organizationsRepository.findById(orgId).orElse(null);
         if(org == null) {
             return null;
         }
 
-        return null;
+        return org;
     }
     
     @Transactional
@@ -68,7 +68,6 @@ public class OrganizationsService {
             new TransactionSynchronization() {
                 @Override
                 public void afterCommit() {
-                    System.out.println("<----------------------------------------------------------------------------------- ");
                     filesService.deleteFile(FilesPath.ORGS_IMAGES, org.getImageUrl());
                 }
             }

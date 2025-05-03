@@ -17,6 +17,7 @@ public class UserWithoutRolesViewDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String avatarUrl;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -25,6 +26,7 @@ public class UserWithoutRolesViewDTO implements Serializable {
         setEmail(user.getEmail());
         setFirstName(user.getFirstName());
         setLastName(user.getLastName());
+        setAvatarUrl(user.getAvatarUrl());
         setCreatedAt(user.getCreatedAt());
         setUpdatedAt(user.getUpdatedAt());
     }

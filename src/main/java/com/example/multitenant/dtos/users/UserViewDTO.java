@@ -19,6 +19,7 @@ public class UserViewDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String avatarUrl;
     private Instant createdAt;
     private Instant updatedAt;
     private List<GlobalRoleViewDTO> roles;
@@ -33,5 +34,6 @@ public class UserViewDTO implements Serializable {
         }).toList());
         setCreatedAt(user.getCreatedAt());
         setUpdatedAt(user.getUpdatedAt());
+        setAvatarUrl(user.getAvatarUrl());
     }
 }
