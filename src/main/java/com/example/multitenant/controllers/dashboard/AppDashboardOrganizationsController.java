@@ -92,7 +92,7 @@ public class AppDashboardOrganizationsController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel());
+        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel(), dto.image());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -101,8 +101,8 @@ public class AppDashboardOrganizationsController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_DELETE)")
     public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
-        var isDeleted = this.organizationsService.findByIdThenDelete(id);
-        if(!isDeleted) {
+        var org = this.organizationsService.findByIdThenDelete(id);
+        if(org == null) {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
         }
         

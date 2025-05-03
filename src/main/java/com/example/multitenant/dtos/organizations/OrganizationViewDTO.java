@@ -12,12 +12,15 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrganizationViewDTO {
     private Integer id;
 
     private String name;
 
     private String industry;
+
+    private String imageUrl;
 
     private Instant createdAt;
 
@@ -29,9 +32,6 @@ public class OrganizationViewDTO {
         setName(org.getName());
         setIndustry(org.getIndustry());
         setCreatedAt(org.getCreatedAt());
-    }
-
-    public OrganizationViewDTO() {
-        
+        setImageUrl(org.getImageUrl());
     }
 }

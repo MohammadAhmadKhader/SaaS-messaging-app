@@ -2,12 +2,19 @@ package com.example.multitenant.services.organizations;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.User;
+import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.OrganizationsRepository;
+import com.example.multitenant.services.files.FilesService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,6 +23,7 @@ public class OrganizationsService {
 
     private final OrganizationsRepository organizationsRepository;
     private final OrganizationsCrudService organizationsCrudService;
+    private final FilesService filesService;
 
     public Page<Organization> findAllOrganization(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
@@ -48,12 +56,41 @@ public class OrganizationsService {
         return null;
     }
     
-    public boolean findByIdThenDelete(Integer id) {
-        return this.organizationsCrudService.findThenDeleteById(id);
+    @Transactional
+    public Organization findByIdThenDelete(Integer id) {
+        var org = this.organizationsCrudService.findById(id);
+        if(org == null) {
+            throw new ResourceNotFoundException("organization", id);
+        }
+
+        this.organizationsRepository.delete(org);
+        TransactionSynchronizationManager.registerSynchronization(
+            new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    System.out.println("<----------------------------------------------------------------------------------- ");
+                    filesService.deleteFile(FilesPath.ORGS_IMAGES, org.getImageUrl());
+                }
+            }
+        );
+
+        return org;
     }
 
-    public Organization findThenUpdate(Integer id, Organization org) {
-        return this.organizationsCrudService.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
+    @Transactional
+    public Organization findThenUpdate(Integer id, Organization org, MultipartFile image) {
+        var updatedOrg = this.organizationsCrudService.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
+        if(updatedOrg == null) {
+            throw new ResourceNotFoundException("organization", id);
+        }
+
+        if(image != null) {
+            var fileResponse = filesService.updateFile(image, FilesPath.ORGS_IMAGES, updatedOrg.getImageUrl());
+            updatedOrg.setImageUrl(fileResponse.getUrl());
+            return this.organizationsRepository.save(updatedOrg);
+        }
+        
+        return updatedOrg;
     }
 
     public Organization findById(Integer id) {

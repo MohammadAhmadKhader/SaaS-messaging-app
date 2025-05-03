@@ -34,6 +34,9 @@ public class Organization implements Serializable {
     @Column(name = "industry", nullable = false, length = 128)
     private String industry;
 
+    @Column(name = "image_url", nullable = true, length = 256)
+    private String imageUrl;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -47,16 +50,16 @@ public class Organization implements Serializable {
     private List<Membership> memberships = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @OrderBy("joinedAt DESC, id ASC")
+    @OrderBy("id ASC")
     private List<OrganizationRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @OrderBy("order ASC")
+    @OrderBy("displayOrder ASC")
     private List<Category> categories = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @OrderBy("order ASC")
+    @OrderBy("displayOrder ASC")
     private List<Channel> channels = new ArrayList<>();
 
 

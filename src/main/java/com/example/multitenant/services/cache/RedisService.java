@@ -61,7 +61,8 @@ public class RedisService {
         if(cached == null) {
             return this.fetchUserOrgRolesAndCache(orgId, userId);
         }
-
+        
+        System.out.println(cached.toString() + "   already cached <---------------------");
         return (List<OrganizationRoleCacheDTO>) cached;
     }   
 

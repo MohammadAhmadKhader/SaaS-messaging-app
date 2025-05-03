@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.multitenant.dtos.membership.MembershipFilter;
 import com.example.multitenant.dtos.organizations.*;
@@ -24,6 +25,7 @@ import com.example.multitenant.models.*;
 import com.example.multitenant.models.binders.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.MembershipRepository;
+import com.example.multitenant.services.files.FilesService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class MemberShipService {
     private final OrganizationsService organizationsService;
     private final MemberShipSpecificationsService memberShipSpecificationsService;
     private final MemberShipCrudService memberShipCrudService;
+    private final FilesService filesService;
 
     public Page<Membership> getOrganizaionMemberships(Integer page, Integer size, Integer organizationId) {
         var org = new Organization();
@@ -84,9 +87,11 @@ public class MemberShipService {
     @Transactional
     public Membership createOwnerMembership(Organization org, User user) {
         var membership = new Membership(org.getId(), user.getId());
+        var createdMembership = this.membershipRepository.save(membership);
 
         var ownerRole = this.initializeDefaultRolesAndPermissions(org.getId());
-        ownerRole.setMemberships(List.of(membership));
+        ownerRole.setMemberships(new ArrayList<>());
+        ownerRole.getMemberships().add(createdMembership);
 
         this.organizationRolesService.create(ownerRole);
         
@@ -94,6 +99,7 @@ public class MemberShipService {
         orgRoles.add(ownerRole);
 
         membership.setOrganizationRoles(orgRoles);
+        membership.loadDefaults();
         
         return this.membershipRepository.saveAndFlush(membership);
     }
@@ -271,11 +277,19 @@ public class MemberShipService {
         return this.membershipRepository.findUserIdsByOrgIdAndRoleId(orgId, roleId);
     }
 
+    @Transactional
+    public Membership initializeOrganizationWithMembership(Organization org, User owner, MultipartFile image) {
+        var createdOrg = this.organizationsService.create(org);
+        if(image != null) {
+            var fileResponse = this.filesService.uploadFile(image, FilesPath.ORGS_IMAGES);
+            createdOrg.setImageUrl(fileResponse.getUrl());
+        }
+        var membership = this.createOwnerMembership(createdOrg, owner);
+        return membership;
+    }
+
     public Membership findUserMembershipWithRoles(Integer orgId, long userId) {
-        var organization = new Organization();
-        organization.setId(orgId);
-        
-        var membership = this.membershipRepository.findUserMembershipWithRoles(organization, userId);
+        var membership = this.membershipRepository.findUserMembershipWithRoles(orgId, userId);
         return membership;
     }
 
@@ -327,6 +341,7 @@ public class MemberShipService {
     private OrganizationRole createOwnerRole(Integer orgId) {
         var orgOwner = DefaultOrganizationRole.ORG_OWNER;
         var orgOwnerRole = new OrganizationRole(orgOwner.getRoleName());
+        orgOwnerRole.setDisplayName("Owner");
 
         var orgOwnerPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgOwner);
 
@@ -339,6 +354,7 @@ public class MemberShipService {
     private OrganizationRole createAdminRole(Integer orgId) {
         var orgAdmin = DefaultOrganizationRole.ORG_ADMIN;
         var orgAdminRole = new OrganizationRole(orgAdmin.getRoleName());
+        orgAdminRole.setDisplayName("Admin");
 
         var orgAdminPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgAdmin);
 
@@ -351,6 +367,7 @@ public class MemberShipService {
     private OrganizationRole createUserRole(Integer orgId) {
         var orgUser = DefaultOrganizationRole.ORG_USER;
         var orgUserRole = new OrganizationRole(orgUser.getRoleName());
+        orgUserRole.setDisplayName("User");
 
         var orgUserPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgUser);
 

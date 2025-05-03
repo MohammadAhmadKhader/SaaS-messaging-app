@@ -162,6 +162,13 @@
 		  <artifactId>stripe-java</artifactId>
 		  <version>29.1.0</version>
 		</dependency>
+
+		<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+        
 	</dependencies>
 
 	<build>

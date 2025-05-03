@@ -58,5 +58,25 @@
     "name": "stripe.tiers.enterprise.id",
     "type": "java.lang.String",
     "description": "A description for 'stripe.tiers.enterprise.id'"
+  },
+  {
+    "name": "supabase.storage.bucket",
+    "type": "java.lang.String",
+    "description": "A description for 'supabase.storage.bucket'"
+  },
+  {
+    "name": "supabase.key",
+    "type": "java.lang.String",
+    "description": "A description for 'supabase.key'"
+  },
+  {
+    "name": "supabase.url",
+    "type": "java.lang.String",
+    "description": "A description for 'supabase.url'"
+  },
+  {
+    "name": "supabase.jwt_secret",
+    "type": "java.lang.String",
+    "description": "A description for 'supabase.jwt_secret'"
   }
 ]}

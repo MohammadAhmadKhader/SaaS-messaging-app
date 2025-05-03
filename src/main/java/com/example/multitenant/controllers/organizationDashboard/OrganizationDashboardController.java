@@ -39,7 +39,7 @@ public class OrganizationDashboardController {
     @PutMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel());
+        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel(), dto.image());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);
@@ -74,12 +74,13 @@ public class OrganizationDashboardController {
         return ResponseEntity.ok().body(res);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("")
     @PreAuthorize("@customSPEL.hasOrgRole('Org-Owner')")
-    public ResponseEntity<Object> deleteOrganization(@ValidateNumberId @PathVariable Integer id) {
-        var isDeleted = this.organizationsService.findByIdThenDelete(id);
-        if(!isDeleted) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", id));
+    public ResponseEntity<Object> deleteOrganization() {
+        var tenantId = AppUtils.getTenantId();
+        var org = this.organizationsService.findByIdThenDelete(tenantId);
+        if(org == null) {
+            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("organization", tenantId));
         }
         
         return ResponseEntity.noContent().build();

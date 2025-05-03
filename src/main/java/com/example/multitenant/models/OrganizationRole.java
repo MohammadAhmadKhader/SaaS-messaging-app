@@ -41,7 +41,7 @@ public class OrganizationRole implements Serializable {
     @ManyToMany(mappedBy = "organizationRoles")
     private List<Membership> memberships;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "organization_roles_organization_permissions",
         joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id", table = "organization_roles"),

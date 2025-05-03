@@ -1,5 +1,7 @@
 package com.example.multitenant.dtos.organizations;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.multitenant.models.Organization;
 
 import jakarta.validation.constraints.*;
@@ -13,7 +15,9 @@ public record OrganizationCreateDTO(
     @NotBlank(message = "industry can not be empty")
     @Size(max = 128, message = "industry must be at most {max}")
     @Size(min = 1, message = "industry must be at least {min}")
-    String industry
+    String industry,
+
+    MultipartFile image
 ){
     public Organization toModel() {
         return new Organization(this.name, this.industry);

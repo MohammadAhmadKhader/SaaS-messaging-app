@@ -24,8 +24,8 @@ public interface MembershipRepository extends GenericRepository<Membership, Memb
     public Membership findUserMembershipWithRolesAndPermissions(@Param("organization") Organization organization, @Param("userId") long userId);
 
     @EntityGraph(attributePaths = {"organizationRoles"})
-    @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.user.id = :userId AND m.isMember = true")
-    public Membership findUserMembershipWithRoles(@Param("organization") Organization organization, @Param("userId") long userId);
+    @Query("SELECT m FROM Membership m WHERE m.organization.id = :organizationId AND m.user.id = :userId AND m.isMember = true")
+    public Membership findUserMembershipWithRoles(@Param("organizationId") Integer organizationId, @Param("userId") long userId);
 
     @Query("""
         SELECT m.user.id

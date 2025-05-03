@@ -1,12 +1,12 @@
 package com.example.multitenant.controllers;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.organizations.*;
+import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.models.enums.LogEventType;
+import com.example.multitenant.services.files.FilesService;
 import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
@@ -15,15 +15,16 @@ import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Validated
@@ -38,14 +39,14 @@ public class OrganizationsController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")
-    public ResponseEntity<Object> createOrganization(@Valid @RequestBody OrganizationCreateDTO dto) {
+    public ResponseEntity<Object> createOrganization(@Valid @ModelAttribute OrganizationCreateDTO dto) {
+
+        log.info("received this image {}", dto.image().getOriginalFilename());
         if (this.organizationsService.existsByName(dto.name())) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("organization name was taken already"));
         }
-        var org = this.organizationsService.create(dto.toModel());
-
         var user = SecurityUtils.getPrincipal().getUser();
-        var membership = this.memberShipService.createOwnerMembership(org, user);
+        var membership = this.memberShipService.initializeOrganizationWithMembership(dto.toModel(), user, dto.image());
 
         var respBody = ApiResponses.OneKey("membership", membership.toViewDTO());
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
@@ -61,9 +62,9 @@ public class OrganizationsController {
         if(!membership.isMember()) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
         }
-
-        this.logsService.createKickLog(user, userId, orgId, LogEventType.KICK);
+        
         this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
+        this.logsService.createKickLog(user, userId, orgId, LogEventType.KICK);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

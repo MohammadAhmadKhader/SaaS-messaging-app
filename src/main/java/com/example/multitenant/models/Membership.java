@@ -14,10 +14,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
 @Entity
 @Table(name = "membership")
 public class Membership {
@@ -46,7 +46,7 @@ public class Membership {
     @OrderBy("id ASC")
     private List<OrganizationRole> organizationRoles;
 
-    @CreationTimestamp
+    // this must be handling manually
     private Instant joinedAt;
 
     @JsonProperty("isMember")
@@ -65,9 +65,9 @@ public class Membership {
         this.organization.setId(orgId);
     }
 
-    @PrePersist
     public void loadDefaults() {
         this.isMember = true;
+        this.joinedAt = Instant.now();
     }
 
     public MembershipViewDTO toViewDTO() {

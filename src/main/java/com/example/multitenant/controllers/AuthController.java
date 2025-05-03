@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.*;
 import com.example.multitenant.dtos.logs.LogsViewDTO;
+import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.models.enums.LogEventType;
@@ -41,9 +42,6 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Slf4j
 @Validated

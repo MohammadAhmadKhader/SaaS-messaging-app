@@ -1,12 +1,12 @@
 package com.example.multitenant.models.enums;
 
-public enum StripeMode {
-    TEST("test"),
-    LIVE("live");
+public enum FilesPath {
+    USERS_AVATARS("/users/avatars"),
+    ORGS_IMAGES("/organizations/images");
 
     private final String value;
 
-    StripeMode(String value) {
+    FilesPath(String value) {
         this.value = value;
     }
 
@@ -14,13 +14,13 @@ public enum StripeMode {
         return value;
     }
 
-    public static StripeMode fromValue(String value) {
+    public static FilesPath fromValue(String value) {
         for (var mode : values()) {
             if (mode.value.equalsIgnoreCase(value)) {
                 return mode;
             }
         }
-        throw new IllegalArgumentException("invalid StripeMode value: " + value + ". valid values are 'test' or 'live'");
+        throw new IllegalArgumentException("invalid FilesPath value: " + value + ". valid values are 'test' or 'live'");
     }
 
     @Override

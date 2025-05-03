@@ -66,7 +66,7 @@ public class RedisConfig {
     RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         var template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(connectionFactory);
-        template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+       // template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
 
         return template;
     }
