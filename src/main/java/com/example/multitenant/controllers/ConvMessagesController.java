@@ -17,6 +17,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.services.conversations.ConversationsService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class ConvMessagesController {
         @ValidateNumberId @PathVariable Integer conversationId
         ) {
 
-        var sender = AppUtils.getUserFromAuth();
+        var sender = SecurityUtils.getUserFromAuth();
         var msg = this.conversationsService.updateConvMessageContent(sender, messageId, conversationId, dto.getContent());
         var conv = msg.getConversation();
         var target = AppUtils.getWsTarget(sender, conv);
@@ -52,7 +53,7 @@ public class ConvMessagesController {
     public ResponseEntity<Object> deleteMessage(@ValidateNumberId @PathVariable Integer messageId,
         @ValidateNumberId @PathVariable Integer conversationId) {
         
-        var sender = AppUtils.getUserFromAuth();
+        var sender = SecurityUtils.getUserFromAuth();
         var conv = this.conversationsService.removeMessageFromConv(messageId, conversationId, sender);
         var target = AppUtils.getWsTarget(sender, conv);
 

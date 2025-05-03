@@ -8,6 +8,7 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         var principal = event.getUser();
-        var user = AppUtils.getUserFromPrincipal(principal);
+        var user = SecurityUtils.getUserFromPrincipal(principal);
         var accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
         var sessionId = accessor.getSessionId();
 

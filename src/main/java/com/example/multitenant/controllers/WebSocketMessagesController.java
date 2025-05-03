@@ -21,6 +21,7 @@ import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -40,7 +41,7 @@ public class WebSocketMessagesController {
         @DestinationVariable Integer tenantId, @DestinationVariable Integer channelId, 
         @DestinationVariable Integer categoryId, Principal principal) {
             
-        var user = AppUtils.getUserFromPrincipal(principal);
+        var user = SecurityUtils.getUserFromPrincipal(principal);
         if(user != null) {
             log.info("received message {}", payload.getContent());
             log.info("principal {}", user.getFirstName());
@@ -61,7 +62,7 @@ public class WebSocketMessagesController {
     public void handleSendMessageToUser(@Payload @Validated ConversationMessageCreateDTO payload,
         @DestinationVariable Integer conversationId, Principal principal) {
             
-        var user = AppUtils.getUserFromPrincipal(principal);
+        var user = SecurityUtils.getUserFromPrincipal(principal);
         if(user != null) {
             log.info("received message {}", payload.getContent());
             log.info("principal {}", user.getFirstName());

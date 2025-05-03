@@ -16,6 +16,7 @@ import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.security.OrganizationRolesService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_ASSIGN)")
     public ResponseEntity<Object> assignRole(@Valid @RequestBody AssignOrganizationRoleDTO dto) {  
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         var orgRole = this.memberShipService.assignRole(dto.getRoleId(), tenantId, dto.getUserId());
         this.redisService.invalidateUserOrgRolesCache(tenantId, dto.getUserId());
@@ -113,7 +114,7 @@ public class OrganizationDashboardRolesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.ROLE_UN_ASSIGN)")
     public ResponseEntity<Object> unAssignRole(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Long userId) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         var orgRole = this.memberShipService.unAssignRole(id, tenantId, userId);
         this.redisService.invalidateUserOrgRolesCache(tenantId, userId);

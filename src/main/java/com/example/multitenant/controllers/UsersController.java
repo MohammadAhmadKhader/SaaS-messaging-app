@@ -11,7 +11,6 @@ import com.example.multitenant.models.FriendRequest;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.services.friendrequests.FriendRequestsService;
 import com.example.multitenant.services.users.UsersService;
-import com.example.multitenant.utils.AppUtils;
 import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
@@ -75,7 +74,7 @@ public class UsersController {
 
     @GetMapping("/friend-requests/receiver")
     public ResponseEntity<Object> getFriendRequestsByReceiver(@RequestParam(required = false) Integer cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         var cusror = this.friendRequestsService.getUserFriendRequests(user.getId(), cursorId, size);
         var body = cusror.toApiResponse("friendRequests", (frs) -> {
             return frs.stream().map((fr) -> fr.toViewDTO()).toList();
@@ -86,7 +85,7 @@ public class UsersController {
 
     @GetMapping("/friend-requests/sender")
     public ResponseEntity<Object> getFriendRequestsBySender(@RequestParam(required = false) Integer cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         var cusror = this.friendRequestsService.getSentFriendRequests(user.getId(), cursorId, size);
         var body = cusror.toApiResponse("friendRequests", (frs) -> {
             return frs.stream().map((fr) -> fr.toViewDTO()).toList();
@@ -97,7 +96,7 @@ public class UsersController {
 
     @PostMapping("/friend-requests/send")
     public ResponseEntity<Object> sendFriendRequest(@Valid @RequestBody FriendRequestSendDTO dto) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         var friendRequest = this.friendRequestsService.sendFriendRequest(user.getId(), dto.getReceiverId());
         var body = ApiResponses.OneKey("friendRequest", friendRequest.toViewDTO());
 
@@ -106,7 +105,7 @@ public class UsersController {
 
     @PatchMapping("/friend-requests/{friendRequestId}/accept")
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable @ValidateNumberId Integer friendRequestId) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         this.friendRequestsService.acceptFriendRequest(friendRequestId, user.getId());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -114,7 +113,7 @@ public class UsersController {
 
     @DeleteMapping("/friend-requests/{friendRequestId}")
     public ResponseEntity<Void> deleteFriendRequest(@PathVariable @ValidateNumberId Integer friendRequestId) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         this.friendRequestsService.deleteFriendRequest(friendRequestId, user.getId());
 
         return ResponseEntity.noContent().build();
@@ -122,7 +121,7 @@ public class UsersController {
 
     @DeleteMapping("/remove-friend/{friendId}")
     public ResponseEntity<Void> removeFriendHandler(@PathVariable @ValidateNumberId Long friendId) {
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         this.usersService.removeFriend(user.getId(), friendId);
 
         return ResponseEntity.noContent().build();

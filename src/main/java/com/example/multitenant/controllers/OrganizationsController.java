@@ -56,7 +56,7 @@ public class OrganizationsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.USER_KICK)")
     public ResponseEntity<Object> kickUser(@ValidateNumberId @PathVariable long userId) {
         var orgId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         var membership = this.memberShipService.findOne(orgId, userId);
         if(!membership.isMember()) {
@@ -72,7 +72,7 @@ public class OrganizationsController {
     @PatchMapping("/leave/{organizationId}")
     public ResponseEntity<Object> leaveOrganization() {
         var orgId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         var membership = this.memberShipService.findOne(orgId, user.getId());
         if(!membership.isMember()) {

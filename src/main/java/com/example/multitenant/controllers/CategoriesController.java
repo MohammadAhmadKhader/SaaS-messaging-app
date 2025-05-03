@@ -15,6 +15,7 @@ import com.example.multitenant.services.categories.CategoriesService;
 import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)")
     public ResponseEntity<Object> getAllCategories() {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         
         var filteredCategoriesViews = this.categoriesCacheService.getCategories(tenantId, user.getId());
         var bodyResponse = ApiResponses.OneKey("categories", filteredCategoriesViews);
@@ -47,7 +48,7 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_CREATE)")
     public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         
         var category = this.categoriesService.create(dto.toModel(), tenantId);
         this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
@@ -76,7 +77,7 @@ public class CategoriesController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
     public ResponseEntity<Object> updateCategory(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody CategoryUpdateDTO dto) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         
         var updatedCategory = this.categoriesService.update(id, dto.toModel(), tenantId);
         if(updatedCategory == null) {

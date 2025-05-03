@@ -184,7 +184,7 @@ public class AuthController {
             var respBody = ApiResponses.GetErrResponse("cookie was not found");
             return ResponseEntity.badRequest().body(respBody);
         }
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         try {
             session.invalidate();

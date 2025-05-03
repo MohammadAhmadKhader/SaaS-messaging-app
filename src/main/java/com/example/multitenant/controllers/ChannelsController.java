@@ -13,6 +13,7 @@ import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.channels.ChannelsService;
 import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class ChannelsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_CREATE)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> createChannel(@Valid @RequestBody ChannelCreateDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         
         var channel = this.channelsService.create(dto.toModel(), tenantId, categoryId);
         this.logsService.createChannelsLog(user, channel, tenantId, LogEventType.ORG_CHANNEL_CREATED);
@@ -61,7 +62,7 @@ public class ChannelsController {
         @Valid @RequestBody ChannelUpdateDTO dto,
         @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         
         var updatedChannel = this.channelsService.update(id, dto.toModel(), tenantId, categoryId);
         if(updatedChannel == null) {

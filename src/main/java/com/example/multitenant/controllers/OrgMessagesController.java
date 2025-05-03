@@ -4,8 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.messages.*;
@@ -14,6 +12,7 @@ import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.websocket.WebSocketService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 import com.github.javafaker.App;
 
 import jakarta.validation.Valid;
@@ -39,7 +38,7 @@ public class OrgMessagesController {
         @ValidateNumberId @PathVariable Integer categotyId
         ) {
 
-        var sender = AppUtils.getUserFromAuth();;
+        var sender = SecurityUtils.getUserFromAuth();;
         var tenantId = AppUtils.getTenantId();
 
         var updatedMsg = this.messagesService.updateContent(messageId, dto.getContent(), sender.getId());
@@ -54,7 +53,7 @@ public class OrgMessagesController {
         @ValidateNumberId @PathVariable(name = "id") Integer messageId,
         @ValidateNumberId @PathVariable Integer categotyId) {
         
-        var senderId = AppUtils.getUserIdFromAuth();
+        var senderId = SecurityUtils.getUserIdFromAuth();
         var tenantId = AppUtils.getTenantId();
 
         this.messagesService.deleteUserMessage(messageId, senderId);

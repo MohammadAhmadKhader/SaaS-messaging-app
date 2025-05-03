@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.services.stripe.StripeService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 import com.stripe.exception.StripeException;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class PaymentController {
     @PostMapping("")
     public ResponseEntity<Object> createCheckoutSession(@RequestBody Map<String, String> reqBody) throws StripeException {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
 
         var priceId = reqBody.get("priceId");
         if(priceId == null || priceId.isBlank()) {

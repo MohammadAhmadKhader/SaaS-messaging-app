@@ -22,6 +22,7 @@ import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.organizations.OrganizationsService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class OrganizationDashboardController {
     @PreAuthorize("@customSPEL.hasOrgRole('Org-Owner')")
     public ResponseEntity<Object> transferOwnership(@Valid @RequestBody OrganizationTransferOwnershipDTO dto) {
         var tenantId = AppUtils.getTenantId();
-        var user = AppUtils.getUserFromAuth();
+        var user = SecurityUtils.getUserFromAuth();
         this.memberShipService.swapOwnerShip(tenantId, user, dto.getNewOwnerId());
         
         return ResponseEntity.noContent().build();
