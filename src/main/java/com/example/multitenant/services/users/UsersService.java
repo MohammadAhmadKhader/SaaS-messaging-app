@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.multitenant.exceptions.InvalidOperationException;
@@ -15,6 +17,7 @@ import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.files.FilesService;
 import com.example.multitenant.utils.PageableHelper;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -131,8 +134,27 @@ public class UsersService {
     public User create(User user) {
         return this.usersCrudService.create(user);
     }
-    public boolean findThenDeleteById(Long id) {
-        return this.usersCrudService.findThenDeleteById(id);
+
+    @Transactional
+    public User findThenDeleteById(Long id) {
+        var user = this.usersCrudService.findById(id);
+        if (user == null) {
+            return null;
+        }
+
+        this.usersRepository.delete(user);
+        if(user.getAvatarUrl() != null) {
+            TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        filesService.deleteFile(FilesPath.USERS_AVATARS, user.getAvatarUrl());
+                    }
+                }
+            );  
+        }
+
+        return user;
     }
 
     private void patcher(User target, User source) {

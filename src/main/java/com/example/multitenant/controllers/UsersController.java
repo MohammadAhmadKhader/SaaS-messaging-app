@@ -64,8 +64,8 @@ public class UsersController {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse(String.format("invalid operation, can't delete super admin")));
         }
 
-        var isDeleted = this.usersService.findThenDeleteById(user.getId());
-        if(!isDeleted) {
+        var deletedUser = this.usersService.findThenDeleteById(user.getId());
+        if(deletedUser == null) {
             return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("user", user.getId()));
         }
         

@@ -85,8 +85,10 @@ public class AppDashboardUsersController {
         });
 
         if(isAdmin) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation"));
+            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation: can not delete an admin user or super admin if it was an admin then remove this role first"));
         }
+
+        this.usersService.findThenDeleteById(id);
         
         return ResponseEntity.noContent().build();
     }

@@ -60,7 +60,7 @@ public class OrganizationsService {
     public Organization findByIdThenDelete(Integer id) {
         var org = this.organizationsCrudService.findById(id);
         if(org == null) {
-            throw new ResourceNotFoundException("organization", id);
+            return null;
         }
 
         this.organizationsRepository.delete(org);
@@ -80,7 +80,7 @@ public class OrganizationsService {
     public Organization findThenUpdate(Integer id, Organization org, MultipartFile image) {
         var updatedOrg = this.organizationsCrudService.findThenUpdate(id, (existingOrg) -> patcher(existingOrg, org));
         if(updatedOrg == null) {
-            throw new ResourceNotFoundException("organization", id);
+            return null;
         }
 
         if(image != null) {
