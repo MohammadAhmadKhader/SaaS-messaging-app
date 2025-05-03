@@ -90,6 +90,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+
     @ExceptionHandler(UnauthorizedUserException.class)
     public ResponseEntity<Map<String, Object>> handleUnauthorizedExceptions(UnauthorizedUserException ex) {
         var errBody = ApiResponses.Unauthorized();
@@ -127,6 +128,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(ApiResponses.StripeError(ex.getMessage()));
     }
 
+    @ExceptionHandler(AppFilesException.class)
+    public ResponseEntity<Object> handle(AppFilesException ex) {
+        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
+    }
+    
     @ExceptionHandler(UnknownException.class)
     public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));

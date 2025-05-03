@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.multitenant.config.SupabaseConfig;
 import com.example.multitenant.dtos.files.FileResponse;
+import com.example.multitenant.exceptions.AppFilesException;
 import com.example.multitenant.models.enums.FilesPath;
 
 import lombok.RequiredArgsConstructor;
@@ -70,12 +71,12 @@ public class FilesService {
                         );
                     } else {
                         var responseBody = EntityUtils.toString(response.getEntity());
-                        throw new RuntimeException("failed to upload file. Status code: " + statusCode + ". response: " + responseBody);
+                        throw new AppFilesException("failed to upload file", statusCode, responseBody);
                     }
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("failed to upload file " + file.getOriginalFilename(), e);
+            throw new AppFilesException("failed to upload file " + file.getOriginalFilename(), e);
         }
     }
 
@@ -104,11 +105,11 @@ public class FilesService {
                     return true;
                 } else {
                     var responseBody = EntityUtils.toString(response.getEntity());
-                    throw new RuntimeException("failed to delete file. Status code: " + statusCode + ". response: " + responseBody);
+                    throw new AppFilesException("failed to delete file", statusCode, responseBody);
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("failed to delete file " + fullPath, e);
+            throw new AppFilesException("failed to delete file " + fullPath, e);
         }
     }
 
@@ -127,10 +128,10 @@ public class FilesService {
                 put.setEntity(entity);
 
                 try (CloseableHttpResponse resp = httpClient.execute(put)) {
-                    var status = resp.getStatusLine().getStatusCode();
-                    var body = EntityUtils.toString(resp.getEntity());
+                    var statusCode = resp.getStatusLine().getStatusCode();
+                    var responseBody = EntityUtils.toString(resp.getEntity());
 
-                    if (status >= 200 && status < 300) {
+                    if (statusCode >= 200 && statusCode < 300) {
                         var publicUrl = storageConfig.getSupabaseUrl() + "/storage/v1/object/public/" + storageConfig.getBucketName() + fullPath;
                         
                         return new FileResponse(
@@ -140,14 +141,12 @@ public class FilesService {
                             publicUrl
                         );
                     } else {
-                        throw new RuntimeException(
-                            "Failed to update file. Status: " + status + ", body: " + body
-                        );
+                        throw new AppFilesException("failed to update file", statusCode, responseBody);
                     }
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to update file " + existingFileName, e);
+            throw new AppFilesException("failed to update file " + existingFileName, e);
         }
     }
 
