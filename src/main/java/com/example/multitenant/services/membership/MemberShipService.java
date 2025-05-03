@@ -326,6 +326,9 @@ public class MemberShipService {
         return this.memberShipSpecificationsService.findAllWithSpecifications(pageable, spec,null);
     }
 
+    public long countOrganizationMembers(Integer orgId) {
+        return this.membershipRepository.countMembersByOrganizationId(orgId);
+    }
 
     public OrganizationRole initializeDefaultRolesAndPermissions(Integer orgId) {
         var orgOwnerRole = this.createOwnerRole(orgId);

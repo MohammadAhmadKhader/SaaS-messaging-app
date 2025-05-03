@@ -16,4 +16,7 @@ public interface OrganizationsRepository extends GenericRepository<Organization,
         WHERE o.id = :organizationId
     """)
     Organization findByIdWithOwner(@Param("organizationId") Integer organizationId);
+
+    @Query("SELECT COUNT(o) FROM Organization o WHERE o.owner.id = :userId")
+    long countOrganizationsByUserId(@Param("userId") long userId);
 }

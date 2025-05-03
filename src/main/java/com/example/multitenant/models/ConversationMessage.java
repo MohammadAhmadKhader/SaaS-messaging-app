@@ -8,9 +8,12 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "conversation_messages")
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "conversation_messages", indexes = {
+    @Index(name = "idx_conversation_message_conversation_id", columnList = "conversation_id"),
+    @Index(name = "idx_conversation_message_sender_id", columnList = "sender_id")
+})
 public class ConversationMessage extends BaseMessage {
 
     @Column(name = "conversation_id", updatable = false, insertable = false)

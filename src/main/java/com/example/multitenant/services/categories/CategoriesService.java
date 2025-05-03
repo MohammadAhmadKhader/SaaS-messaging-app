@@ -141,6 +141,10 @@ public class CategoriesService {
         return this.categoriesRepository.findOne(Example.of(probe)).orElse(null);
     }
 
+    public long countOrganizationCategories(Integer orgId) {
+        return this.categoriesRepository.countCategoriesByOrgId(orgId);
+    }
+
     public void initializeRoles(Category category, Integer orgId) {
         var defRoles = this.organizationRolesService.findDefaultOrgRoles(orgId);
         category.setAuthorizedRoles(defRoles.stream().collect(Collectors.toSet()));

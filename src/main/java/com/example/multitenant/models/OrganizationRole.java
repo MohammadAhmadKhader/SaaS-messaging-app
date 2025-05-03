@@ -16,7 +16,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "organization_roles",indexes = {
-    @Index(name = "idx_name_organizationid", columnList = "name, organization_id", unique = true)
+    @Index(name = "idx_organization_roles_name_organizationid", columnList = "organization_id, name", unique = true),
 })
 public class OrganizationRole implements Serializable {
     private static final long serialVersionUID = 1L;

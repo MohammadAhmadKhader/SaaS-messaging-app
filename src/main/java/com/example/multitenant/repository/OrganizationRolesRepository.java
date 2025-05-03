@@ -26,4 +26,7 @@ public interface OrganizationRolesRepository extends GenericRepository<Organizat
         WHERE (r.organizationId = :organizationId)
     """)
     List<OrganizationRole> findAllRolesWithPermissions(@Param("organizationId") Integer organizationId);
+
+    @Query("SELECT COUNT(r) FROM OrganizationRole r WHERE r.organizationId = :organizationId")
+    long countRolesByOrganizationId(@Param("organizationId") Integer organizationId);
 }

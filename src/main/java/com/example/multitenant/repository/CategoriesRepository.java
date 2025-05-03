@@ -57,4 +57,7 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
 
     @Query("SELECT c FROM Category c WHERE c.organizationId = :organizationId ORDER BY c.displayOrder DESC")
     Category findLatestOrder(@Param("organizationId") Integer organizationId);
+
+    @Query("SELECT COUNT(c) FROM Category c WHERE c.organizationId = :organizationId")
+    long countCategoriesByOrgId(@Param("organizationId") long organizationId);
 }

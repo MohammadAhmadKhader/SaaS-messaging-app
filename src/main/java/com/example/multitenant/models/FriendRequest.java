@@ -17,8 +17,8 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "friend_requests", indexes = {
-    @Index(name = "idx_sender_id", columnList = "sender_id"),
-    @Index(name = "idx_receiver_id", columnList = "receiver_id")
+    @Index(name = "idx_friend_requests_sender_id", columnList = "sender_id"),
+    @Index(name = "idx_friend_requests_receiver_id", columnList = "receiver_id")
 })
 public class FriendRequest {
     @Id

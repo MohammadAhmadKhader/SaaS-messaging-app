@@ -21,22 +21,22 @@ public class OrganizationPermission implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false , unique = true, length = 64)
     private String name;
 
     @ManyToMany(mappedBy = "organizationPermissions")
     private List<OrganizationRole> roles = new ArrayList<>();
 
     @JsonProperty("isDefaultUser")
-    @Column(name = "is_default_user")
+    @Column(name = "is_default_user", nullable = false)
     private Boolean isDefaultUser;
 
     @JsonProperty("isDefaultAdmin")
-    @Column(name = "is_default_admin")
+    @Column(name = "is_default_admin", nullable = false)
     private Boolean isDefaultAdmin;
 
     @JsonProperty("isDefaultOrgOwner")
-    @Column(name = "is_default_org_owner")
+    @Column(name = "is_default_org_owner", nullable = false)
     private Boolean isDefaultOrgOwner;
 
     public OrganizationPermissionWithRolesViewDTO toWithRoleViewDTO() {

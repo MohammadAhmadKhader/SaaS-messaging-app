@@ -19,7 +19,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "organizations")
+@Table(name = "organizations", indexes = {
+    @Index(name ="idx_organization_owner_id", columnList = "owner_id")
+})
 @Entity
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;

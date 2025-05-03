@@ -17,7 +17,10 @@ import lombok.*;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name = "organization_messages")
+@Table(name = "organization_messages", indexes = {
+    @Index(name = "idx_organization_message_organization_id", columnList = "organization_id"),
+    @Index(name = "idx_organization_message_sender_id", columnList = "sender_id")
+})
 public class OrgMessage extends BaseMessage {
 
     @Column(name = "organization_id", nullable = false)

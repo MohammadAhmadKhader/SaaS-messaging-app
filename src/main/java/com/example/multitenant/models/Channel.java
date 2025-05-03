@@ -19,9 +19,15 @@ import lombok.*;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name = "channels", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"category_id", "name"})
-})
+@Table(
+    name = "channels", 
+    indexes = {
+        @Index(name ="idx_channels_organization_id", columnList = "organization_id")
+    },
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"category_id", "name"})
+    }
+)
 public class Channel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

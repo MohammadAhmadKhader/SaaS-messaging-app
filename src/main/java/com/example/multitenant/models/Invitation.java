@@ -16,7 +16,11 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "invitations")
+@Table(name = "invitations", indexes = {
+    @Index(name ="idx_invitation_organization_id", columnList = "organization_id"),
+    @Index(name ="idx_invitation_sender_id", columnList = "sender_id"),
+    @Index(name ="idx_invitation_recipient_id", columnList = "recipient_id")
+})
 public class Invitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

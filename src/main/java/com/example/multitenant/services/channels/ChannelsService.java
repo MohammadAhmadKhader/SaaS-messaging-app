@@ -115,4 +115,12 @@ public class ChannelsService {
 
         return this.channelsRepository.findOne(Example.of(probe)).orElse(null);
     }
+
+    public long countChannelsByCategoryId(Integer categoryId, Integer orgId) {
+        return this.channelsRepository.countChannelsByCategoryId(categoryId, orgId);
+    }
+
+    public long countChannelsByOrgId(Integer orgId) {
+        return this.channelsRepository.countChannelsByOrganizationId(orgId);
+    }
 }

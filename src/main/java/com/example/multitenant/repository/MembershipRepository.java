@@ -34,4 +34,7 @@ public interface MembershipRepository extends GenericRepository<Membership, Memb
         WHERE m.id.organizationId = :orgId AND r.id = :roleId
     """)
     List<Long> findUserIdsByOrgIdAndRoleId(@Param("orgId") Integer orgId, @Param("roleId") Integer roleId);
+
+    @Query("SELECT COUNT(m) FROM Membership m WHERE m.organization.id = :organizationId AND m.isMember = true")
+    long countMembersByOrganizationId(@Param("organizationId") Integer organizationId);
 }

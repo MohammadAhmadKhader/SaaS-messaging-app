@@ -19,7 +19,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "membership")
+@Table(name = "membership", indexes = {
+    @Index(name ="idx_membership_organization_id", columnList = "organization_id"),
+    @Index(name ="idx_membership_user_id", columnList = "user_id")
+})
 public class Membership {
     @EmbeddedId
     private MembershipKey id;

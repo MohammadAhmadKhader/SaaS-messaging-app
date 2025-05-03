@@ -32,4 +32,10 @@ public interface ChannelsRepository extends GenericRepository<Channel, Integer> 
 
     @Query("SELECT c FROM Channel c WHERE (c.organizationId = :organizationId AND c.categoryId = :categoryId) ORDER BY c.displayOrder DESC")
     Channel findLatestOrder(@Param("organizationId") Integer organizationId, @Param("categoryId") Integer categoryId);
+
+    @Query("SELECT COUNT(c) FROM Channel c WHERE c.organizationId = :organizationId")
+    long countChannelsByOrganizationId(@Param("organizationId") Integer organizationId);
+
+    @Query("SELECT COUNT(c) FROM Channel c WHERE c.category.id = :categoryId AND c.organizationId = :organizationId")
+    long countChannelsByCategoryId(@Param("categoryId") Integer categoryId, @Param("organizationId") Integer organizationId);
 }

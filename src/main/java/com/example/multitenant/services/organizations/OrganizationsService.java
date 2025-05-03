@@ -99,6 +99,10 @@ public class OrganizationsService {
     public Organization create(Organization org) {
         return this.organizationsCrudService.create(org);
     }
+
+    public long countUserOrganizations(Long userId) {
+        return this.organizationsRepository.countOrganizationsByUserId(userId);
+    }
     
     private void patcher(Organization target, Organization source) {
         var newIndustry = source.getIndustry();
