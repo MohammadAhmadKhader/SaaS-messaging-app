@@ -92,7 +92,7 @@ public class AppDashboardOrganizationsController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ORGANIZATION_UPDATE)")
     public ResponseEntity<Object> updateOrganization(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody OrganizationUpdateDTO dto) {
-        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel(), dto.image());
+        var updatedOrg = this.organizationsService.findThenUpdate(id, dto.toModel(), dto.getImage());
         var respBody = ApiResponses.OneKey("organization", updatedOrg.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);

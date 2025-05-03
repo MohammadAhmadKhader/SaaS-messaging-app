@@ -4,6 +4,7 @@ import java.lang.annotation.*;
 import com.example.multitenant.common.validators.impl.ValidateNumberIdValidator;
 import jakarta.validation.*;
 
+@Documented
 @Constraint(validatedBy = ValidateNumberIdValidator.class)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
