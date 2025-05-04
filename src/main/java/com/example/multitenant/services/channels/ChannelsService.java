@@ -90,12 +90,12 @@ public class ChannelsService {
 
     @Transactional
     public void swapChannelOrder(ChannelOrderSwapDTO dto, Integer orgId, Integer categoryId) {
-        var chan1 = this.findOne(dto.getChannelId1(), orgId, categoryId);
-        if(chan1  == null) {
+        var chan1 = this.channelsRepository.findByIdAndOrgIdAndCatIdLocked(dto.getChannelId1(), orgId, categoryId);
+        if(chan1 == null) {
             throw new ResourceNotFoundException("channel", dto.getChannelId1());
         }
 
-        var chan2 = this.findOne(dto.getChannelId2(), orgId, categoryId);
+        var chan2 = this.channelsRepository.findByIdAndOrgIdAndCatIdLocked(dto.getChannelId2(), orgId, categoryId);
         if (chan2 == null) {
             throw new ResourceNotFoundException("channel", dto.getChannelId2());
         }

@@ -2,6 +2,7 @@ package com.example.multitenant.services.cache;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.function.Function;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,50 +28,28 @@ public class SubscriptionLimitChecker {
     private final OrganizationRolesService organizationRolesService;
     private final CategoriesService categoriesService;
     private final ChannelsService channelsService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
     private final StripePlansConfig stripePlansConfig;
 
-    public void validateOrgRolesLimitNotExceeded(Integer orgId, String plan) {
-        var currentCount = this.getOrgRolesCount(orgId);
-        var maxAllowed = this.stripePlansConfig.getMaxAllowed(StripeLimit.ROLES, StripePlan.fromValue(plan));
+    public void validateLimitNotExceeded(Integer orgId, String plan, StripeLimit limit) {
+        var currentCount = this.getCounterFunction(limit).apply(orgId);
+        var maxAllowed = this.stripePlansConfig.getMaxAllowed(limit, StripePlan.fromValue(plan));
     
         if (currentCount >= maxAllowed) {
-            var msg = "organization role limit exceeded for plan: " + plan;
-            log.warn(msg);
-            throw new PlanLimitExceededException(msg);
+            var errMsg = String.format("%s exceeded limit for plan: '%s'", limit.getLimit(), plan);
+            log.warn(errMsg);
+            throw new PlanLimitExceededException(errMsg);
         }
     }
 
-    public void validateOrgMembersLimitNotExceeded(Integer orgId, String plan) {
-        var currentCount = this.getOrgMembersCount(orgId);
-        var maxAllowed = this.stripePlansConfig.getMaxAllowed(StripeLimit.MEMBERS, StripePlan.fromValue(plan));
-    
-        if (currentCount >= maxAllowed) {
-            var msg = "members limit exceeded for plan: " + plan;
-            log.warn(msg);
-            throw new PlanLimitExceededException(msg);
-        }
-    }
-
-    public void validateOrgCategoriesLimitNotExceeded(Integer orgId, String plan) {
-        var currentCount = this.getOrgCategoriesCount(orgId);
-        var maxAllowed = this.stripePlansConfig.getMaxAllowed(StripeLimit.CATEGORIES, StripePlan.fromValue(plan));
-    
-        if (currentCount >= maxAllowed) {
-            var msg = "categories limit exceeded for plan: " + plan;
-            log.warn(msg);
-            throw new PlanLimitExceededException(msg);
-        }
-    }
-
-    public void validateOrgCategoryChannelsLimitNotExceeded(Integer orgId, Integer categoryId, String plan) {
+    public void validateCategoriesChannelsLimitNotExceeded(Integer orgId, String plan, StripeLimit limit, Integer categoryId) {
         var currentCount = this.getOrgCategoryChannelCount(orgId, categoryId);
-        var maxAllowed = this.stripePlansConfig.getMaxAllowed(StripeLimit.CATEGORY_CHANNELS, StripePlan.fromValue(plan));
+        var maxAllowed = this.stripePlansConfig.getMaxAllowed(limit, StripePlan.fromValue(plan));
     
         if (currentCount >= maxAllowed) {
-            var msg = String.format("category with id '%s' limit exceeded for plan: %s", categoryId, plan);
-            log.warn(msg);
-            throw new PlanLimitExceededException(msg);
+            var errMsg = String.format("%s exceeded for plan: '%s'", limit.getLimit(), plan);
+            log.warn(errMsg);
+            throw new PlanLimitExceededException(errMsg);
         }
     }
 
@@ -87,7 +66,7 @@ public class SubscriptionLimitChecker {
 
     @LogMethod
     public long getOrgMembersCount(Integer orgId) {
-        var key = this.getOrgMembersCount(orgId);
+        var key = this.getOrgMembersCountKey(orgId);
         var cached = this.redisTemplate.opsForValue().get(key);
         if(cached == null) {
             return this.loadOrgMembersCount(orgId);
@@ -104,7 +83,7 @@ public class SubscriptionLimitChecker {
             return this.loadOrgCategoriesCount(orgId);
         }
 
-        return (long) cached;
+        return cached;
     }
 
     @LogMethod
@@ -256,5 +235,19 @@ public class SubscriptionLimitChecker {
 
     private String getOrgMembersCountKey(Serializable orgId) {
         return "org:limit-checker:" + orgId +":members-count";
+    }
+
+    private Function<Integer, Long> getCounterFunction(StripeLimit limit) {
+        switch (limit) {
+            case MEMBERS:
+                return this::getOrgMembersCount;
+            case ROLES:
+                return this::getOrgRolesCount;
+            case CATEGORIES:
+                return this::getOrgCategoriesCount;
+            default:
+                log.error("invalid limit was received {}", limit);
+                throw new IllegalArgumentException("unsupported StripeLimit: " + limit);
+        }
     }
 }

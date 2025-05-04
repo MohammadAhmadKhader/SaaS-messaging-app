@@ -17,9 +17,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.exceptions.*;
+import com.example.multitenant.utils.AppUtils;
 
 import jakarta.validation.*;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -112,6 +115,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleReesouceNotFound(ResourceNotFoundException ex) {
         var errBody = ApiResponses.GetErrResponse(ex);
         return ResponseEntity.badRequest().body(errBody);
+    }
+
+    @ExceptionHandler(PlanLimitExceededException.class)
+    public ResponseEntity<Map<String, Object>> handlePlanLimitExceeded(PlanLimitExceededException ex) {
+        var errBody = ApiResponses.GetErrResponse(ex);
+        return ResponseEntity.badRequest().body(errBody);
+    }
+
+    @ExceptionHandler(DistributedLockException.class)
+    public ResponseEntity<Map<String, Object>> handleDistributedLock(DistributedLockException ex) {
+        var tenantId = AppUtils.getTenantId();
+        log.error("[Distributed Lock] exception was occured on organization with id {}", tenantId);
+        var errMsg = "server is too busy please try again shortly";
+        var errBody = ApiResponses.GetErrResponse(errMsg);
+
+        return ResponseEntity.status(HttpStatus.LOCKED).body(errBody);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)

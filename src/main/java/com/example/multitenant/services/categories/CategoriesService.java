@@ -7,6 +7,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.dtos.categories.CategoryOrderSwapDTO;
+import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.Category;
@@ -43,6 +44,11 @@ public class CategoriesService {
     }
     
     public Category create(Category category, Integer organizationId) {
+        var duplicatedName = this.hasOrgCategoryWithSameName(organizationId, category.getName());
+        if(duplicatedName) {
+            throw new InvalidOperationException(String.format("category with name '%s' already exists", category.getName()));
+        }
+
         category.setOrganizationId(organizationId);
         var latestOrderCategory = this.categoriesRepository.findLatestOrder(organizationId);
         
@@ -77,16 +83,15 @@ public class CategoriesService {
     
     @Transactional
     public void swapCategoryOrder(CategoryOrderSwapDTO dto, Integer orgId) {
-        var cat1 = this.findOne(dto.getCategoryId1(), orgId);
+        var cat1 = this.categoriesRepository.findByIdAndOrgIdLocked(dto.getCategoryId1(), orgId);
         if(cat1 == null) {
             throw new ResourceNotFoundException("category", dto.getCategoryId1());
         }
 
-        var cat2 = this.findOne(dto.getCategoryId2(), orgId);
+        var cat2 = this.categoriesRepository.findByIdAndOrgIdLocked(dto.getCategoryId2(), orgId);
         if (cat2 == null) {
             throw new ResourceNotFoundException("category", dto.getCategoryId2());
         }
-        
 
         var tempOrder = cat1.getDisplayOrder();
         cat1.setDisplayOrder(cat2.getDisplayOrder());
@@ -143,6 +148,14 @@ public class CategoriesService {
 
     public long countOrganizationCategories(Integer orgId) {
         return this.categoriesRepository.countCategoriesByOrgId(orgId);
+    }
+
+    public boolean hasOrgCategoryWithSameName(Integer orgId, String categoryName) {
+        var probe = new Category();
+        probe.setOrganizationId(orgId);
+        probe.setName(categoryName);
+
+        return this.categoriesRepository.findOne(Example.of(probe)).isPresent();
     }
 
     public void initializeRoles(Category category, Integer orgId) {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.example.multitenant.models.Category;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -55,9 +56,13 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
     @Query("DELETE FROM Category c WHERE c.id = :id AND c.organizationId = :organizationId")
     void deleteByIdAndOrganizationId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
 
-    @Query("SELECT c FROM Category c WHERE c.organizationId = :organizationId ORDER BY c.displayOrder DESC")
+    @Query("SELECT c FROM Category c WHERE c.organizationId = :organizationId ORDER BY c.displayOrder DESC LIMIT 1")
     Category findLatestOrder(@Param("organizationId") Integer organizationId);
 
     @Query("SELECT COUNT(c) FROM Category c WHERE c.organizationId = :organizationId")
     long countCategoriesByOrgId(@Param("organizationId") long organizationId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM Category c WHERE c.id = :id AND c.organizationId = :organizationId")
+    Category findByIdAndOrgIdLocked(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
 }

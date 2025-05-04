@@ -16,6 +16,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class StripePlansConfig {
 
+    // Free Tier
+    @Value("${stripe.tiers.free.org-max-categories}")
+    private Integer freeMaxCategories;
+
+    @Value("${stripe.tiers.free.org-max-roles}")
+    private Integer freeMaxRoles;
+
+    @Value("${stripe.tiers.free.org-max-members}")
+    private Integer freeMaxMembers;
+
+    @Value("${stripe.tiers.free.org-max-category-channels}")
+    private Integer freeMaxCategoryChannels;
+
     // Starter Tier
     @Value("${stripe.tiers.starter.org-max-categories}")
     private Integer starterMaxCategories;
@@ -71,6 +84,11 @@ public class StripePlansConfig {
         validate(enterpriseMaxRoles, "enterprise org-max-roles");
         validate(enterpriseMaxMembers, "enterprise org-max-members");
         validate(enterpriseMaxCategoryChannels, "enterprise org-category-channels");
+
+        validate(freeMaxCategories, "free org-max-categories");
+        validate(freeMaxRoles, "free org-max-roles");
+        validate(freeMaxMembers, "free org-max-members");
+        validate(freeMaxCategoryChannels, "free org-max-category-channels");
     }
 
     public Integer getMaxAllowed(StripeLimit limit, StripePlan plan) {
@@ -83,21 +101,25 @@ public class StripePlansConfig {
                 case STARTER -> this.getStarterMaxCategories();
                 case PRO -> this.getProMaxCategories();
                 case ENTERPRISE -> this.getEnterpriseMaxCategories();
+                case FREE -> this.getFreeMaxCategories();
             };
             case CATEGORY_CHANNELS -> switch (plan) {
                 case STARTER -> this.getStarterMaxCategoryChannels();
                 case PRO -> this.getProMaxCategoryChannels();
                 case ENTERPRISE -> this.getEnterpriseMaxCategoryChannels();
+                case FREE -> this.getFreeMaxCategoryChannels();
             };
             case MEMBERS -> switch (plan) {
                 case STARTER -> this.getStarterMaxMembers();
                 case PRO -> this.getProMaxMembers();
                 case ENTERPRISE -> this.getEnterpriseMaxMembers();
+                case FREE -> this.getFreeMaxMembers();
             };
             case ROLES -> switch (plan) {
                 case STARTER -> this.getStarterMaxRoles();
                 case PRO -> this.getProMaxRoles();
                 case ENTERPRISE -> this.getEnterpriseMaxRoles();
+                case FREE -> this.getFreeMaxRoles();
             };
             default -> throw new IllegalArgumentException("unknown limit: " + limit);
         };

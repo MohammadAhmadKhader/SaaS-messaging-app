@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.example.multitenant.dtos.stripe.InternalStripeSubscriptionCacheDTO;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -61,8 +63,12 @@ public class InternalStripeSubscription {
     @Column(name = "status", nullable = false, length = 64)
     private String status;
 
-    @Column(name = "tier", nullable = false, length = 34)
-    private String tier;
+    // this is samed as prod_... in database (stripe product id)
+    @Column(name = "stripe_product_id", nullable = false, length = 64)
+    private String stripeProductId;
+
+    @Column(name = "stripe_product_name", nullable = false, length = 34)
+    private String stripeProductName;
 
     @Column(name = "current_period_end")
     private Instant currentPeriodEnd;
@@ -76,4 +82,8 @@ public class InternalStripeSubscription {
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
+
+    public InternalStripeSubscriptionCacheDTO toCacheDTO() {
+        return new InternalStripeSubscriptionCacheDTO(this);
+    }
 }

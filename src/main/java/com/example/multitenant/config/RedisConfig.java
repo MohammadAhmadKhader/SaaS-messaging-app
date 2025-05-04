@@ -7,7 +7,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 
 import io.github.bucket4j.distributed.proxy.ProxyManager;
@@ -63,10 +65,21 @@ public class RedisConfig {
     }
 
     @Bean
-    RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, Object> generalRedisTemplate(RedisConnectionFactory connectionFactory) {
         var template = new RedisTemplate<String, Object>();
         template.setConnectionFactory(connectionFactory);
-       // template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        template.setKeySerializer(new StringRedisSerializer());
+        // template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+
+        return template;
+    }
+
+    @Bean
+    RedisTemplate<String, Long> counterRedisTemplate(RedisConnectionFactory connectionFactory) {
+        var template = new RedisTemplate<String, Long>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericToStringSerializer<>(Long.class));
 
         return template;
     }

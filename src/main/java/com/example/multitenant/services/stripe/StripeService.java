@@ -15,6 +15,7 @@ import com.example.multitenant.models.InternalStripeCustomer;
 import com.example.multitenant.models.InternalStripeSubscription;
 import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.StripeEventType;
+import com.example.multitenant.models.enums.StripePlan;
 import com.example.multitenant.repository.InternalStripeCustomersRepository;
 import com.example.multitenant.repository.InternalStripeSubscriptionsRepository;
 import com.stripe.Stripe;
@@ -116,12 +117,15 @@ public class StripeService {
 
         var item = stripeSub.getItems().getData().get(0);
         var cancelAt = stripeSub.getCancelAt() == null ? null : Instant.ofEpochMilli(stripeSub.getCancelAt());
+        var stripeProductId = item.getPrice().getProduct();
+        
         var internalSub = InternalStripeSubscription.builder()
                 .stripeSubscriptionId(stripeSub.getId())
                 .stripeCustomerId(stripeSub.getCustomer())
                 .stripePriceId(item.getPrice().getId())
                 .userId(userId)
-                .tier(item.getPrice().getProduct())
+                .stripeProductId(stripeProductId)
+                .stripeProductName(this.getStripeProductDisplayName(stripeProductId))
                 .internalCustomerId(intenralCustomer.getId())
                 .organizationId(organizationId)
                 .currentPeriodStart(Instant.ofEpochSecond(item.getCurrentPeriodStart()))
@@ -188,13 +192,13 @@ public class StripeService {
                         priceId = price.getId();
                         iterations++;
                     }
-                    var tier = this.getPlanByPriceId(priceId);
-                    if(tier == null) {
-                        throw new AppStripeException(String.format("price tier was not found for price id '%s'", priceId));
+                    var productId = this.getStripeProductIdByPriceId(priceId);
+                    if(productId == null) {
+                        throw new AppStripeException(String.format("product was not found for price id '%s'", priceId));
                     }
 
                     log.info("received the following priceId {}", priceId);
-                    log.info("received the following tier {}", tier);
+                    log.info("received the following productId {}", productId);
 
                     if(iterations == 0) {
                         throw new AppStripeException(String.format("no subsecription items were found for subscription with id '%s'", session.getSubscription()));
@@ -209,8 +213,8 @@ public class StripeService {
                         throw new AppStripeException("priceId is missing");
                     }
 
-                    if(tier.equals("")) {
-                        throw new AppStripeException("tier is missing");
+                    if(productId.equals("")) {
+                        throw new AppStripeException("product id is missing");
                     }
 
                     Subscription stripeSub = null;
@@ -250,7 +254,7 @@ public class StripeService {
         return Customer.retrieve(customerId);
     }
 
-    public String getPlanByPriceId(String priceId) {
+    public String getStripeProductIdByPriceId(String priceId) {
         if(priceId.equals(this.stripeConfig.getPriceStarterId())) {
             return this.stripeConfig.getStarterPlanId();
 
@@ -259,6 +263,20 @@ public class StripeService {
 
         } else if(priceId.equals(this.stripeConfig.getPriceEnterpriseId())) {
             return this.stripeConfig.getEnterprisePlanId();
+        }
+
+        return null;
+    }
+
+    public String getStripeProductDisplayName(String priceId) {
+        if(priceId.equals(this.stripeConfig.getPriceStarterId())) {
+            return StripePlan.STARTER.toString();
+
+        } else if(priceId.equals(this.stripeConfig.getPriceProId())) {
+            return StripePlan.PRO.toString();
+
+        } else if(priceId.equals(this.stripeConfig.getPriceEnterpriseId())) {
+            return StripePlan.ENTERPRISE.toString();
         }
 
         return null;

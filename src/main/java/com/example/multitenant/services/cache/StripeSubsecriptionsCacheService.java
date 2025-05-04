@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.multitenant.dtos.stripe.InternalStripeSubscriptionCacheDTO;
 import com.example.multitenant.models.InternalStripeSubscription;
 import com.example.multitenant.services.stripe.StripeService;
 
@@ -18,23 +19,23 @@ public class StripeSubsecriptionsCacheService {
     private final StripeService stripeService;
     private static final Duration CACHE_TTL = Duration.ofMinutes(30);
 
-    public InternalStripeSubscription getSubscription(Integer orgId) {
+    public InternalStripeSubscriptionCacheDTO getSubscription(Integer orgId) {
         var key = this.getKey(orgId);
         var cached = redisTemplate.opsForValue().get(key);
         if (cached == null) {
             return loadSubscription(orgId);
         }
 
-        return (InternalStripeSubscription) cached;
+        return (InternalStripeSubscriptionCacheDTO) cached;
     }
 
-    public InternalStripeSubscription loadSubscription(Integer orgId) {
+    public InternalStripeSubscriptionCacheDTO loadSubscription(Integer orgId) {
         var subscription = this.stripeService.getOrgActiveSubsecription(orgId);
         if (subscription != null) {
-            redisTemplate.opsForValue().set(getKey(orgId), subscription, CACHE_TTL);
+            redisTemplate.opsForValue().set(getKey(orgId), subscription.toCacheDTO(), CACHE_TTL);
         }
 
-        return subscription;
+        return subscription == null ? null : subscription.toCacheDTO();
     }
 
     public void setSubscription(Integer orgId, InternalStripeSubscription subscription) {

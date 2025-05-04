@@ -6,11 +6,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.multitenant.common.annotations.contract.TenantHandlerLocker;
+import com.example.multitenant.common.annotations.contract.ValidateSubscriptionLimit;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.categories.*;
 import com.example.multitenant.models.enums.LogEventType;
+import com.example.multitenant.models.enums.StripeCounterOperation;
+import com.example.multitenant.models.enums.StripeLimit;
 import com.example.multitenant.services.cache.CategoriesCacheService;
+import com.example.multitenant.services.cache.SubscriptionLimitChecker;
 import com.example.multitenant.services.categories.CategoriesService;
 import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.services.membership.MemberShipService;
@@ -31,7 +36,8 @@ public class CategoriesController {
     private final CategoriesService categoriesService;
     private final CategoriesCacheService categoriesCacheService;
     private final LogsService logsService;
-    
+    private final SubscriptionLimitChecker subscriptionLimitChecker;
+
     @GetMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)")
     public ResponseEntity<Object> getAllCategories() {
@@ -46,10 +52,11 @@ public class CategoriesController {
     
     @PostMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_CREATE)")
+    @ValidateSubscriptionLimit(limit = StripeLimit.CATEGORIES, counterOperation = StripeCounterOperation.INCREMENT)
     public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
         var tenantId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
-        
+
         var category = this.categoriesService.create(dto.toModel(), tenantId);
         this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
         this.logsService.createCategoriesLog(user, category, tenantId, LogEventType.ORG_CATEGORY_CREATED);
@@ -62,6 +69,7 @@ public class CategoriesController {
 
     @PatchMapping("/swap-order")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
+    @TenantHandlerLocker
     public ResponseEntity<Void> swapCategoryOrder(@RequestBody CategoryOrderSwapDTO dto) {
         var tenantId = AppUtils.getTenantId();
         
@@ -101,6 +109,8 @@ public class CategoriesController {
         this.categoriesService.delete(id, tenantId);
         this.categoriesCacheService.invalidateOrgCategories(tenantId, id);
         this.categoriesCacheService.invalidateOrgCategoriesUserRoles(tenantId, "*");
+
+        this.subscriptionLimitChecker.decrementOrgCategoriesCount(tenantId);
 
         return ResponseEntity.noContent().build();
     }

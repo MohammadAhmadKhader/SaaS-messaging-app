@@ -331,52 +331,30 @@ public class MemberShipService {
     }
 
     public OrganizationRole initializeDefaultRolesAndPermissions(Integer orgId) {
-        var orgOwnerRole = this.createOwnerRole(orgId);
-        var orgAdminRole = this.createAdminRole(orgId);
-        var orgUserRole = this.createUserRole(orgId);
-
-        this.organizationRolesService.createMany(List.of(orgOwnerRole, orgAdminRole, orgUserRole));
-
-        return orgOwnerRole;
+        var roles = List.of(
+            DefaultOrganizationRole.ORG_OWNER,
+            DefaultOrganizationRole.ORG_ADMIN,
+            DefaultOrganizationRole.ORG_USER
+        );
+    
+        List<OrganizationRole> orgRoles = roles.stream()
+            .map(role -> createRoleWithPermissions(role, orgId))
+            .toList();
+    
+        this.organizationRolesService.createMany(orgRoles);
+    
+        return orgRoles.get(0);
     }
 
     // * private methods below
-    private OrganizationRole createOwnerRole(Integer orgId) {
-        var orgOwner = DefaultOrganizationRole.ORG_OWNER;
-        var orgOwnerRole = new OrganizationRole(orgOwner.getRoleName());
-        orgOwnerRole.setDisplayName("Owner");
-
-        var orgOwnerPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgOwner);
-
-        orgOwnerRole.setOrganizationPermissions(orgOwnerPerms);
-        orgOwnerRole.setOrganizationId(orgId);
-
-        return orgOwnerRole;
-    }
-
-    private OrganizationRole createAdminRole(Integer orgId) {
-        var orgAdmin = DefaultOrganizationRole.ORG_ADMIN;
-        var orgAdminRole = new OrganizationRole(orgAdmin.getRoleName());
-        orgAdminRole.setDisplayName("Admin");
-
-        var orgAdminPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgAdmin);
-
-        orgAdminRole.setOrganizationPermissions(orgAdminPerms);
-        orgAdminRole.setOrganizationId(orgId);
-
-        return orgAdminRole;
-    }
-
-    private OrganizationRole createUserRole(Integer orgId) {
-        var orgUser = DefaultOrganizationRole.ORG_USER;
-        var orgUserRole = new OrganizationRole(orgUser.getRoleName());
-        orgUserRole.setDisplayName("User");
-
-        var orgUserPerms = this.organizationsPermissionsService.findAllDefaultPermissions(orgUser);
-
-        orgUserRole.setOrganizationPermissions(orgUserPerms);
-        orgUserRole.setOrganizationId(orgId);
-
-        return orgUserRole;
+    private OrganizationRole createRoleWithPermissions(DefaultOrganizationRole defaultRole, Integer orgId) {
+        var role = new OrganizationRole(defaultRole.getRoleName());
+        role.setDisplayName(defaultRole.getDefaultDisplayName()); // assuming this method exists
+        role.setOrganizationId(orgId);
+    
+        var permissions = this.organizationsPermissionsService.findAllDefaultPermissions(defaultRole);
+        role.setOrganizationPermissions(permissions);
+    
+        return role;
     }
 }

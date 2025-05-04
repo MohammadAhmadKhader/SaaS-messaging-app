@@ -6,10 +6,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.multitenant.common.annotations.contract.TenantHandlerLocker;
+import com.example.multitenant.common.annotations.contract.ValidateCategoryChannelsSubscriptionLimit;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.channels.*;
 import com.example.multitenant.models.enums.LogEventType;
+import com.example.multitenant.models.enums.StripeCounterOperation;
+import com.example.multitenant.models.enums.StripeLimit;
+import com.example.multitenant.services.cache.SubscriptionLimitChecker;
 import com.example.multitenant.services.channels.ChannelsService;
 import com.example.multitenant.services.logs.LogsService;
 import com.example.multitenant.utils.AppUtils;
@@ -27,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChannelsController {
     private final ChannelsService channelsService;
     private final LogsService logsService;
+    private final SubscriptionLimitChecker subscriptionLimitChecker;
 
     @GetMapping("/{id}")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
@@ -42,6 +48,7 @@ public class ChannelsController {
     
     @PostMapping("")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_CREATE)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @ValidateCategoryChannelsSubscriptionLimit(limit = StripeLimit.CATEGORY_CHANNELS, counterOperation = StripeCounterOperation.INCREMENT, categoryIdParamIndex = 1)
     public ResponseEntity<Object> createChannel(@Valid @RequestBody ChannelCreateDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
@@ -78,6 +85,7 @@ public class ChannelsController {
 
     @PatchMapping("/swap-order")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @TenantHandlerLocker
     public ResponseEntity<Void> swapChannelOrder(@RequestBody ChannelOrderSwapDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         this.channelsService.swapChannelOrder(dto, tenantId, categoryId);
@@ -89,7 +97,10 @@ public class ChannelsController {
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_DELETE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> deleteChannel(@ValidateNumberId @PathVariable Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
+
         this.channelsService.delete(id, tenantId, categoryId);
+        this.subscriptionLimitChecker.decrementCategoryChannelsCount(id, categoryId);
+        
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.example.multitenant.models.Channel;
 
 import org.springframework.data.repository.query.Param;
+
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -38,4 +40,8 @@ public interface ChannelsRepository extends GenericRepository<Channel, Integer> 
 
     @Query("SELECT COUNT(c) FROM Channel c WHERE c.category.id = :categoryId AND c.organizationId = :organizationId")
     long countChannelsByCategoryId(@Param("categoryId") Integer categoryId, @Param("organizationId") Integer organizationId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM Channel c WHERE c.id = :id AND c.organizationId = :organizationId AND c.category.id = :categoryId")
+    Channel findByIdAndOrgIdAndCatIdLocked(@Param("id") Integer id, @Param("organizationId") Integer organizationId, @Param("categoryId") Integer categoryId);
 }
