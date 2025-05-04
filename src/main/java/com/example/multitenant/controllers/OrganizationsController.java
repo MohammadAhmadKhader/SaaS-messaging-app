@@ -40,8 +40,6 @@ public class OrganizationsController {
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")
     public ResponseEntity<Object> createOrganization(@Valid @ModelAttribute OrganizationCreateDTO dto) {
-
-        log.info("received this image {}", dto.image().getOriginalFilename());
         if (this.organizationsService.existsByName(dto.name())) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("organization name was taken already"));
         }

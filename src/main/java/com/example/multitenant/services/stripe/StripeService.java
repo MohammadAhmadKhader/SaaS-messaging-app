@@ -98,7 +98,6 @@ public class StripeService {
 
         var stripeCustomer = Customer.create(customerParams);
 
-        // customer in our db
         var localCustomer = new InternalStripeCustomer();
         localCustomer.setUser(user);
         localCustomer.setStripeCustomerId(stripeCustomer.getId());
@@ -263,5 +262,9 @@ public class StripeService {
         }
 
         return null;
+    }
+
+    public InternalStripeSubscription getOrgActiveSubsecription(Integer orgId) {
+        return this.internalStripeSubscriptionsRepository.findActiveSubsecriptionByOrgId(orgId);
     }
 }

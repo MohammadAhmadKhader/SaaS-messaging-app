@@ -1,0 +1,32 @@
+package com.example.multitenant.models.enums;
+
+public enum StripePlan {
+    STARTER("starter"),
+    PRO("pro"),
+    ENTERPRISE("enterprise");
+
+    private final String value;
+
+    StripePlan(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static StripePlan fromValue(String value) {
+        for (var plan : values()) {
+            if (plan.value.equalsIgnoreCase(value)) {
+                return plan;
+            }
+        }
+
+        throw new IllegalArgumentException("invalid StripePlans value: " + value + ". valid values are 'starter' or 'pro' or 'enterprise'");
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
+}

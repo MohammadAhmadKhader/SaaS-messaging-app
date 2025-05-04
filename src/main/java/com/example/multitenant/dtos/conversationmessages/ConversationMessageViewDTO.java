@@ -19,7 +19,7 @@ public class ConversationMessageViewDTO {
 
     public ConversationMessageViewDTO(ConversationMessage message) {
         setId(message.getId());
-        setUser(message.getSender().toUserMessageViewDTO()); // this here throws the errror
+        setUser(message.getSender().toUserMessageViewDTO());
         setCreatedAt(message.getCreatedAt());
         setUpdatedAt(message.getUpdatedAt());
     }

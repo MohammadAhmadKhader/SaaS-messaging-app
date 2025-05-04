@@ -189,6 +189,10 @@ public class OrganizationRolesService {
         return this.organizationRolesCrudService.createMany(roles);
     }
 
+    public long countOrganizationRoles(Integer orgId) {
+        return this.rolesRepository.countRolesByOrganizationId(orgId);
+    }
+
     // TODO: must be made by 1 request rather than 1 request per role.
     public List<OrganizationRole> findDefaultOrgRoles(Integer orgId) {
         var defaultOrgRoles = DefaultOrganizationRole.values();

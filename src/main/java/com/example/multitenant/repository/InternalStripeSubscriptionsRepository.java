@@ -31,4 +31,11 @@ public interface InternalStripeSubscriptionsRepository extends GenericRepository
         AND s.currentPeriodEnd > CURRENT_TIMESTAMP)
     """)
     boolean hasValidActiveSubscription(@Param("organizationId") Integer organizationId);
+
+    @Query("""
+        SELECT s FROM InternalStripeSubscription s
+        WHERE s.organization.id = :organizationId AND s.status = 'active'
+        ORDER BY s.createdAt DESC
+    """)
+    InternalStripeSubscription findActiveSubsecriptionByOrgId(@Param("organizationId") Integer organizationId);
 } 

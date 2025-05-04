@@ -78,5 +78,65 @@
     "name": "supabase.jwt_secret",
     "type": "java.lang.String",
     "description": "A description for 'supabase.jwt_secret'"
+  },
+  {
+    "name": "stripe.tiers.starter.org-max-roles",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.starter.org-max-roles'"
+  },
+  {
+    "name": "stripe.tiers.pro.org-max-roles",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.pro.org-max-roles'"
+  },
+  {
+    "name": "stripe.tiers.starter.org-max-category-channels",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.starter.org-max-category-channels'"
+  },
+  {
+    "name": "stripe.tiers.enterprise.org-category-channels",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.enterprise.org-category-channels'"
+  },
+  {
+    "name": "stripe.tiers.enterprise.org-max-members",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.enterprise.org-max-members'"
+  },
+  {
+    "name": "stripe.tiers.pro.org-max-category-channels",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.pro.org-max-category-channels'"
+  },
+  {
+    "name": "stripe.tiers.starter.org-max-members",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.starter.org-max-members'"
+  },
+  {
+    "name": "stripe.tiers.enterprise.org-max-roles",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.enterprise.org-max-roles'"
+  },
+  {
+    "name": "stripe.tiers.enterprise.org-max-categories",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.enterprise.org-max-categories'"
+  },
+  {
+    "name": "stripe.tiers.starter.org-max-categories",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.starter.org-max-categories'"
+  },
+  {
+    "name": "stripe.tiers.pro.org-max-categories",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.pro.org-max-categories'"
+  },
+  {
+    "name": "stripe.tiers.pro.org-max-members",
+    "type": "java.lang.Integer",
+    "description": "A description for 'stripe.tiers.pro.org-max-members'"
   }
 ]}

@@ -19,7 +19,8 @@ import lombok.*;
 @Table(name = "internal_stripe_subscriptions", indexes = {
     @Index(name = "idx_internal_stripe_sub_stripe_subscription_id", columnList = "stripe_subscription_id"),
     @Index(name = "idx_internal_stripe_sub_organization_id", columnList = "organization_id"),
-    @Index(name = "idx_internal_stripe_sub_user_id", columnList = "user_id")
+    @Index(name = "idx_internal_stripe_sub_user_id", columnList = "status"),
+    @Index(name = "idx_internal_status", columnList = "user_id")
 })
 public class InternalStripeSubscription {
     @Id
@@ -57,10 +58,10 @@ public class InternalStripeSubscription {
     @JoinColumn(name = "user_id", updatable = false, insertable = false)
     private User user;
 
-    @Column(name = "status", length = 64)
+    @Column(name = "status", nullable = false, length = 64)
     private String status;
 
-    @Column(name = "tier", length = 34)
+    @Column(name = "tier", nullable = false, length = 34)
     private String tier;
 
     @Column(name = "current_period_end")

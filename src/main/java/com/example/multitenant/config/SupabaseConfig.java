@@ -8,10 +8,8 @@ import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Configuration
 public class SupabaseConfig {
     @Value("${supabase.url}")
