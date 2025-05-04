@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class SessionsService {
+public class SessionsCacheService {
     
     @Value("${server.servlet.session.timeout}")
     private Duration timeout;

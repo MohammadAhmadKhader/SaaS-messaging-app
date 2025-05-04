@@ -54,7 +54,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final GlobalRolesService globalRolesService;
     private final SecurityContextRepository securityRepository;
-    private final SessionsService sessionsService;
+    private final SessionsCacheService sessionsCacheService;
     private final LogsService logsService;
 
     @PostMapping("/register")
@@ -77,7 +77,7 @@ public class AuthController {
         var populatedUser = this.usersService.findUserWithRolesAndPermissions(createdUser.getId());
         var userDTO = populatedUser.toViewDTO();
 
-        this.sessionsService.createSessionWithUser(req, userDTO);
+        this.sessionsCacheService.createSessionWithUser(req, userDTO);
         var respBody = ApiResponses.OneKey("user", userDTO);
 
         var userAgent = AppUtils.getUserAgrent(req);
@@ -151,7 +151,7 @@ public class AuthController {
         var userDTO = user.toViewDTO();
         var respBody = ApiResponses.OneKey("user", userDTO);
         
-        this.sessionsService.storeUserInSession(request, userDTO);
+        this.sessionsCacheService.storeUserInSession(request, userDTO);
 
         var userAgent = AppUtils.getUserAgrent(request);
         var ipAddress = AppUtils.getClientIp(request);
@@ -168,7 +168,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respBody);
         }
 
-        var user = this.sessionsService.getUserFromSession(req);
+        var user = this.sessionsCacheService.getUserFromSession(req);
         if(user == null) {
             var respBody = ApiResponses.GetInternalErr();
             return ResponseEntity.internalServerError().body(respBody);
