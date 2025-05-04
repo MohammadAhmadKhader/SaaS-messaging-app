@@ -15,7 +15,6 @@ import com.example.multitenant.dtos.conversationmessages.ConversationMessageCrea
 import com.example.multitenant.dtos.messages.*;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
 import com.example.multitenant.models.User;
-import com.example.multitenant.services.cache.RedisService;
 import com.example.multitenant.services.conversations.ConversationsService;
 import com.example.multitenant.services.messages.OrgMessagesService;
 import com.example.multitenant.services.users.UsersService;

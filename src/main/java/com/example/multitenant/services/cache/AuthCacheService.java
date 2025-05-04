@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Service
-public class RedisService {
+public class AuthCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final OrganizationRolesService organizationRolesService;
     private final MemberShipService memberShipService;

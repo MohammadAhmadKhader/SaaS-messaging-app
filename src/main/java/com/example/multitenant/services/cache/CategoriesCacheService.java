@@ -25,7 +25,7 @@ public class CategoriesCacheService {
     private final MemberShipService memberShipService;
     private final CategoriesService categoriesService;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisService redisService;
+    private final AuthCacheService authCacheService;
 
     private static final Duration CACHE_TTL = Duration.ofMinutes(30);
 
@@ -33,7 +33,7 @@ public class CategoriesCacheService {
     @SuppressWarnings("unchecked")
     public List<CategoryViewDTO> getCategories(Integer orgId, Long userId) {
         log.info("getting categories");
-        var userOrgRoles = this.redisService.getUserOrgRoles(orgId, userId);
+        var userOrgRoles = this.authCacheService.getUserOrgRoles(orgId, userId);
         var userOrgRolesIds = userOrgRoles.stream().map((role) -> role.getId()).toList();
 
         var key = this.getOrgCategoriesUserRolesCacheKey(orgId, userOrgRolesIds.toString());

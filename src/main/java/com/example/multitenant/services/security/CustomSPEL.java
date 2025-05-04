@@ -9,14 +9,14 @@ import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.services.cache.*;
 import com.example.multitenant.utils.AppUtils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class CustomSPEL {
-
-    @Autowired
-    private RedisService redisService;
+    private final AuthCacheService authCacheService;
 
     public boolean hasAnyRole(Authentication auth) {
         return auth.getAuthorities().stream()
@@ -32,7 +32,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var perms = this.redisService.getUserOrgPermissions(tenantId, userId);
+        var perms = this.authCacheService.getUserOrgPermissions(tenantId, userId);
 
         return perms.stream().anyMatch((perm) -> perm.equals(permission));
     }
@@ -46,7 +46,7 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var roles = this.redisService.getUserOrgRoles(tenantId, userId);
+        var roles = this.authCacheService.getUserOrgRoles(tenantId, userId);
 
         return roles.stream().anyMatch((role) -> role.getName().equals(roleName));
     }
@@ -60,12 +60,12 @@ public class CustomSPEL {
         var tenantId = AppUtils.getTenantId();
         var userId = userDetails.getUser().getId();
 
-        var userRolesIds = this.redisService.getUserOrgRoles(tenantId, userId)
+        var userRolesIds = this.authCacheService.getUserOrgRoles(tenantId, userId)
                                             .stream()
                                             .map((role) -> role.getId())
                                             .toList();
 
-        var authoriedRolesIds = this.redisService
+        var authoriedRolesIds = this.authCacheService
                                     .getOrgCategoryWithAuthorizedRolesList(tenantId, categoryId);
 
         return authoriedRolesIds.stream().anyMatch((roleId)-> userRolesIds.contains(roleId));
