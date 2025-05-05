@@ -67,6 +67,24 @@ public class InternalStripeSubscription {
     @Column(name = "stripe_product_id", nullable = false, length = 64)
     private String stripeProductId;
 
+    @Column(name = "amount",nullable = false)
+    private Long amount;
+
+    @Column(name = "country",nullable = false, length = 8)
+    private String country;
+
+    @Column(name = "interval",nullable = false, length = 16)    
+    private String interval;
+
+    @Column(name = "currency",nullable = false, length = 8)
+    private String currency;
+    
+    @Column(name = "brand",nullable = false, length = 50)
+    private String brand;
+
+    @Column(name = "last4",nullable = false, length = 4)
+    private String last4;
+
     @Column(name = "stripe_product_name", nullable = false, length = 34)
     private String stripeProductName;
 

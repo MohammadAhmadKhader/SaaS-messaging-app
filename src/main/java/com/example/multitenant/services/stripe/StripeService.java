@@ -1,9 +1,7 @@
 package com.example.multitenant.services.stripe;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.*;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,26 +9,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.multitenant.config.StripeConfig;
 import com.example.multitenant.exceptions.AppStripeException;
-import com.example.multitenant.models.InternalStripeCustomer;
-import com.example.multitenant.models.InternalStripeSubscription;
-import com.example.multitenant.models.User;
-import com.example.multitenant.models.enums.StripeEventType;
-import com.example.multitenant.models.enums.StripePlan;
-import com.example.multitenant.repository.InternalStripeCustomersRepository;
-import com.example.multitenant.repository.InternalStripeSubscriptionsRepository;
+import com.example.multitenant.models.*;
+import com.example.multitenant.models.enums.*;
+import com.example.multitenant.repository.*;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Customer;
-import com.stripe.model.Event;
-import com.stripe.model.Subscription;
-import com.stripe.model.SubscriptionCollection;
-import com.stripe.model.SubscriptionItem;
-import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.SubscriptionCreateParams;
+import com.stripe.model.*;
+import com.stripe.param.*;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.param.checkout.SessionCreateParams.SubscriptionData;
 import com.stripe.model.checkout.Session;
-import com.stripe.net.Webhook;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +30,7 @@ public class StripeService {
     private final InternalStripeCustomersRepository internalStripeCustomersRepository;
     private final InternalStripeSubscriptionsRepository internalStripeSubscriptionsRepository;
     private final StripeConfig stripeConfig;
+    private final StripeHelperService stripeHelperService;
 
     @PostConstruct
     public void init() {
@@ -107,36 +95,84 @@ public class StripeService {
         return localCustomer;
     }
 
-    public InternalStripeSubscription createInternalSubscription(Subscription stripeSub, Integer organizationId, Long userId) throws StripeException {
+    public InternalStripeSubscription createInternalSubscription(Session session, Subscription stripeSub, Integer organizationId, Long userId) throws StripeException {
         var intenralCustomer = this.internalStripeCustomersRepository.findCustomerByUserId(userId);
         if(intenralCustomer == null) {
-            throw new AppStripeException(String.format("""
-                internal customer for user with id '%s' is null during chechkout session that was completed successfully
-            """.trim(), userId));
+            var errMsg = String.format(
+            "internal customer for user with id '%s' is null during chechkout session that was completed successfully",
+            userId);
+            throw new AppStripeException(errMsg);
+        }
+
+        PaymentMethod paymentMethod = null;
+        if (stripeSub.getDefaultPaymentMethodObject() != null) {
+            paymentMethod = stripeSub.getDefaultPaymentMethodObject();
+            var paymentMethodType = paymentMethod.getType();
+
+            if (!paymentMethodType.equals("card")) {
+                log.error("invalid payment method, received {}, payment_method: {}",paymentMethodType ,paymentMethod.toJson());
+                throw new AppStripeException("invalid payment method");
+            }
+
+        } else {
+            log.error("payment method is required received payemnt as null, checkout_session: {}", stripeSub.toJson());
+            throw new AppStripeException("payment method is required");
         }
 
         var item = stripeSub.getItems().getData().get(0);
         var cancelAt = stripeSub.getCancelAt() == null ? null : Instant.ofEpochMilli(stripeSub.getCancelAt());
-        var stripeProductId = item.getPrice().getProduct();
+        var country = session.getCustomerDetails().getAddress().getCountry();
+
+        // price
+        var price = item.getPrice();
+        var stripeProductId = price.getProduct();
+        var currency = price.getCurrency();
+        var amount = price.getUnitAmount();
+        var status = stripeSub.getStatus();
+        var interval = price.getRecurring().getInterval();
+
+        // card
+        var card = paymentMethod.getCard();
+        var brand = card.getBrand();
+        var last4 = card.getLast4();
+
+        // periods
+        var currPerioudEnd = Instant.ofEpochSecond(item.getCurrentPeriodEnd());
+        var currPerioudStart = Instant.ofEpochSecond(item.getCurrentPeriodStart());
+
+        // ids
+        var stripeCustomerId = stripeSub.getCustomer();
+        var priceId = price.getId();
+        var stripeSubscriptionId = stripeSub.getId();
+        var productDisplayName = this.stripeHelperService.getStripeProductDisplayName(stripeProductId);
+        var internalCustomerId = intenralCustomer.getId();
         
         var internalSub = InternalStripeSubscription.builder()
-                .stripeSubscriptionId(stripeSub.getId())
-                .stripeCustomerId(stripeSub.getCustomer())
-                .stripePriceId(item.getPrice().getId())
+                //id's
+                .stripeSubscriptionId(stripeSubscriptionId)
+                .stripeCustomerId(stripeCustomerId)
+                .stripePriceId(priceId)
                 .userId(userId)
                 .stripeProductId(stripeProductId)
-                .stripeProductName(this.getStripeProductDisplayName(stripeProductId))
-                .internalCustomerId(intenralCustomer.getId())
+                .internalCustomerId(internalCustomerId)
                 .organizationId(organizationId)
-                .currentPeriodStart(Instant.ofEpochSecond(item.getCurrentPeriodStart()))
-                .currentPeriodEnd(Instant.ofEpochSecond(item.getCurrentPeriodEnd()))
+                // periods
+                .currentPeriodStart(currPerioudStart)
+                .currentPeriodEnd(currPerioudEnd)
                 .cancelPeriodAt(cancelAt)
-                .status(stripeSub.getStatus())
+                 // card
+                .brand(brand)
+                .last4(last4)
+                // others
+                .stripeProductName(productDisplayName)
+                .country(country)
+                .amount(amount)
+                .interval(interval)
+                .currency(currency)
+                .status(status)
                 .build();
 
-        this.internalStripeSubscriptionsRepository.save(internalSub);
-
-        return internalSub;
+        return this.internalStripeSubscriptionsRepository.save(internalSub);
     }
 
     public Subscription getSubscriptionByOrganizationId(String stripeCustomerId, String organizationId) throws StripeException {
@@ -154,132 +190,19 @@ public class StripeService {
         return null;
     }
 
-    public void handleCheckoutSessionCompletedEvent(Event event) {
-        event.getDataObjectDeserializer().getObject().ifPresent((obj) ->{ 
-                if(obj instanceof Session) {
-                    var session = (Session) obj;
-                    log.info("subscription id: {}", session.getId());
-                    log.info("customer id: {}", session.getCustomer());
-
-                    Subscription sub;
-                    try {
-                        sub = this.getSubscriptionById(session.getSubscription());
-                    } catch (StripeException ex) {
-                        throw new AppStripeException(String.format("an error has occured during attempt to fetch subsecription with id '%s'", session.getSubscription()), ex);
-                    }
-                    
-                    if(sub == null) {
-                        throw new AppStripeException(String.format("subscription with id '%s' was not found", session.getSubscription()));
-                    }
-
-                    var userId = session.getMetadata().get("user_id");
-                    if(userId == null || userId.isBlank()) {
-                        throw new AppStripeException(String.format("user id was not found in metadata on stripe session id '%s'", session.getSubscription()));
-                    }
-
-                    var organizationId = session.getMetadata().get("organization_id");
-                    if(organizationId == null || organizationId.isBlank()) {
-                        throw new AppStripeException(String.format("organization id was not found in metadata on stripe session id '%s'", session.getSubscription()));
-                    }
-
-                    var userIdAsLong = Long.valueOf(userId);
-                    var organizationIdAsInteger = Integer.valueOf(organizationId);
-                    
-                    var iterations = 0;
-                    var priceId = "";
-                    for (var item : sub.getItems().autoPagingIterable()) {
-                        var price = item.getPrice();
-                        priceId = price.getId();
-                        iterations++;
-                    }
-                    var productId = this.getStripeProductIdByPriceId(priceId);
-                    if(productId == null) {
-                        throw new AppStripeException(String.format("product was not found for price id '%s'", priceId));
-                    }
-
-                    log.info("received the following priceId {}", priceId);
-                    log.info("received the following productId {}", productId);
-
-                    if(iterations == 0) {
-                        throw new AppStripeException(String.format("no subsecription items were found for subscription with id '%s'", session.getSubscription()));
-                    }
-
-                    if(iterations > 1) {
-                        throw new AppStripeException(String.format("items are supposed to be only one which" +
-                        "is the plan selected, but received more than one, subsecription.getItems().getData() = %s", sub.getItems().getData()));
-                    }
-
-                    if(priceId.equals("")) {
-                        throw new AppStripeException("priceId is missing");
-                    }
-
-                    if(productId.equals("")) {
-                        throw new AppStripeException("product id is missing");
-                    }
-
-                    Subscription stripeSub = null;
-                    try {
-                        stripeSub = this.getSubscriptionById(session.getSubscription());
-                    } catch (StripeException ex) {
-                        throw new AppStripeException(String.format("an error occured during attempt to fetch subsecription from stripe api", session.getSubscription()), ex);
-                    }
-
-                    if(stripeSub == null) {
-                        throw new AppStripeException(String.format("stripe subsecription with session id '%s' was received as null after fetching from stripe api", session.getSubscription()));
-                    }
-
-                    try {
-                        this.createInternalSubscription(stripeSub, organizationIdAsInteger, userIdAsLong);
-                    } catch (StripeException ex) {
-                        throw new AppStripeException(String.format("an error occured during attempt to created an internal subsecription with stripe session id '%s'", session.getSubscription()), ex);
-                    }
-
-                } else {
-                    log.error("[Stripe Error] event type {} with object was expected to be instanceof {}", StripeEventType.CHECKOUT_SESSION_COMPLETED, Subscription.class);
-                }
-            });
-    }
-
     public SubscriptionCollection getUserSubscriptions(String stripeCustomerId) throws StripeException {
         var params = new HashMap<String, Object>();
         params.put("customer", stripeCustomerId);
         return Subscription.list(params);
     }
 
-    public Subscription getSubscriptionById(String subscriptionId) throws StripeException {
-        return Subscription.retrieve(subscriptionId);
-    }
+    public Subscription getSubscriptionById(String subscriptionId, String... expands) throws StripeException {
+        var params = SubscriptionRetrieveParams.builder()
+        .addExpand("default_payment_method")
+        .addAllExpand(List.of(expands))
+        .build();
 
-    public Customer getCustomerById(String customerId) throws StripeException {
-        return Customer.retrieve(customerId);
-    }
-
-    public String getStripeProductIdByPriceId(String priceId) {
-        if(priceId.equals(this.stripeConfig.getPriceStarterId())) {
-            return this.stripeConfig.getStarterPlanId();
-
-        } else if(priceId.equals(this.stripeConfig.getPriceProId())) {
-            return this.stripeConfig.getProPlanId();
-
-        } else if(priceId.equals(this.stripeConfig.getPriceEnterpriseId())) {
-            return this.stripeConfig.getEnterprisePlanId();
-        }
-
-        return null;
-    }
-
-    public String getStripeProductDisplayName(String priceId) {
-        if(priceId.equals(this.stripeConfig.getPriceStarterId())) {
-            return StripePlan.STARTER.toString();
-
-        } else if(priceId.equals(this.stripeConfig.getPriceProId())) {
-            return StripePlan.PRO.toString();
-
-        } else if(priceId.equals(this.stripeConfig.getPriceEnterpriseId())) {
-            return StripePlan.ENTERPRISE.toString();
-        }
-
-        return null;
+        return Subscription.retrieve(subscriptionId, params, null);
     }
 
     public InternalStripeSubscription getOrgActiveSubsecription(Integer orgId) {
