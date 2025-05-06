@@ -16,26 +16,31 @@ public interface InternalStripeSubscriptionsRepository extends GenericRepository
         WHERE s.organization.id = :organizationId
         ORDER BY s.createdAt DESC
     """)
-    List<InternalStripeSubscription> findSubsecriptionsByOrgId(@Param("organizationId") Integer organizationId);
+    List<InternalStripeSubscription> findByOrgId(@Param("organizationId") Integer organizationId);
 
     @Query("""
         SELECT s FROM InternalStripeSubscription s
         WHERE s.user.id = :userId
         ORDER BY s.createdAt DESC
     """)
-    List<InternalStripeSubscription> findSubsecriptionsByUserId(@Param("userId") Integer userId);
+    List<InternalStripeSubscription> findByUserId(@Param("userId") Integer userId);
+
+    @Query("""
+        SELECT s FROM InternalStripeSubscription s
+        WHERE s.stripeSubscriptionId = :stripeSubscriptionId
+    """)
+    InternalStripeSubscription findByStripeId(@Param("stripeSubscriptionId") String stripeSubscriptionId);
 
     @Query("""
         SELECT COUNT(s) > 0 FROM InternalStripeSubscription s
         WHERE (s.organizationId = :organizationId AND s.status = 'active' 
         AND s.currentPeriodEnd > CURRENT_TIMESTAMP)
     """)
-    boolean hasValidActiveSubscription(@Param("organizationId") Integer organizationId);
+    boolean hasActive(@Param("organizationId") Integer organizationId);
 
     @Query("""
         SELECT s FROM InternalStripeSubscription s
         WHERE s.organization.id = :organizationId AND s.status = 'active'
-        ORDER BY s.createdAt DESC
     """)
-    InternalStripeSubscription findActiveSubsecriptionByOrgId(@Param("organizationId") Integer organizationId);
+    InternalStripeSubscription findActiveByOrgId(@Param("organizationId") Integer organizationId);
 } 

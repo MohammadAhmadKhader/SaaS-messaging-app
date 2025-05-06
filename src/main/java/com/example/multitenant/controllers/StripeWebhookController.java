@@ -27,9 +27,18 @@ public class StripeWebhookController {
     public ResponseEntity<Object> handleStripeEvent(@RequestBody byte[] payloadBytes, @RequestHeader("stripe-signature") String sigHeader) throws SignatureVerificationException, IOException {
         var payloadString = new String(payloadBytes, StandardCharsets.UTF_8);
         var event = Webhook.constructEvent(payloadString, sigHeader, stripeConfig.getWebhookSecret());
-        log.info("received event: {}", event.getType());
-        if(event.getType().equals(StripeEventType.CHECKOUT_SESSION_COMPLETED.getEvent())) {
+        var eventType = event.getType();
+        log.info("received event: {}", eventType);
+
+        if(eventType.equals(StripeEventType.CHECKOUT_SESSION_COMPLETED.getEvent())) {
             this.stripeHandlerService.handleCheckoutSessionCompletedEvent(event);
+            
+        } else if(eventType.equals(StripeEventType.CUSTOMER_SUBSCRIPTION_UPDATED.getEvent())) {
+            this.stripeHandlerService.handleSubscriptionUpdate(event);
+
+        } else if(eventType.equals(StripeEventType.CUSTOMER_SUBSCRIPTION_DELETED.getEvent())) {
+            this.stripeHandlerService.handleSubscriptionCancellation(event);
+            
         }
 
         return ResponseEntity.ok().build();

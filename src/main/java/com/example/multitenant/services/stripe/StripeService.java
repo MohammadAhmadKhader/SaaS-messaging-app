@@ -40,7 +40,7 @@ public class StripeService {
     // frontend will hit backend on this
     // this method will ensure we always have customer before checking out and its set to the checkout session
     public Session createCheckoutSession(User user, String priceId, Integer tenantId) throws StripeException {
-        if(this.internalStripeSubscriptionsRepository.hasValidActiveSubscription(tenantId)) {
+        if(this.internalStripeSubscriptionsRepository.hasActive(tenantId)) {
             throw new AppStripeException("organization has already an active subscription");
         }
 
@@ -144,7 +144,7 @@ public class StripeService {
         var stripeCustomerId = stripeSub.getCustomer();
         var priceId = price.getId();
         var stripeSubscriptionId = stripeSub.getId();
-        var productDisplayName = this.stripeHelperService.getStripeProductDisplayName(stripeProductId);
+        var productDisplayName = this.stripeHelperService.getStripeProductDisplayName(priceId);
         var internalCustomerId = intenralCustomer.getId();
         
         var internalSub = InternalStripeSubscription.builder()
@@ -171,6 +171,37 @@ public class StripeService {
                 .currency(currency)
                 .status(status)
                 .build();
+
+        return this.internalStripeSubscriptionsRepository.save(internalSub);
+    }
+
+    public InternalStripeSubscription cancelSubsecription(String stripeSubId) {
+        var internalSub = this.internalStripeSubscriptionsRepository.findByStripeId(stripeSubId);
+        if (internalSub == null) {
+            return null;
+        }
+
+        internalSub.setStatus("inactive");
+        internalSub.setCancelPeriodAt(Instant.now());
+        return this.internalStripeSubscriptionsRepository.save(internalSub);
+    }
+
+    public InternalStripeSubscription updateSubsecription(Subscription subscription) {
+        var internalSub = this.internalStripeSubscriptionsRepository.findByStripeId(subscription.getId());
+        if (internalSub == null) {
+            return null;
+        }
+
+        var item = subscription.getItems().getData().get(0);
+        var price = item.getPrice();
+        var amount = price.getUnitAmount();
+        var status = subscription.getStatus();
+        var interval = price.getRecurring().getInterval();
+
+        internalSub.setStatus(status);
+        internalSub.setAmount(amount);
+        internalSub.setInterval(interval);
+        internalSub.setStripeProductName(this.stripeHelperService.getStripeProductDisplayName(price.getId()));
 
         return this.internalStripeSubscriptionsRepository.save(internalSub);
     }
@@ -206,6 +237,6 @@ public class StripeService {
     }
 
     public InternalStripeSubscription getOrgActiveSubsecription(Integer orgId) {
-        return this.internalStripeSubscriptionsRepository.findActiveSubsecriptionByOrgId(orgId);
+        return this.internalStripeSubscriptionsRepository.findActiveByOrgId(orgId);
     }
 }
