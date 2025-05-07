@@ -27,6 +27,7 @@ public class CursorPage<TModel, ID extends Serializable> {
     }
 
     public Object toApiResponse(String modelKey, Function<List<TModel>, List<?>> listModifier) {
-        return ApiResponses.CursorResponse(modelKey, listModifier == null ? this.getData() : listModifier.apply(this.getData()), this.isHasNext(), this.getNextCursor());
+        var dataList = listModifier == null ? this.getData() : listModifier.apply(this.getData());
+        return ApiResponses.CursorResponse(modelKey, dataList, this.isHasNext(), this.getNextCursor());
     }
 }

@@ -118,4 +118,8 @@ public class User implements Serializable {
     public UserMessageViewDTO toUserMessageViewDTO() {
         return new UserMessageViewDTO(this);
     }
+
+    public UserSearchDTO toSearchDTO() {
+        return new UserSearchDTO(this);
+    }
 }

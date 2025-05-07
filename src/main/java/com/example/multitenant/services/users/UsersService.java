@@ -8,6 +8,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.multitenant.dtos.shared.CursorPage;
+import com.example.multitenant.dtos.users.UsersFilter;
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
@@ -15,6 +17,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.files.FilesService;
+import com.example.multitenant.specificationsbuilders.UsersSpecificationsBuilder;
 import com.example.multitenant.utils.PageableHelper;
 
 import jakarta.transaction.Transactional;
@@ -69,6 +72,13 @@ public class UsersService {
         userToUnFriend.getFriends().remove(currUser);
 
         return this.usersRepository.saveAll(List.of(currUser, userToUnFriend));
+    }
+
+    public CursorPage<User, Long> search(UsersFilter filter, Long cursor, int size) {
+        var spec = UsersSpecificationsBuilder.build(filter);
+        var result = this.usersSpecificationsService.findAllWithCursor(spec, cursor, size, "id");
+
+        return result;
     }
 
     public User findByEmail(String email) {

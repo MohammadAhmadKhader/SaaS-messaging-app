@@ -45,8 +45,8 @@ public class InvitationsController {
     public ResponseEntity<Object> getOrganizationInvitations(Integer cursor, @ValidateSize Integer size) {
         var tenantId = AppUtils.getTenantId();
 
-        var inviations = this.invitationsService.getOrganizationInvitationsWithCursor(tenantId, cursor, size);
-        var res = ApiResponses.OneKey("invitations", inviations);
+        var invitations = this.invitationsService.getOrganizationInvitationsWithCursor(tenantId, cursor, size);
+        var res = ApiResponses.OneKey("invitations", invitations);
         
         return ResponseEntity.ok().body(res);
     }
@@ -57,10 +57,10 @@ public class InvitationsController {
         var principal = SecurityUtils.getPrincipal();
         var sender = principal.getUser();
 
-        var inviation = this.invitationsService.sendInviteToUser(sender, orgId, dto.toModel());
-        this.logsService.createInvitationLog(sender, inviation.getRecipientId(), orgId, LogEventType.INVITE_SENT);
+        var invitation = this.invitationsService.sendInviteToUser(sender, orgId, dto.toModel());
+        this.logsService.createInvitationLog(sender, invitation.getRecipientId(), orgId, LogEventType.INVITE_SENT);
 
-        var res = ApiResponses.OneKey("invitation", inviation.toViewDTO());
+        var res = ApiResponses.OneKey("invitation", invitation.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }

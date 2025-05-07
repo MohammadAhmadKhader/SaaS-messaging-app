@@ -6,7 +6,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.services.helperservices.ServiceSpecifications;
 
 @Service
-public class UsersSpecificationsService extends ServiceSpecifications<User> {
+public class UsersSpecificationsService extends ServiceSpecifications<User, Long> {
     public UsersSpecificationsService() {
         super(User.class);
     }

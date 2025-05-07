@@ -1,9 +1,11 @@
 package com.example.multitenant.controllers;
 
+import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.organizations.*;
+import com.example.multitenant.dtos.users.UsersFilter;
 import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.models.enums.LogEventType;
 import com.example.multitenant.services.files.FilesService;
@@ -48,6 +50,17 @@ public class OrganizationsController {
 
         var respBody = ApiResponses.OneKey("membership", membership.toViewDTO());
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchOrganizations(
+        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size,
+        OrganizationsFilter filter) {
+        
+        var result = this.organizationsService.search(filter, cursorId, size);
+        var body = result.toApiResponse("organizations", (orgs) -> orgs.stream().map((org) -> org.toSearchDTO()).toList());
+        
+        return ResponseEntity.ok(body);
     }
 
     @PatchMapping("/memberships/{userId}/kick")

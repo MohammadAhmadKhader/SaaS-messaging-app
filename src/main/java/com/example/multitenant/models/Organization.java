@@ -69,6 +69,10 @@ public class Organization implements Serializable {
         return new OrganizationViewDTO(this);
     }
 
+    public OrganizationSearchDTO toSearchDTO() {
+        return new OrganizationSearchDTO(this);
+    }
+
     public Organization(String name, String industry) {
         setName(name);
         setIndustry(industry);

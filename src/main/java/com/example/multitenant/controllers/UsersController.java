@@ -36,6 +36,17 @@ public class UsersController {
     private final UsersService usersService;
     private final FriendRequestsService friendRequestsService;
 
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchUsers(
+        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size,
+        UsersFilter filter) {
+        
+        var result = this.usersService.search(filter, cursorId, size);
+        var body = result.toApiResponse("users", (users) -> users.stream().map((user) -> user.toSearchDTO()).toList());
+        
+        return ResponseEntity.ok(body);
+    }
+
     @PutMapping("")
     public ResponseEntity<Object> updateUserProfile(@Valid @ModelAttribute UserUpdateDTO dto) {
         var principal = SecurityUtils.getPrincipal();

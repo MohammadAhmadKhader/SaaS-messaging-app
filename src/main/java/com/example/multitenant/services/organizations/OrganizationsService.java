@@ -6,6 +6,9 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.multitenant.dtos.organizations.OrganizationsFilter;
+import com.example.multitenant.dtos.shared.CursorPage;
+import com.example.multitenant.dtos.users.UsersFilter;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.Membership;
 import com.example.multitenant.models.Organization;
@@ -13,6 +16,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.OrganizationsRepository;
 import com.example.multitenant.services.files.FilesService;
+import com.example.multitenant.specificationsbuilders.OrganizationsSpecificationsBuilder;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +27,19 @@ public class OrganizationsService {
 
     private final OrganizationsRepository organizationsRepository;
     private final OrganizationsCrudService organizationsCrudService;
+    private final OrganizationsSpecificationsService organizationsSpecificationsService;
     private final FilesService filesService;
 
     public Page<Organization> findAllOrganization(Integer page, Integer size) {
         var pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
         var result = this.organizationsRepository.findAll(pageable);
+
+        return result;
+    }
+
+    public CursorPage<Organization, Long> search(OrganizationsFilter filter, Long cursor, int size) {
+        var spec = OrganizationsSpecificationsBuilder.build(filter);
+        var result = this.organizationsSpecificationsService.findAllWithCursor(spec, cursor, size, "id");
 
         return result;
     }
