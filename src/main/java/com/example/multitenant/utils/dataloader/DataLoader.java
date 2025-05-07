@@ -44,7 +44,7 @@ public class DataLoader {
     @Transactional
     public void loadData() throws IOException {
         var objectMapper = new ObjectMapper();
-        var inputStream = new ClassPathResource("data.json").getInputStream();
+        var inputStream = new ClassPathResource("seeding-data.json").getInputStream();
         this.data = objectMapper.readValue(inputStream, JsonData.class);
 
         loadOrganizationPermissions();

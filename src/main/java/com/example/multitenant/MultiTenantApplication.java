@@ -24,15 +24,6 @@ public class MultiTenantApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MultiTenantApplication.class);
-		app.addInitializers(ctx -> {
-            var argsList = List.of(args);
-            if (argsList.contains("--seed")) {
-                ctx.getBeanFactory().registerSingleton("shouldSeedFlag", true);
-            } else {
-                ctx.getBeanFactory().registerSingleton("shouldSeedFlag", false);
-            }
-        });
-
         app.run(args);
 	}
 
@@ -51,8 +42,8 @@ public class MultiTenantApplication implements CommandLineRunner {
         }
 	}
 
-	@Autowired
-    public void setSeedFlag(@Value("#{shouldSeedFlag}") boolean seedFlag) {
+	@Value("${app.seed:false}")
+    public void setSeedFlag(boolean seedFlag) {
         this.shouldSeed = seedFlag;
     }
 }

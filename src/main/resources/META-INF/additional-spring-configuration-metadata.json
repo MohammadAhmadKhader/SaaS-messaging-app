@@ -158,5 +158,10 @@
     "name": "stripe.tiers.free.org-max-categories",
     "type": "java.lang.String",
     "description": "A description for 'stripe.tiers.free.org-max-categories'"
+  },
+  {
+    "name": "app.seed",
+    "type": "java.lang.Boolean",
+    "description": "A description for 'app.seed'"
   }
 ]}

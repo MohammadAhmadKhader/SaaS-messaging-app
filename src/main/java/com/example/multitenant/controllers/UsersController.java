@@ -38,7 +38,7 @@ public class UsersController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchUsers(
-        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size,
+        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "10") Integer size,
         UsersFilter filter) {
         
         var result = this.usersService.search(filter, cursorId, size);

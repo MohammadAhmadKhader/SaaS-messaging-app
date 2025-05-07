@@ -1,0 +1,164 @@
+[
+    {
+        "name": "Organization 1",
+        "industry": "Industry 1",
+        "owner": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john.doe1@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 2",
+        "industry": "Industry 2",
+        "owner": {
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "email": "jane.smith2@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 3",
+        "industry": "Industry 3",
+        "owner": {
+            "firstName": "Michael",
+            "lastName": "Johnson",
+            "email": "michael.johnson3@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 4",
+        "industry": "Industry 4",
+        "owner": {
+            "firstName": "Emily",
+            "lastName": "Davis",
+            "email": "emily.davis4@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 5",
+        "industry": "Industry 5",
+        "owner": {
+            "firstName": "James",
+            "lastName": "Miller",
+            "email": "james.miller5@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 6",
+        "industry": "Industry 6",
+        "owner": {
+            "firstName": "Sarah",
+            "lastName": "Wilson",
+            "email": "sarah.wilson6@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 7",
+        "industry": "Industry 7",
+        "owner": {
+            "firstName": "David",
+            "lastName": "Moore",
+            "email": "david.moore7@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 8",
+        "industry": "Industry 8",
+        "owner": {
+            "firstName": "Olivia",
+            "lastName": "Taylor",
+            "email": "olivia.taylor8@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 9",
+        "industry": "Industry 9",
+        "owner": {
+            "firstName": "Daniel",
+            "lastName": "Anderson",
+            "email": "daniel.anderson9@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 10",
+        "industry": "Industry 10",
+        "owner": {
+            "firstName": "Sophia",
+            "lastName": "Thomas",
+            "email": "sophia.thomas10@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 11",
+        "industry": "Industry 11",
+        "owner": {
+            "firstName": "William",
+            "lastName": "Jackson",
+            "email": "william.jackson11@hotmail.com"
+        }
+    },
+    {
+        "name": "Organization 12",
+        "industry": "Industry 12",
+        "owner": {
+            "firstName": "Isabella",
+            "lastName": "White",
+            "email": "isabella.white12@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 13",
+        "industry": "Industry 13",
+        "owner": {
+            "firstName": "Benjamin",
+            "lastName": "Harris",
+            "email": "benjamin.harris13@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 14",
+        "industry": "Industry 14",
+        "owner": {
+            "firstName": "Mia",
+            "lastName": "Martin",
+            "email": "mia.martin14@gmail.com"
+        }
+    },
+    {
+        "name": "Organization 15",
+        "industry": "Industry 15",
+        "owner": {
+            "firstName": "Alexander",
+            "lastName": "Clark",
+            "email": "alexander.clark15@hotmail.com"
+        }
+    },
+    {
+      "name": "Nebula Nexus",
+      "industry": "Aerospace Innovation",
+      "owner": {
+        "firstName": "Lena",
+        "lastName": "Ortega",
+        "email": "lena.ortega@nebulanexus.io"
+      }
+    },
+    {
+      "name": "Quantum Quokka Labs",
+      "industry": "AI Research",
+      "owner": {
+        "firstName": "Elliot",
+        "lastName": "Zhao",
+        "email": "elliot.zhao@quokkatech.com"
+      }
+    },
+    {
+      "name": "Verdant Chain",
+      "industry": "Sustainable Supply Chains",
+      "owner": {
+        "firstName": "Priya",
+        "lastName": "Deshmukh",
+        "email": "priya@verdantchain.org"
+      }
+    }
+]

@@ -54,7 +54,7 @@ public class OrganizationsController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchOrganizations(
-        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "20") Integer size,
+        @RequestParam(required = false) Long cursorId, @HandleSize @RequestParam(defaultValue = "10") Integer size,
         OrganizationsFilter filter) {
         
         var result = this.organizationsService.search(filter, cursorId, size);

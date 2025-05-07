@@ -89,8 +89,10 @@ public abstract class ServiceSpecifications<TModel, PrimaryKey extends Serializa
             predicates.add(cb.lessThan(root.get(idFieldName), cursor));
         }
 
-        if(spec != null) {
-            critQuery.where(predicate);
+        if (!predicates.isEmpty()) {
+            critQuery.where(cb.and(predicates.toArray(new Predicate[0])));
+        } else {
+            critQuery.where(cb.conjunction());
         }
 
         var arrOfPredicates = predicates.toArray(new Predicate[0]);

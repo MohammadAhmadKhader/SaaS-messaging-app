@@ -20,9 +20,9 @@ public class UsersSpecificationsBuilder {
         }
 
         if(filter.getLastName() != null && !filter.getLastName().isBlank()) {
-            spec = spec.and(UsersSpecifications.hasFirstName(filter.getLastName()));
+            spec = spec.and(UsersSpecifications.hasLastName(filter.getLastName()));
         }
 
-        return spec;
+        return spec == null ? Specification.where(null) : spec;
     }
 }
