@@ -28,15 +28,4 @@ public class RateLimiterService {
     public Bucket getBucketByIP(String ip) {
         return (Bucket) proxyManager.builder().build(prefix + ip, getNormalUsersConfig());
     }
-
-    public String getClientIp(HttpServletRequest request) {
-        var forwardedFor = request.getHeader("X-Forwarded-For");
-        
-        if (forwardedFor != null && !forwardedFor.isEmpty()) {
-            return forwardedFor.split(",")[0];
-
-        } else {
-            return request.getRemoteAddr();
-        }
-    }
 }

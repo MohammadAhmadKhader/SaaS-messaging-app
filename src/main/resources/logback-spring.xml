@@ -2,15 +2,17 @@
   <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
   <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>
-        %clr(%d{MM-dd HH:mm:ss}){faint} %clr([%thread]){magenta} %clr(%level) %clr(%class) %clr(%file):%clr(%line){magenta} - %msg%n
-      </pattern>
-    </encoder>
-  </appender>
+    <springProfile name="dev">  
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+              <pattern>
+                %clr(%d{MM-dd HH:mm:ss}){faint} %clr([%thread]){magenta} %clr(%level) %clr(%class) %clr(%file):%clr(%line){magenta} - %msg%n
+              </pattern>
+            </encoder>
+        </appender>
 
-  <root level="INFO">
-    <appender-ref ref="STDOUT"/>
-  </root>
+        <root level="INFO">
+          <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
 </configuration>

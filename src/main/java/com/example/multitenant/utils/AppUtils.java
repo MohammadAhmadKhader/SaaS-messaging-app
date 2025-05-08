@@ -15,7 +15,9 @@ import com.example.multitenant.models.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AppUtils {
     public static Integer getTenantId() {
         @SuppressWarnings("null")
@@ -60,7 +62,34 @@ public class AppUtils {
         return ip;
     }
 
+    public static String getClientIp() {
+        var request = getCurrentHttpRequest();
+        if(request == null) {
+            var errMsg = "an error has occured during attempt to fetch request";
+            log.error(errMsg);
+            throw new UnknownException(errMsg);
+        }
+
+        var ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        } else {
+            ip = ip.split(",")[0];
+        }
+
+        return ip;
+    }
+
     public static String getUserAgrent(HttpServletRequest request) {
         return request.getHeader("User-Agent");
+    }
+
+    private static HttpServletRequest getCurrentHttpRequest() {
+        var attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes instanceof ServletRequestAttributes servletRequestAttributes) {
+            return servletRequestAttributes.getRequest();
+        }
+
+        return null;
     }
 }

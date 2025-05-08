@@ -8,7 +8,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.services.security.RateLimiterService;
-
+import com.example.multitenant.utils.AppUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +22,7 @@ public class RequestFilter extends OncePerRequestFilter {
     RateLimiterService rateLimiterService;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)throws ServletException, IOException {
-        var clientIP = rateLimiterService.getClientIp(request);
+        var clientIP = AppUtils.getClientIp(request);
         var bucket = rateLimiterService.getBucketByIP(clientIP);
         
         if(bucket.tryConsume(1)){

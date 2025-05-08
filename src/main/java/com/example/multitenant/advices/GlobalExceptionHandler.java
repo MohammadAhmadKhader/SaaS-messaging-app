@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -25,8 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
         var errors = new ArrayList<String>();
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         var paramName = ex.getName();
         var invalidValue = String.valueOf(ex.getValue());
-        logger.error("[MethodArgumentTypeMismatchException]: " +ex.getMessage());
+        log.error("[MethodArgumentTypeMismatchException]: " +ex.getMessage());
     
         var errRes = ApiResponses.GetErrIdIsRequired(paramName, invalidValue);
         return ResponseEntity.badRequest().body(errRes);
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedUserException.class)
     public ResponseEntity<Map<String, Object>> handleUnauthorizedExceptions(UnauthorizedUserException ex) {
         var errBody = ApiResponses.Unauthorized();
-        logger.error("[User Unauthorized]: " +ex.getMessage());
+        log.error("[User Unauthorized]: " +ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errBody);
     }
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedOrganizationException.class)
     public ResponseEntity<Map<String, Object>> handleUnauthorizedExceptions(UnauthorizedOrganizationException ex) {
         var errBody = ApiResponses.Unauthorized();
-        logger.error("[Organization Unauthorized]: " +ex.getMessage());
+        log.error("[Organization Unauthorized]: " +ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errBody);
     }
@@ -131,6 +131,35 @@ public class GlobalExceptionHandler {
         var errBody = ApiResponses.GetErrResponse(errMsg);
 
         return ResponseEntity.status(HttpStatus.LOCKED).body(errBody);
+    }
+
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<Map<String, Object>> handleAccountLockedException(InternalAuthenticationServiceException ex) {
+        if(ex.getCause() instanceof AppLockedException) {
+            var appLockedException = (AppLockedException) ex.getCause();
+            log.error("account locked for user: {}", appLockedException.getEmail());
+
+            var body = ApiResponses.GetErrResponse(appLockedException.getMessage());
+            return ResponseEntity.status(HttpStatus.LOCKED).body(body);
+        }
+        
+        log.error("[InternalAuthenticationServiceException]: {}", ex.getMessage());
+        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AppLockedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccountLockedException(AppLockedException ex) {
+        log.error("account locked for user: {}", ex.getEmail());
+        var body = ApiResponses.GetErrResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.LOCKED).body(body);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, String>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        var body = new HashMap<String, String>();
+        log.error(ex.getMessage());
+        body.put("error", "method not allowed");
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
@@ -166,7 +195,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Map<String, Object>> handleUnknownErrors(Throwable ex) {
         var errBody = ApiResponses.GetInternalErr();
-        logger.error("cause:{} - message:{}",ex.getCause(),ex.getMessage());
+        log.error("cause:{} - message:{}",ex.getCause(),ex.getMessage());
         ex.printStackTrace();
         
         return ResponseEntity.internalServerError().body(errBody);

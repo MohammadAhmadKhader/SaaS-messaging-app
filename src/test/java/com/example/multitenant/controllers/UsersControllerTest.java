@@ -37,11 +37,12 @@ public class UsersControllerTest extends BaseIntegration {
     private final ObjectMapper objectMapper;
     private final UsersRepository usersRepository;
     private Integer defaultSearchSize = 10;
-    private static final String ENDPOINT = "/api/users/search";
     private List<User> users;
     
+    private static final String ENDPOINT = "/api/users/search";
+    
     @BeforeAll
-    private void setUp() throws Exception {
+    void setUp() throws Exception {
         var resource = new ClassPathResource("test-data/users.json");
         List<User> users = objectMapper.readValue(resource.getInputStream(), new TypeReference<>() {});
         var savedUsers = DataLoader.loadUsers(users, this.usersRepository, true);
@@ -49,7 +50,7 @@ public class UsersControllerTest extends BaseIntegration {
     }
 
     @AfterAll
-    private void tearDown() {
+    void tearDown() {
         this.usersRepository.deleteAll(this.users);
     }
 

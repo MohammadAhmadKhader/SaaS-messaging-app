@@ -17,7 +17,7 @@ import lombok.*;
 public class UserPrincipal implements UserDetails {
     // we must explicitly declare one, since we using long live sessions
     private static final long serialVersionUID = 1L;
-    final private User user;
+    private final User user;
 
     @JsonCreator
     public UserPrincipal(@JsonProperty User user) {

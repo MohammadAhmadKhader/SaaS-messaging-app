@@ -21,3 +21,6 @@ sess-complete:
 # this customer exists in our database with email and name
 create-testing-customer:
 	stripe customers create --email user10@gmail.com --name "john doe"
+
+test:
+	mvn test -Dspring.profiles.active=test

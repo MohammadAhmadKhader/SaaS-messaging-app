@@ -16,13 +16,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 
+import com.example.multitenant.services.cache.BlackListedIpsCacheService;
 import com.example.multitenant.utils.ConsoleColorUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ApiResponses {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     public static Map<String, Object> GetAllResponse(String collectionKey, List<?> list, long count, Integer page, Integer size) {
         return Map.of(collectionKey, list, "count", count,"page", page,"size", size);
     }
@@ -47,13 +50,15 @@ public class ApiResponses {
     public static void SendErrMissingRequiredHeader(HttpServletResponse response, String header) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json");
-        response.getWriter().write("{\"error\": \"missing required header: " + header + "\"}");
+        var body = Map.of("error", "missing required header: " + header);
+        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 
     public static void SendErrInvalidTenantId(HttpServletResponse response, String tenantId) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json");
-        response.getWriter().write("{\"error\":" + "\"" + String.format("invalid tenantId received: '%s' must be an integer", tenantId) + "\"}");
+        var body = Map.of("error", String.format("invalid tenantId received: '%s' must be an integer", tenantId));
+        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
     
     public static <K, V> Map<K, V> Keys(K k1, V v1, K k2, V v2) {
@@ -130,10 +135,21 @@ public class ApiResponses {
     public static void SendErrTooManyRequests(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setContentType("application/json");
-        var jsonResponse = "{ \"error\": \"Rate limit exceeded. Try again later.\" }";
+        var body = Map.of("error", "Rate limit exceeded. Try again later.");
 
         try (PrintWriter writer = response.getWriter()) {
-            writer.write(jsonResponse);
+            writer.write(objectMapper.writeValueAsString(body));
+            writer.flush();
+        }
+    }
+
+    public static void SendBlockedIpResponse(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+        response.setContentType("application/json");
+        var body = Map.of("error", BlackListedIpsCacheService.defaultLockedMessage);
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(objectMapper.writeValueAsString(body));
             writer.flush();
         }
     }
