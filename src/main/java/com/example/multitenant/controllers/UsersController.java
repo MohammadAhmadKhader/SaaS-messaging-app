@@ -1,5 +1,6 @@
 package com.example.multitenant.controllers;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.common.resolvers.contract.HandlePage;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
@@ -51,7 +52,7 @@ public class UsersController {
     public ResponseEntity<Object> updateUserProfile(@Valid @ModelAttribute UserUpdateDTO dto) {
         var principal = SecurityUtils.getPrincipal();
         if(principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         var userId = principal.getUser().getId();;
@@ -63,7 +64,7 @@ public class UsersController {
     public ResponseEntity<Object> selfDeleteUser() {
         var principal = SecurityUtils.getPrincipal();
         if(principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         var user = principal.getUser();
@@ -105,6 +106,7 @@ public class UsersController {
         return ResponseEntity.ok(body);
     }
 
+    @CheckRestricted
     @PostMapping("/friend-requests/send")
     public ResponseEntity<Object> sendFriendRequest(@Valid @RequestBody FriendRequestSendDTO dto) {
         var user = SecurityUtils.getUserFromAuth();
@@ -114,6 +116,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
+    @CheckRestricted
     @PatchMapping("/friend-requests/{friendRequestId}/accept")
     public ResponseEntity<Void> acceptFriendRequest(@PathVariable @ValidateNumberId Integer friendRequestId) {
         var user = SecurityUtils.getUserFromAuth();

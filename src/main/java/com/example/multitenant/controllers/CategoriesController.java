@@ -6,14 +6,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.multitenant.common.annotations.contract.TenantHandlerLocker;
-import com.example.multitenant.common.annotations.contract.ValidateSubscriptionLimit;
+import com.example.multitenant.common.annotations.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.categories.*;
-import com.example.multitenant.models.enums.LogEventType;
-import com.example.multitenant.models.enums.StripeCounterOperation;
-import com.example.multitenant.models.enums.StripeLimit;
+import com.example.multitenant.models.enums.*;
 import com.example.multitenant.services.cache.CategoriesCacheService;
 import com.example.multitenant.services.cache.SubscriptionLimitChecker;
 import com.example.multitenant.services.categories.CategoriesService;
@@ -26,6 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@CheckRestricted
 @Slf4j
 @Validated
 @RequiredArgsConstructor

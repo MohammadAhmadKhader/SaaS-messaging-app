@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.dtos.conversationmessages.ConversationMessageCreateDTO;
 import com.example.multitenant.dtos.messages.*;
@@ -35,6 +36,7 @@ public class WebSocketMessagesController {
     private final WebSocketService webSocketService;
     private final ConversationsService conversationsService;
 
+    @CheckRestricted(isWebsocket = true)
     @MessageMapping("/tenants/{tenantId}/categories/{categoryId}/channels/{channelId}/send")
     public void handleSendMessageToChannel(@Payload @Validated OrgMessageCreateDTO payload,
         @DestinationVariable Integer tenantId, @DestinationVariable Integer channelId, 
@@ -57,6 +59,7 @@ public class WebSocketMessagesController {
         }
     }
 
+    @CheckRestricted(isWebsocket = true)
     @MessageMapping("/conversations/{conversationId}")
     public void handleSendMessageToUser(@Payload @Validated ConversationMessageCreateDTO payload,
         @DestinationVariable Integer conversationId, Principal principal) {

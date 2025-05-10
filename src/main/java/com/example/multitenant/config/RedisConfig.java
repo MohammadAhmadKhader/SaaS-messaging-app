@@ -83,4 +83,14 @@ public class RedisConfig {
 
         return template;
     }
+
+    @Bean
+    RedisTemplate<String, Boolean> booleanRedisTemplate(RedisConnectionFactory connectionFactory) {
+        var template = new RedisTemplate<String, Boolean>();
+        template.setConnectionFactory(connectionFactory);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericToStringSerializer<>(Boolean.class));
+
+        return template;
+    }
 }

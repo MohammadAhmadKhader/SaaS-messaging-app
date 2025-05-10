@@ -10,6 +10,7 @@ import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.InvitationsRepository;
+import com.example.multitenant.services.cache.OrgRestrictionsCacheSerivce;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.users.UsersService;
 
@@ -23,6 +24,7 @@ public class InvitationsService {
     private final InvitationsRepository invitationsRepository;
     private final UsersService usersService;
     private final MemberShipService memberShipService;
+    private final OrgRestrictionsCacheSerivce orgRestrictionsCacheSerivce;
 
     public CursorPage<Invitation, Integer> getUserInvitationsWithCursor(Long userId, Integer cursor ,Integer size) {
         var pageable = PageRequest.of(0, size + 1, Sort.by("createdAt","id").descending());
@@ -128,7 +130,9 @@ public class InvitationsService {
     @Transactional
     public Membership acceptInvitationAndCreateMembership(Invitation inv) {
         var acceptedInv = this.acceptInvitation(inv);
-        var membership = this.memberShipService.joinOrganization(acceptedInv.getOrganizationId(), acceptedInv.getRecipientId());
+        var isRestricted = this.orgRestrictionsCacheSerivce.getIsRestricted(inv.getOrganizationId(), inv.getRecipientId());
+        var membership = this.memberShipService.joinOrganization(acceptedInv.getOrganizationId(), acceptedInv.getRecipientId(), isRestricted);
+        
         return membership;
     }
 

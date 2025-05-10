@@ -42,6 +42,9 @@ public class OrganizationRestriction {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name = "organization_id", updatable = false, insertable = false)
     private Organization organization;
+
+    @Column(name = "user_id", updatable = false, insertable = false)
+    private Long userId;
     
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name = "user_id")

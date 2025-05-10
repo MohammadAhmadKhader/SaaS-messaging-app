@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,7 +62,7 @@ public class MemberShipService {
     }
 
     @Transactional
-    public Membership joinOrganization(Integer orgId, long userId) {
+    public Membership joinOrganization(Integer orgId, long userId, boolean isRestricted) {
         if(orgId == null || orgId<= 0) {
             throw new InvalidOperationException("invalid organization id");
         }
@@ -72,6 +73,9 @@ public class MemberShipService {
         }
 
         var membership = oldMembership == null ? new Membership(orgId, userId) : oldMembership;
+        if(isRestricted) {
+            throw new AccessDeniedException("user is restricted from this organization");
+        }
 
         var orgUserRole = this.organizationRolesService.
         findByNameAndOrganizationId(DefaultOrganizationRole.ORG_USER.getRoleName(), orgId);

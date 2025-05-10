@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
@@ -19,6 +20,7 @@ import com.example.multitenant.services.users.UsersService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+@CheckRestricted
 @Slf4j
 @Validated
 @RestController

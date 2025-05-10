@@ -1,5 +1,6 @@
 package com.example.multitenant.controllers;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.common.resolvers.contract.HandleSize;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
@@ -39,6 +40,7 @@ public class OrganizationsController {
     private final MemberShipService memberShipService;
     private final LogsService logsService;
 
+    @CheckRestricted
     @PostMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.ORG_CREATE)")
     public ResponseEntity<Object> createOrganization(@Valid @ModelAttribute OrganizationCreateDTO dto) {
@@ -63,6 +65,7 @@ public class OrganizationsController {
         return ResponseEntity.ok(body);
     }
 
+    @CheckRestricted
     @PatchMapping("/memberships/{userId}/kick")
     @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.USER_KICK)")
     public ResponseEntity<Object> kickUser(@ValidateNumberId @PathVariable long userId) {

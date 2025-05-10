@@ -3,6 +3,7 @@ package com.example.multitenant.controllers.dashboard;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@CheckRestricted
 @Slf4j
 @Validated
 @RequiredArgsConstructor

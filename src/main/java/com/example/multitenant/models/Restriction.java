@@ -36,6 +36,9 @@ public class Restriction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, optional = false)
     @JoinColumn(name = "user_id")
     private User user;

@@ -1,5 +1,7 @@
 package com.example.multitenant.controllers.dashboard;
 
+import java.time.Instant;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +11,7 @@ import com.example.multitenant.common.resolvers.contract.*;
 import com.example.multitenant.common.validators.contract.ValidateNumberId;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.restrictions.*;
+import com.example.multitenant.services.cache.RestrictionsCacheSerivce;
 import com.example.multitenant.services.restrictions.RestrictionsService;
 import com.example.multitenant.utils.SecurityUtils;
 
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/dashboard/restrictions")
 public class AppDashboardRestrictionsController {
     private final RestrictionsService restrictionsService;
+    private final RestrictionsCacheSerivce restrictionsCacheSerivce;
 
     @GetMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_RESTRICTION_VIEW)")
@@ -43,6 +47,8 @@ public class AppDashboardRestrictionsController {
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_RESTRICTION_CREATE)")
     public ResponseEntity<Object> handleCreateRestriction(@Valid @RequestBody RestrictionCreateDTO dto) {
         var restriction = this.restrictionsService.restrictUser(dto.getUserId(), dto.toModel());
+        this.restrictionsCacheSerivce.invalidateKey(dto.getUserId());
+
         var respBody = ApiResponses.OneKey("restriction", restriction.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
@@ -52,6 +58,14 @@ public class AppDashboardRestrictionsController {
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_RESTRICTION_UPDATE)")
     public ResponseEntity<Object> handleUpdateRestriction(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody RestrictionUpdateDTO dto) {
         var restriction = this.restrictionsService.updateRestriction(id, dto.toModel());
+        
+        var now = Instant.now();
+        var until = restriction.getUntil();
+        var isRestRemoved = until.isBefore(now) || until.equals(now);
+        if(isRestRemoved) {
+            this.restrictionsCacheSerivce.invalidateKey(restriction.getUserId());
+        }
+
         var respBody = ApiResponses.OneKey("restriction", restriction.toViewDTO());
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(respBody);

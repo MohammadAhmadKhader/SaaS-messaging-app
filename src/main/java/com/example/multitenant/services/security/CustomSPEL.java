@@ -1,13 +1,16 @@
 package com.example.multitenant.services.security;
 
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
+import com.example.multitenant.models.User;
 import com.example.multitenant.services.cache.*;
 import com.example.multitenant.utils.AppUtils;
+import com.example.multitenant.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +27,13 @@ public class CustomSPEL {
     }
 
     public boolean hasOrgAuthority(String permission) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+        var user = SecurityUtils.getUserFromAuth();
+        if (user == null) {
             return false;
         }
 
         var tenantId = AppUtils.getTenantId();
-        var userId = userDetails.getUser().getId();
+        var userId = user.getId();
 
         var perms = this.authCacheService.getUserOrgPermissions(tenantId, userId);
 
@@ -38,13 +41,13 @@ public class CustomSPEL {
     }
 
     public boolean hasOrgRole(String roleName) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+        var user = SecurityUtils.getUserFromAuth();
+        if (user == null) {
             return false;
         }
 
         var tenantId = AppUtils.getTenantId();
-        var userId = userDetails.getUser().getId();
+        var userId = user.getId();
 
         var roles = this.authCacheService.getUserOrgRoles(tenantId, userId);
 
@@ -52,13 +55,13 @@ public class CustomSPEL {
     }
 
     public boolean hasCategoryAccess(Integer categoryId) {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal userDetails)) {
+        var user = SecurityUtils.getUserFromAuth();
+        if (user == null) {
             return false;
         }
 
         var tenantId = AppUtils.getTenantId();
-        var userId = userDetails.getUser().getId();
+        var userId = user.getId();
 
         var userRolesIds = this.authCacheService.getUserOrgRoles(tenantId, userId)
                                             .stream()

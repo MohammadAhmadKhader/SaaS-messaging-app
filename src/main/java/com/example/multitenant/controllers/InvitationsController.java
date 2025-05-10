@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
+import com.example.multitenant.common.annotations.contract.CheckRestricted;
 import com.example.multitenant.common.validators.contract.*;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.invitations.*;
@@ -51,6 +52,7 @@ public class InvitationsController {
         return ResponseEntity.ok().body(res);
     }
 
+    @CheckRestricted
     @PostMapping("")
     public ResponseEntity<Object> sendInvitation(@Valid @RequestBody InvitationSendDTO dto) {
         var orgId = AppUtils.getTenantId();
@@ -94,6 +96,7 @@ public class InvitationsController {
         return ResponseEntity.accepted().build();
     }
 
+    @CheckRestricted
     @PostMapping("/accept")
     public ResponseEntity<Object> acceptInvitiation(@Valid @RequestBody InvitationAcceptDTO dto) {
         var orgId = AppUtils.getTenantId();

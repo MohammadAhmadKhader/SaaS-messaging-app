@@ -20,6 +20,7 @@ import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.specificationsbuilders.OrganizationsRestrictionsSpecificationsBuilder;
 import com.example.multitenant.specificationsbuilders.OrganizationsSpecificationsBuilder;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class OrganizationRestrictionsService {
         return this.organizationRestrictionsRepository.isUserRestricted(userId, orgId);
     }
 
+    @Transactional
     public OrganizationRestriction restrictUser(Long userId, Integer orgId, OrganizationRestriction dto) {
         var membership = this.memberShipService.findUserMembershipWithRoles(orgId, userId);
         User userToRestrict = null;
@@ -62,6 +64,8 @@ public class OrganizationRestrictionsService {
             if(isOrgOwner) {
                 throw new InvalidOperationException("can not restrict organization owner");
             }
+
+            this.memberShipService.kickUserFromOrganization(orgId, userToRestrict.getId());
         }    
 
         var restriction = new OrganizationRestriction();
