@@ -9,7 +9,6 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
 
     private String[] fields;
     private String DEFAULT_MESSAGE;
-    private boolean ignoreEmptyStrings;
     private String message;
 
     @Override
@@ -17,7 +16,6 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
         this.DEFAULT_MESSAGE = AtLeastOneNotNull.DEFAULT_MESSAGE;
         this.message = constraintAnnotation.message();
         this.fields = constraintAnnotation.fields();
-        this.ignoreEmptyStrings = constraintAnnotation.ignoreEmptyStrings();
     }
 
     @Override
@@ -31,13 +29,7 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
                 var value = field.get(object);
 
                 if (value != null) {
-                    if (ignoreEmptyStrings && value instanceof String) {
-                        if (!((String) value).isBlank()) {
-                            return true;
-                        }
-                    } else {
-                        return true;
-                    }
+                    return true;
                 }
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -45,6 +37,11 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
             }
         }
 
+        this.addErrorMessage(context);
+        return false;
+    }
+
+    private void addErrorMessage(ConstraintValidatorContext context) {
         if(this.message.equals(this.DEFAULT_MESSAGE) || fields.length == 0) {
             var errMsg = this.DEFAULT_MESSAGE +" " +String.join(", ",fields);
             context.disableDefaultConstraintViolation();
@@ -57,6 +54,5 @@ public class AtLeastOneNotNullValidator implements ConstraintValidator<AtLeastOn
                 .addConstraintViolation();
         }
 
-        return false;
     }
 }

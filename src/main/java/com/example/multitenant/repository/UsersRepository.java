@@ -37,7 +37,7 @@ public interface UsersRepository extends GenericRepository<User, Long> {
         LEFT JOIN FETCH u.roles r 
         WHERE u.id = :id
     """)
-    User findOneByIdWithRoles(@Param("email") Long id);
+    User findOneByIdWithRoles(@Param("id") Long id);
 
     @Query("""
         SELECT CASE WHEN COUNT(uf) > 0 THEN true ELSE false END FROM User u  

@@ -21,7 +21,7 @@ import io.lettuce.core.codec.*;
 
 
 @Configuration(proxyBeanMethods = false)
-@EnableRedisIndexedHttpSession(redisNamespace = "spring:sessions:java-app")
+@EnableRedisIndexedHttpSession(redisNamespace = "spring:java-app") // this will be prefixed with "spring:java-app:sessions" on redis
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")

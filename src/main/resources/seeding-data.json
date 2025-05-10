@@ -91,6 +91,31 @@
       "isDefaultSuperAdmin": true
     },
     {
+      "name": "app-dashboard:restriction:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:restriction:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
+      "name": "app-dashboard:restriction:update",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+
+    {
+      "name": "app-dashboard:restriction:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultSuperAdmin": true
+    },
+    {
       "name": "organization:create",
       "isDefaultUser": true,
       "isDefaultAdmin": true,
@@ -220,6 +245,24 @@
     },
     {
       "name":"organization:channel:delete",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:restriction:view",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:restriction:create",
+      "isDefaultUser":false,
+      "isDefaultAdmin": true,
+      "isDefaultOrgOwner": true
+    },
+    {
+      "name":"organization:restriction:update",
       "isDefaultUser":false,
       "isDefaultAdmin": true,
       "isDefaultOrgOwner": true

@@ -29,4 +29,8 @@ public class OrganizationPermissions {
     public static final String CHANNEL_CREATE = "organization:channel:create";
     public static final String CHANNEL_UPDATE = "organization:channel:update";
     public static final String CHANNEL_DELETE = "organization:channel:delete";
+    
+    public static final String RESTRICTION_VIEW = "organization:restriction:view";
+    public static final String RESTRICTION_CREATE = "organization:restriction:create";
+    public static final String RESTRICTION_UPDATE = "organization:restriction:update";
 }

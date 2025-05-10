@@ -15,8 +15,6 @@ public @interface AtLeastOneNotNull {
 
     String[] fields();
 
-    boolean ignoreEmptyStrings() default true;
-
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
