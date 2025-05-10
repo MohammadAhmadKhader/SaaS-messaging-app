@@ -65,7 +65,7 @@ public class AppDashboardRolesController {
 
     @PostMapping("/{id}/permissions")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_PERMISSION_ASSIGN)")
-    public ResponseEntity<Object> assignPermissions(@ValidateNumberId @PathVariable Integer id,  @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+    public ResponseEntity<Object> assignPermissions(@ValidateNumberId @PathVariable Integer id,  @Valid @RequestBody OrgAssignPermissionsDTO dto) {
         var updatedRole = this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
         var respBody = ApiResponses.OneKey("role", updatedRole.toString());
         
@@ -74,7 +74,7 @@ public class AppDashboardRolesController {
 
     @DeleteMapping("/{id}/permissions/{permissionId}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_PERMISSION_UN_ASSIGN)")
-    public ResponseEntity<Object> unAssignPermissions(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Integer permissionId, @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+    public ResponseEntity<Object> unAssignPermissions(@ValidateNumberId @PathVariable Integer id, @ValidateNumberId @PathVariable Integer permissionId, @Valid @RequestBody OrgAssignPermissionsDTO dto) {
         var updatedRole = this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
         var respBody = ApiResponses.OneKey("role", updatedRole.toString());
         
@@ -83,7 +83,7 @@ public class AppDashboardRolesController {
 
     @PostMapping("/{id}/assign")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_ROLE_ASSIGN)")
-    public ResponseEntity<Object> assignRole(@PathVariable Integer id, @Valid @RequestBody AssignOrganizationPermissionsDTO dto) {
+    public ResponseEntity<Object> assignRole(@PathVariable Integer id, @Valid @RequestBody OrgAssignPermissionsDTO dto) {
         this.globalRolesService.assignPermissionsToRole(id, dto.getPermissionsIds());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new Object());
     }

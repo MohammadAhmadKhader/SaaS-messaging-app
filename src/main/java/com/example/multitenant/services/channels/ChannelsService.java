@@ -11,7 +11,7 @@ import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnauthorizedUserException;
 import com.example.multitenant.models.Channel;
 import com.example.multitenant.repository.ChannelsRepository;
-import com.example.multitenant.services.organizations.OrganizationsService;
+import com.example.multitenant.services.organizations.OrgsService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +22,11 @@ public class ChannelsService {
     private final ChannelsRepository channelsRepository;
     
     public List<Channel> findAll(Integer organizationId) {
-        return this.channelsRepository.findAllByOrganizationId(organizationId);
+        return this.channelsRepository.findAllByOrgId(organizationId);
     }
     
     public Channel findByIdAndOrganizationId(Integer id, Integer organizationId, Integer categoryId) {
-        var chan = this.channelsRepository.findByIdAndOrganizationId(id, organizationId);
+        var chan = this.channelsRepository.findByIdAndOrgId(id, organizationId);
         if(chan == null) {
             throw new ResourceNotFoundException("channel", id);
         }
@@ -39,7 +39,7 @@ public class ChannelsService {
     }
 
     public Channel findWithMessagesByIdAndOrganizationId(Integer id, Integer organizationId, Integer categoryId) {
-        var chan = this.channelsRepository.findWithMessagesByIdAndOrganizationId(id, organizationId);
+        var chan = this.channelsRepository.findWithMessagesByIdAndOrgId(id, organizationId);
         if(chan == null) {
             throw new ResourceNotFoundException("channel", id);
         }
@@ -68,7 +68,7 @@ public class ChannelsService {
     }
     
     public Channel update(Integer id, Channel updatedChannel, Integer organizationId, Integer categoryId) {
-        var channel = this.channelsRepository.findByIdAndOrganizationId(id, organizationId);
+        var channel = this.channelsRepository.findByIdAndOrgId(id, organizationId);
         if(updatedChannel.getName() != null) {
             channel.setName(updatedChannel.getName());
         }
@@ -85,7 +85,7 @@ public class ChannelsService {
     }
     
     public void delete(Integer id, Integer organizationId, Integer categoryId) {
-        this.channelsRepository.deleteByIdAndOrganizationId(id, organizationId, categoryId);
+        this.channelsRepository.deleteByIdAndOrgId(id, organizationId, categoryId);
     }
 
     @Transactional
@@ -121,6 +121,6 @@ public class ChannelsService {
     }
 
     public long countChannelsByOrgId(Integer orgId) {
-        return this.channelsRepository.countChannelsByOrganizationId(orgId);
+        return this.channelsRepository.countChannelsByOrgId(orgId);
     }
 }

@@ -53,7 +53,7 @@ public class Organization implements Serializable {
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("id ASC")
-    private List<OrganizationRole> roles = new ArrayList<>();
+    private List<OrgRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("displayOrder ASC")
@@ -65,12 +65,12 @@ public class Organization implements Serializable {
     private List<Channel> channels = new ArrayList<>();
 
 
-    public OrganizationViewDTO toViewDTO() {
-        return new OrganizationViewDTO(this);
+    public OrgViewDTO toViewDTO() {
+        return new OrgViewDTO(this);
     }
 
-    public OrganizationSearchDTO toSearchDTO() {
-        return new OrganizationSearchDTO(this);
+    public OrgSearchDTO toSearchDTO() {
+        return new OrgSearchDTO(this);
     }
 
     public Organization(String name, String industry) {

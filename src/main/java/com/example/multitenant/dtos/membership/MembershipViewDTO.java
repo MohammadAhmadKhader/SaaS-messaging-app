@@ -14,8 +14,8 @@ public class MembershipViewDTO {
     private Integer organizationId;
     private long userId;
     private Instant joinedAt;
-    private OrganizationViewDTO organization;
-    private UserOrganizationViewDTO user;
+    private OrgViewDTO organization;
+    private UserOrgViewDTO user;
     
     public MembershipViewDTO(Membership memebership) {
         setOrganizationId(memebership.getId().getOrganizationId());

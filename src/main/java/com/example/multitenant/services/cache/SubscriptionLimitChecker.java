@@ -15,7 +15,7 @@ import com.example.multitenant.models.enums.StripePlan;
 import com.example.multitenant.services.categories.CategoriesService;
 import com.example.multitenant.services.channels.ChannelsService;
 import com.example.multitenant.services.membership.MemberShipService;
-import com.example.multitenant.services.security.OrganizationRolesService;
+import com.example.multitenant.services.security.OrgRolesService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SubscriptionLimitChecker {
     private final MemberShipService memberShipService;
-    private final OrganizationRolesService organizationRolesService;
+    private final OrgRolesService organizationRolesService;
     private final CategoriesService categoriesService;
     private final ChannelsService channelsService;
     private final RedisTemplate<String, Long> redisTemplate;

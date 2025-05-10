@@ -17,7 +17,7 @@ import com.example.multitenant.models.binders.MembershipKey;
 public interface MembershipRepository extends GenericRepository<Membership, MembershipKey> {
     @EntityGraph(attributePaths = "user")
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.isMember = true")
-    public Page<Membership> findByOrganizationAndIsMemberTrue(@Param("organization") Organization organization, Pageable pageable);
+    public Page<Membership> findByOrgAndIsMemberTrue(@Param("organization") Organization organization, Pageable pageable);
 
     @EntityGraph(attributePaths = {"organizationRoles", "organizationRoles.organizationPermissions"})
     @Query("SELECT m FROM Membership m WHERE m.organization = :organization AND m.user.id = :userId AND m.isMember = true")
@@ -36,5 +36,5 @@ public interface MembershipRepository extends GenericRepository<Membership, Memb
     List<Long> findUserIdsByOrgIdAndRoleId(@Param("orgId") Integer orgId, @Param("roleId") Integer roleId);
 
     @Query("SELECT COUNT(m) FROM Membership m WHERE m.organization.id = :organizationId AND m.isMember = true")
-    long countMembersByOrganizationId(@Param("organizationId") Integer organizationId);
+    long countMembersByOrgId(@Param("organizationId") Integer organizationId);
 }

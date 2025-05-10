@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.User;
-import com.example.multitenant.repository.OrganizationsRepository;
+import com.example.multitenant.repository.OrgsRepository;
 import com.example.multitenant.repository.UsersRepository;
 
 public class DataLoader {
     public static Organization loadTestOrganization(Organization org, UsersRepository usersRepository, 
-        OrganizationsRepository organizationsRepository) {
+        OrgsRepository organizationsRepository) {
 
         var owner = org.getOwner();
         owner.setPassword("test-password");
@@ -22,7 +22,7 @@ public class DataLoader {
     }
 
     public static List<Organization> loadTestOrganizations(List<Organization> orgs, UsersRepository usersRepository, 
-        OrganizationsRepository organizationsRepository) {
+        OrgsRepository organizationsRepository) {
 
         var orgsList = new ArrayList<Organization>();
         for (var organization : orgs) {

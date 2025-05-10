@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.auth.*;
 import com.example.multitenant.dtos.logs.LogsViewDTO;
-import com.example.multitenant.dtos.organizations.OrganizationUpdateDTO;
+import com.example.multitenant.dtos.organizations.OrgUpdateDTO;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.models.enums.LogEventType;

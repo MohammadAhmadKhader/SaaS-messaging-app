@@ -103,8 +103,8 @@ public class User implements Serializable {
         this.email = this.email.toLowerCase();
     }
 
-    public UserOrganizationViewDTO toOrganizationViewDTO(Membership membership) {
-        return new UserOrganizationViewDTO(this, membership);
+    public UserOrgViewDTO toOrganizationViewDTO(Membership membership) {
+        return new UserOrgViewDTO(this, membership);
     }
 
     public UserWithoutRolesViewDTO toViewWithoutRolesDTO() {

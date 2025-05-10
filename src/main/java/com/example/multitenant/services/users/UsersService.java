@@ -17,7 +17,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.files.FilesService;
-import com.example.multitenant.specificationsbuilders.UsersSpecificationsBuilder;
+import com.example.multitenant.specificationsbuilders.UsersSpecBuilder;
 import com.example.multitenant.utils.PageableHelper;
 
 import jakarta.transaction.Transactional;
@@ -30,7 +30,7 @@ public class UsersService {
     private static String defaultSortDir = "DESC";
 
     private final UsersRepository usersRepository;
-    private final UsersSpecificationsService usersSpecificationsService;
+    private final UsersSpecService usersSpecificationsService;
     private final UsersCrudService usersCrudService;
     private final FilesService filesService;
 
@@ -75,7 +75,7 @@ public class UsersService {
     }
 
     public CursorPage<User, Long> search(UsersFilter filter, Long cursor, int size) {
-        var spec = UsersSpecificationsBuilder.build(filter);
+        var spec = UsersSpecBuilder.build(filter);
         var result = this.usersSpecificationsService.findAllWithCursor(spec, cursor, size, "id");
 
         return result;

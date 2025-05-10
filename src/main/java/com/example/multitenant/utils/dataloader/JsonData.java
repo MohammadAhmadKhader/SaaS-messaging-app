@@ -7,8 +7,8 @@ import lombok.*;
 
 @Getter
 public class JsonData {
-    List<OrganizationPermission> organizationPermissions;
-    List<OrganizationRole> organizationRoles;
+    List<OrgPermission> organizationPermissions;
+    List<OrgRole> organizationRoles;
     List<GlobalRole> globalRoles;
     List<GlobalPermission> globalPermissions;
     List<Organization> organizations;

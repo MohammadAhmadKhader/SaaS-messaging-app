@@ -58,7 +58,7 @@ public class LogsService {
         return this.invitationsLogsRepository.save(log);
     }
 
-    public RolesAssignmentsLog createRolesAssignmentsLog(User assignedFrom, OrganizationRole role, 
+    public RolesAssignmentsLog createRolesAssignmentsLog(User assignedFrom, OrgRole role, 
     Long assignedToId ,Integer organizationId, LogEventType event) {
 
         var log = new RolesAssignmentsLog();

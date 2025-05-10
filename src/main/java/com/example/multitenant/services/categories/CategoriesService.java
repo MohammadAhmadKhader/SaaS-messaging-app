@@ -13,7 +13,7 @@ import com.example.multitenant.exceptions.UnknownException;
 import com.example.multitenant.models.Category;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.repository.CategoriesRepository;
-import com.example.multitenant.services.security.OrganizationRolesService;
+import com.example.multitenant.services.security.OrgRolesService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,25 +22,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoriesService {
     private final CategoriesRepository categoriesRepository;
-    private final OrganizationRolesService organizationRolesService;
+    private final OrgRolesService orgRolesService;
     
     public List<Category> findAllWithChannels(Integer organizationId) {
-        return this.categoriesRepository.findAllByOrganizationIdWithChannels(organizationId);
+        return this.categoriesRepository.findAllByOrgIdWithChannels(organizationId);
     }
 
     public List<Category> findAllWithChannelsAndRoles(Integer organizationId) {
-        return this.categoriesRepository.findAllByOrganizationIdWithChannelsAndRoles(organizationId);
+        return this.categoriesRepository.findAllByOrgIdWithChannelsAndRoles(organizationId);
     }
     
     public List<Category> findAllWithAuthorizedRoles(Integer organizationId) {
-        return this.categoriesRepository.findAllByOrganizationIdWithAuthorizedRoles(organizationId);
+        return this.categoriesRepository.findAllByOrgIdWithAuthorizedRoles(organizationId);
     }
 
     public Category findByIdAndOrganizationId(Integer id, Integer organizationId) {
-        return this.categoriesRepository.findByIdAndOrganizationId(id, organizationId);
+        return this.categoriesRepository.findByIdAndOrgId(id, organizationId);
     }
     public Category findByIdAndOrganizationIdWithAuthorizedRoles(Integer id, Integer organizationId) {
-        return this.categoriesRepository.findByIdAndOrganizationIdWithAuthorizedRoles(id, organizationId);
+        return this.categoriesRepository.findByIdAndOrgIdWithAuthorizedRoles(id, organizationId);
     }
     
     public Category create(Category category, Integer organizationId) {
@@ -66,7 +66,7 @@ public class CategoriesService {
     }
     
     public Category update(Integer id, Category updatedCategory, Integer organizationId) {
-        var existingCategory = this.categoriesRepository.findByIdAndOrganizationId(id, organizationId);
+        var existingCategory = this.categoriesRepository.findByIdAndOrgId(id, organizationId);
         if (existingCategory == null) {
             return null;
         }
@@ -77,7 +77,7 @@ public class CategoriesService {
     }
     
     public void delete(Integer id, Integer organizationId) {
-        this.categoriesRepository.deleteByIdAndOrganizationId(id, organizationId);
+        this.categoriesRepository.deleteByIdAndOrgId(id, organizationId);
     }
 
     
@@ -106,7 +106,7 @@ public class CategoriesService {
             throw new ResourceNotFoundException("category", id);
         }
 
-        var orgRole = this.organizationRolesService.findOne(roleId, orgId);
+        var orgRole = this.orgRolesService.findOne(roleId, orgId);
         if (orgRole == null) {
             throw new ResourceNotFoundException("organization role", roleId);
         }
@@ -125,7 +125,7 @@ public class CategoriesService {
             throw new ResourceNotFoundException("category", id);
         }
 
-        var orgRole = this.organizationRolesService.findOne(roleId, orgId);
+        var orgRole = this.orgRolesService.findOne(roleId, orgId);
         if (orgRole == null) {
             throw new ResourceNotFoundException("organization role", roleId);
         }
@@ -159,7 +159,7 @@ public class CategoriesService {
     }
 
     public void initializeRoles(Category category, Integer orgId) {
-        var defRoles = this.organizationRolesService.findDefaultOrgRoles(orgId);
+        var defRoles = this.orgRolesService.findDefaultOrgRoles(orgId);
         category.setAuthorizedRoles(defRoles.stream().collect(Collectors.toSet()));
     }
 }

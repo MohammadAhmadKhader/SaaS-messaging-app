@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.multitenant.services.organizationsrestrictions.OrganizationRestrictionsService;
+import com.example.multitenant.services.organizationsrestrictions.OrgsRestrictionsService;
 import com.example.multitenant.services.restrictions.RestrictionsService;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class OrgRestrictionsCacheSerivce {
     private final RedisTemplate<String, Boolean> redisTemplate;
-    private final OrganizationRestrictionsService organizationRestrictionsService;
+    private final OrgsRestrictionsService organizationRestrictionsService;
     private static final Duration CACHE_TTL = Duration.ofMinutes(30);
 
     public Boolean getIsRestricted(Integer orgId, Long userId) {

@@ -103,8 +103,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errBody);
     }
 
-    @ExceptionHandler(UnauthorizedOrganizationException.class)
-    public ResponseEntity<Map<String, Object>> handleUnauthorizedExceptions(UnauthorizedOrganizationException ex) {
+    @ExceptionHandler(UnauthorizedOrgException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorizedExceptions(UnauthorizedOrgException ex) {
         var errBody = ApiResponses.Unauthorized();
         log.error("[Organization Unauthorized]: " +ex.getMessage());
 

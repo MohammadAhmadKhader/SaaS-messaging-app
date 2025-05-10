@@ -15,12 +15,12 @@ import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.stereotype.Service;
 
 import com.example.multitenant.common.annotations.contract.LogMethod;
-import com.example.multitenant.dtos.organizationroles.OrganizationRoleCacheDTO;
+import com.example.multitenant.dtos.organizationroles.OrgRoleCacheDTO;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
-import com.example.multitenant.models.OrganizationPermission;
+import com.example.multitenant.models.OrgPermission;
 import com.example.multitenant.services.categories.CategoriesService;
 import com.example.multitenant.services.membership.MemberShipService;
-import com.example.multitenant.services.security.OrganizationRolesService;
+import com.example.multitenant.services.security.OrgRolesService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AuthCacheService {
     private final RedisTemplate<String, Object> redisTemplate;
-    private final OrganizationRolesService organizationRolesService;
+    private final OrgRolesService organizationRolesService;
     private final MemberShipService memberShipService;
     private final CategoriesService categoriesService;
 
@@ -55,7 +55,7 @@ public class AuthCacheService {
    
     @LogMethod
     @SuppressWarnings("unchecked")
-    public List<OrganizationRoleCacheDTO> getUserOrgRoles(Integer orgId, long userId) {
+    public List<OrgRoleCacheDTO> getUserOrgRoles(Integer orgId, long userId) {
         var key = this.getUserOrgRolesCacheKey(orgId, userId);
         var cached = this.redisTemplate.opsForValue().get(key);
         if(cached == null) {
@@ -63,7 +63,7 @@ public class AuthCacheService {
         }
         
         System.out.println(cached.toString() + "   already cached <---------------------");
-        return (List<OrganizationRoleCacheDTO>) cached;
+        return (List<OrgRoleCacheDTO>) cached;
     }   
 
     @LogMethod
@@ -105,12 +105,12 @@ public class AuthCacheService {
         return (Map<Integer, List<Integer>>) cached;
     }
 
-    private List<OrganizationRoleCacheDTO> fetchUserOrgRolesAndCache(Integer orgId, long userId) {
+    private List<OrgRoleCacheDTO> fetchUserOrgRolesAndCache(Integer orgId, long userId) {
         var userRoles =  this.memberShipService
         .findUserMembershipWithRoles(orgId, userId)
         .getOrganizationRoles()
         .stream()
-        .map((role) -> new OrganizationRoleCacheDTO(role))
+        .map((role) -> new OrgRoleCacheDTO(role))
         .toList();
 
         this.setUserOrgRoles(orgId, userId, userRoles);
@@ -125,7 +125,7 @@ public class AuthCacheService {
         .collect(Collectors.toMap(
             role -> role.getName(),
             role -> {
-                Set<OrganizationPermission> permissions = role.getOrganizationPermissions();
+                Set<OrgPermission> permissions = role.getOrganizationPermissions();
                 return permissions.stream().map((perm) -> perm.getName()).toList();
             }
         ));
@@ -167,7 +167,7 @@ public class AuthCacheService {
         this.redisTemplate.opsForValue().set(key, rolesWithPerms, CACHE_TTL);
     }
     
-    private void setUserOrgRoles(Integer orgId, long userId, List<OrganizationRoleCacheDTO> roles) {
+    private void setUserOrgRoles(Integer orgId, long userId, List<OrgRoleCacheDTO> roles) {
         var key = this.getUserOrgRolesCacheKey(orgId, userId);
         this.redisTemplate.opsForValue().set(key, roles, CACHE_TTL);
     }

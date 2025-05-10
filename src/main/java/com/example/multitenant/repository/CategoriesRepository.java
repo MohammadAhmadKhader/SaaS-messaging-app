@@ -20,7 +20,7 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
         WHERE c.organizationId = :organizationId
         ORDER BY c.displayOrder ASC
     """)
-    List<Category> findAllByOrganizationIdWithChannels(@Param("organizationId") Integer organizationId);
+    List<Category> findAllByOrgIdWithChannels(@Param("organizationId") Integer organizationId);
 
     @Query("""
         SELECT DISTINCT c 
@@ -30,7 +30,7 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
         WHERE c.organizationId = :organizationId
         ORDER BY c.displayOrder ASC
     """)
-    List<Category> findAllByOrganizationIdWithChannelsAndRoles(@Param("organizationId") Integer organizationId);
+    List<Category> findAllByOrgIdWithChannelsAndRoles(@Param("organizationId") Integer organizationId);
 
     @Query("""
         SELECT DISTINCT c 
@@ -39,22 +39,22 @@ public interface CategoriesRepository extends GenericRepository<Category, Intege
         WHERE (c.organizationId = :organizationId)
         ORDER BY c.displayOrder ASC
     """)
-    List<Category> findAllByOrganizationIdWithAuthorizedRoles(@Param("organizationId") Integer organizationId);
+    List<Category> findAllByOrgIdWithAuthorizedRoles(@Param("organizationId") Integer organizationId);
     
     @Query("SELECT c FROM Category c WHERE c.id = :id AND c.organizationId = :organizationId")
-    Category findByIdAndOrganizationId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
+    Category findByIdAndOrgId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
 
     @Query("""
         SELECT c FROM Category c
         LEFT JOIN FETCH c.authorizedRoles
         WHERE c.id = :id AND c.organizationId = :organizationId
     """)
-    Category findByIdAndOrganizationIdWithAuthorizedRoles(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
+    Category findByIdAndOrgIdWithAuthorizedRoles(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
     
     @Transactional
     @Modifying
     @Query("DELETE FROM Category c WHERE c.id = :id AND c.organizationId = :organizationId")
-    void deleteByIdAndOrganizationId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
+    void deleteByIdAndOrgId(@Param("id") Integer id, @Param("organizationId") Integer organizationId);
 
     @Query("SELECT c FROM Category c WHERE c.organizationId = :organizationId ORDER BY c.displayOrder DESC LIMIT 1")
     Category findLatestOrder(@Param("organizationId") Integer organizationId);

@@ -3,7 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.multitenant.models.User;
-import com.example.multitenant.repository.OrganizationRolesRepository;
+import com.example.multitenant.repository.OrgRolesRepository;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.utils.BaseIntegration;
 import com.example.multitenant.utils.DataLoader;

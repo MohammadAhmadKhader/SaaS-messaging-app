@@ -51,7 +51,7 @@ public class Category {
         joinColumns = @JoinColumn(name = "category_id", referencedColumnName = "id", table = "categories"),
         inverseJoinColumns = @JoinColumn(name = "role_id",  referencedColumnName = "id", table = "organization_roles")
     )
-    private Set<OrganizationRole> authorizedRoles = new HashSet<OrganizationRole>();
+    private Set<OrgRole> authorizedRoles = new HashSet<OrgRole>();
 
     @Column(name = "created_by_id", insertable = false, updatable = false)
     private Long createdById;

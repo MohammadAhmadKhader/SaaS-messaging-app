@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import com.example.multitenant.services.security.*;
-import com.example.multitenant.specifications.MembershipSpecifications;
-import com.example.multitenant.specificationsbuilders.MembershipSpecificationsBuilder;
+import com.example.multitenant.specifications.MembershipSpec;
+import com.example.multitenant.specificationsbuilders.MembershipSpecBuilder;
 import com.example.multitenant.utils.*;
 
 import jakarta.transaction.Transactional;
@@ -27,7 +27,7 @@ import com.example.multitenant.models.binders.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.MembershipRepository;
 import com.example.multitenant.services.files.FilesService;
-import com.example.multitenant.services.organizations.OrganizationsService;
+import com.example.multitenant.services.organizations.OrgsService;
 
 @RequiredArgsConstructor
 @Service
@@ -35,11 +35,11 @@ public class MemberShipService {
     private static String defaultSortBy = "joinedAt";
     private static String defaultSortDir = "DESC";
 
-    private final OrganizationRolesService organizationRolesService;
-    private final OrganizationPermissionsService organizationsPermissionsService;
+    private final OrgRolesService organizationRolesService;
+    private final OrgPermissionsService organizationsPermissionsService;
     private final MembershipRepository membershipRepository;
-    private final OrganizationsService organizationsService;
-    private final MemberShipSpecificationsService memberShipSpecificationsService;
+    private final OrgsService organizationsService;
+    private final MemberShipSpecService memberShipSpecificationsService;
     private final MemberShipCrudService memberShipCrudService;
     private final FilesService filesService;
 
@@ -48,7 +48,7 @@ public class MemberShipService {
         org.setId(organizationId);
         var pageable = PageRequest.of(page - 1, size, Sort.by("joinedAt","id").descending());
         
-        return this.membershipRepository.findByOrganizationAndIsMemberTrue(org, pageable);
+        return this.membershipRepository.findByOrgAndIsMemberTrue(org, pageable);
     }
     
     public boolean hasUserJoined(Integer orgId, long userId) {
@@ -99,7 +99,7 @@ public class MemberShipService {
 
         this.organizationRolesService.create(ownerRole);
         
-        var orgRoles = new ArrayList<OrganizationRole>();
+        var orgRoles = new ArrayList<OrgRole>();
         orgRoles.add(ownerRole);
 
         membership.setOrganizationRoles(orgRoles);
@@ -109,7 +109,7 @@ public class MemberShipService {
     }
 
     @Transactional
-    public Membership createOrganizationWithOwnerMembership(OrganizationCreateDTO dto, User user) {
+    public Membership createOrganizationWithOwnerMembership(OrgCreateDTO dto, User user) {
         var org = this.organizationsService.create(dto.toModel());
         var membership = new Membership(org.getId(), user.getId());
 
@@ -119,7 +119,7 @@ public class MemberShipService {
 
         this.organizationRolesService.create(ownerRole);
         
-        var orgRoles = new ArrayList<OrganizationRole>();
+        var orgRoles = new ArrayList<OrgRole>();
         orgRoles.add(ownerRole);
 
         membership.setOrganizationRoles(orgRoles);
@@ -195,7 +195,7 @@ public class MemberShipService {
         }
     }
 
-    public OrganizationRole assignRole(Integer orgRoleId, Integer orgId, long userId) {
+    public OrgRole assignRole(Integer orgRoleId, Integer orgId, long userId) {
         try {
             var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
             var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
@@ -224,7 +224,7 @@ public class MemberShipService {
         }
     }
 
-    public OrganizationRole unAssignRole(Integer orgRoleId, Integer orgId, long userId) {
+    public OrgRole unAssignRole(Integer orgRoleId, Integer orgId, long userId) {
         try {
             var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
             var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
@@ -297,7 +297,7 @@ public class MemberShipService {
         return membership;
     }
 
-    public Membership assignRoleToUser(Membership membership, OrganizationRole orgRole) {
+    public Membership assignRoleToUser(Membership membership, OrgRole orgRole) {
         if(orgRole.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
             throw new InvalidOperationException("cant assign organization owner to a user");
         }
@@ -306,7 +306,7 @@ public class MemberShipService {
         return this.membershipRepository.save(membership);
     }
 
-    public Membership unAssignRoleToUser(Membership membership, OrganizationRole orgRole) {
+    public Membership unAssignRoleToUser(Membership membership, OrgRole orgRole) {
         if(orgRole.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
             throw new InvalidOperationException("cant un-assign organization owner from a user");
         }
@@ -325,23 +325,23 @@ public class MemberShipService {
 
     public Page<Membership> findActiveOrgMemberShips(Integer orgId, Integer page, Integer size, String sortBy, String sortDir, MembershipFilter filter) {
         var pageable = PageableHelper.HandleSortWithPagination(defaultSortBy, defaultSortDir, sortBy, sortDir, page, size);
-        var spec = MembershipSpecificationsBuilder.build(filter, orgId, true);
+        var spec = MembershipSpecBuilder.build(filter, orgId, true);
 
         return this.memberShipSpecificationsService.findAllWithSpecifications(pageable, spec,null);
     }
 
     public long countOrganizationMembers(Integer orgId) {
-        return this.membershipRepository.countMembersByOrganizationId(orgId);
+        return this.membershipRepository.countMembersByOrgId(orgId);
     }
 
-    public OrganizationRole initializeDefaultRolesAndPermissions(Integer orgId) {
+    public OrgRole initializeDefaultRolesAndPermissions(Integer orgId) {
         var roles = List.of(
             DefaultOrganizationRole.ORG_OWNER,
             DefaultOrganizationRole.ORG_ADMIN,
             DefaultOrganizationRole.ORG_USER
         );
     
-        List<OrganizationRole> orgRoles = roles.stream()
+        List<OrgRole> orgRoles = roles.stream()
             .map(role -> createRoleWithPermissions(role, orgId))
             .toList();
     
@@ -351,8 +351,8 @@ public class MemberShipService {
     }
 
     // * private methods below
-    private OrganizationRole createRoleWithPermissions(DefaultOrganizationRole defaultRole, Integer orgId) {
-        var role = new OrganizationRole(defaultRole.getRoleName());
+    private OrgRole createRoleWithPermissions(DefaultOrganizationRole defaultRole, Integer orgId) {
+        var role = new OrgRole(defaultRole.getRoleName());
         role.setDisplayName(defaultRole.getDefaultDisplayName()); // assuming this method exists
         role.setOrganizationId(orgId);
     

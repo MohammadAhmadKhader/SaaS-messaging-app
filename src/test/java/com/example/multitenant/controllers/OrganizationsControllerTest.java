@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.models.User;
-import com.example.multitenant.repository.OrganizationsRepository;
+import com.example.multitenant.repository.OrgsRepository;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.utils.BaseIntegration;
 import com.example.multitenant.utils.DataLoader;
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class OrganizationsControllerTest extends BaseIntegration {
     private final MockMvc mockMvc;
-    private final OrganizationsRepository organizationsRepository;
+    private final OrgsRepository organizationsRepository;
     private final UsersRepository usersRepository;
     private final ObjectMapper objectMapper;
     private List<Organization> organizations;

@@ -1,7 +1,7 @@
 package com.example.multitenant.models.logsmodels;
 
 import com.example.multitenant.exceptions.UnknownException;
-import com.example.multitenant.models.OrganizationRole;
+import com.example.multitenant.models.OrgRole;
 import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.LogEventType;
 
@@ -31,7 +31,7 @@ public class RolesAssignmentsLog extends BaseOrganizationsLogs {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
-    private OrganizationRole role;
+    private OrgRole role;
 
     @Override
     public String getMessage() {

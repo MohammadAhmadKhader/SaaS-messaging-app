@@ -33,9 +33,9 @@ public class DataLoader {
 
     @PersistenceContext
     private final EntityManager entityManager;
-    private final OrganizationPermissionsRepository organizationPermissionsRepository;
-    private final OrganizationRolesRepository organizationRolesRepository;
-    private final OrganizationsRepository organizationsRepository;
+    private final OrgPermissionsRepository organizationPermissionsRepository;
+    private final OrgRolesRepository organizationRolesRepository;
+    private final OrgsRepository organizationsRepository;
     private final UsersRepository usersRepository;
     private final GlobalRolesRepository globalRolesRepository;
     private final GlobalPermissionsRepository globalPermissionsRepository;
@@ -59,15 +59,15 @@ public class DataLoader {
     @Transactional
     private void loadOrganizationPermissions() {
         var permissions = this.data.getOrganizationPermissions();
-        var permsHashMap = new HashMap<String, OrganizationPermission>();
+        var permsHashMap = new HashMap<String, OrgPermission>();
 
         permissions.stream().forEach((perm) -> {
             permsHashMap.put(perm.getName(), perm);
         });
 
-        var ownerPerms = new ArrayList<OrganizationPermission>();
-        var adminPerms = new ArrayList<OrganizationPermission>();
-        var userPerms = new ArrayList<OrganizationPermission>();
+        var ownerPerms = new ArrayList<OrgPermission>();
+        var adminPerms = new ArrayList<OrgPermission>();
+        var userPerms = new ArrayList<OrgPermission>();
         for(var perm: permissions) {
             if(!this.organizationPermissionsRepository.findByName(perm.getName()).isPresent()) {
                 this.organizationPermissionsRepository.save(perm);

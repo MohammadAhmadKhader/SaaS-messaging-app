@@ -14,7 +14,7 @@ import com.example.multitenant.models.User;
 import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.repository.RestrictionsRepository;
 import com.example.multitenant.services.users.UsersService;
-import com.example.multitenant.specificationsbuilders.RestrictionsSpecificationsBuilder;
+import com.example.multitenant.specificationsbuilders.RestrictionsSpecBuilder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 public class RestrictionsService {
     private final RestrictionsCrudService restrictionsCrudService;
     private final RestrictionsRepository restrictionsRepository;
-    private final RestrictionsSpecificationsService specificationsService;
+    private final RestrictionsSpecService specificationsService;
     private final UsersService usersService;
 
     public Page<Restriction> getRestrictions(Integer page, Integer size, RestrictionsFilter filter) {
         var pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        var spec = RestrictionsSpecificationsBuilder.build(filter);
+        var spec = RestrictionsSpecBuilder.build(filter);
         var result  = this.specificationsService.findAllWithSpecifications(pageRequest, spec, null);
 
         return result;

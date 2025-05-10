@@ -37,7 +37,7 @@ public class CategoriesController {
     private final SubscriptionLimitChecker subscriptionLimitChecker;
 
     @GetMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_VIEW)")
     public ResponseEntity<Object> getAllCategories() {
         var tenantId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
@@ -49,7 +49,7 @@ public class CategoriesController {
     }
     
     @PostMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_CREATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_CREATE)")
     @ValidateSubscriptionLimit(limit = StripeLimit.CATEGORIES, counterOperation = StripeCounterOperation.INCREMENT)
     public ResponseEntity<Object> createCategory(@Valid @RequestBody CategoryCreateDTO dto) {
         var tenantId = AppUtils.getTenantId();
@@ -66,7 +66,7 @@ public class CategoriesController {
     }
 
     @PatchMapping("/swap-order")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_UPDATE)")
     @TenantHandlerLocker
     public ResponseEntity<Void> swapCategoryOrder(@RequestBody CategoryOrderSwapDTO dto) {
         var tenantId = AppUtils.getTenantId();
@@ -80,7 +80,7 @@ public class CategoriesController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_UPDATE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_UPDATE)")
     public ResponseEntity<Object> updateCategory(@ValidateNumberId @PathVariable Integer id, @Valid @RequestBody CategoryUpdateDTO dto) {
         var tenantId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
@@ -100,7 +100,7 @@ public class CategoriesController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_DELETE)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_DELETE)")
     public ResponseEntity<Object> deleteCategory(@ValidateNumberId @PathVariable Integer id) {
         var tenantId = AppUtils.getTenantId();
 

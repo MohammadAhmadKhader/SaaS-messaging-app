@@ -47,7 +47,7 @@ public class Membership {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     @OrderBy("id ASC")
-    private List<OrganizationRole> organizationRoles;
+    private List<OrgRole> organizationRoles;
 
     // this must be handling manually
     private Instant joinedAt;

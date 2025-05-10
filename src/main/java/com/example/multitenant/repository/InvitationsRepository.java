@@ -18,8 +18,8 @@ public interface InvitationsRepository extends GenericRepository<Invitation, Int
     List<Invitation> findByRecipientId(Long recipientId, Pageable pageable);
 
     @Query("SELECT inv FROM Invitation inv WHERE inv.organization.id = :organizationId AND inv.id < :cursor ORDER BY inv.id DESC")
-    List<Invitation> findByOrganizationIdAndCursor(Integer organizationId, Integer cursor, Pageable pageable);
+    List<Invitation> findByOrgIdAndCursor(Integer organizationId, Integer cursor, Pageable pageable);
 
     @Query("SELECT inv FROM Invitation inv WHERE inv.organization.id = :organizationId ORDER BY inv.id DESC")
-    List<Invitation> findByOrganizationId(Integer organizationId, Pageable pageable);
+    List<Invitation> findByOrgId(Integer organizationId, Pageable pageable);
 }

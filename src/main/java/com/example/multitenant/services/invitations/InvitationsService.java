@@ -54,9 +54,9 @@ public class InvitationsService {
 
         List<Invitation> invitations;
         if(cursor == null) {
-            invitations = this.invitationsRepository.findByOrganizationId(organizationId, pageable);
+            invitations = this.invitationsRepository.findByOrgId(organizationId, pageable);
         } else {
-            invitations = this.invitationsRepository.findByOrganizationIdAndCursor(organizationId, cursor, pageable);
+            invitations = this.invitationsRepository.findByOrgIdAndCursor(organizationId, cursor, pageable);
         }
         
         var hasNext = invitations.size() > size;

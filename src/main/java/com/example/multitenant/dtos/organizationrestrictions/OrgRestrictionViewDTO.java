@@ -3,7 +3,7 @@ package com.example.multitenant.dtos.organizationrestrictions;
 import java.time.Instant;
 
 import com.example.multitenant.dtos.users.UserWithoutRolesViewDTO;
-import com.example.multitenant.models.OrganizationRestriction;
+import com.example.multitenant.models.OrgRestriction;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ public class OrgRestrictionViewDTO {
     private Instant createdAt;
     private UserWithoutRolesViewDTO createdBy;
 
-    public OrgRestrictionViewDTO(OrganizationRestriction rest) {
+    public OrgRestrictionViewDTO(OrgRestriction rest) {
         setId(rest.getId());
         var user = rest.getUser() == null ? null : rest.getUser().toViewWithoutRolesDTO();
         setUser(user);

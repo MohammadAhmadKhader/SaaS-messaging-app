@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.multitenant.common.annotations.contract.LogMethod;
 import com.example.multitenant.dtos.categories.CategoryViewDTO;
-import com.example.multitenant.dtos.organizationroles.OrganizationRoleCacheDTO;
+import com.example.multitenant.dtos.organizationroles.OrgRoleCacheDTO;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.models.Category;
 import com.example.multitenant.services.categories.CategoriesService;

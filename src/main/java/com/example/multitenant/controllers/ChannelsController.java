@@ -37,7 +37,7 @@ public class ChannelsController {
     private final SubscriptionLimitChecker subscriptionLimitChecker;
 
     @GetMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CATEGORY_VIEW)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CATEGORY_VIEW)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> getChannelById(@PathVariable @ValidateNumberId Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
         
@@ -49,7 +49,7 @@ public class ChannelsController {
     }
     
     @PostMapping("")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_CREATE)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CHANNEL_CREATE)" + " and @customSPEL.hasCategoryAccess(#categoryId)")
     @ValidateCategoryChannelsSubscriptionLimit(limit = StripeLimit.CATEGORY_CHANNELS, counterOperation = StripeCounterOperation.INCREMENT, categoryIdParamIndex = 1)
     public ResponseEntity<Object> createChannel(@Valid @RequestBody ChannelCreateDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
@@ -65,7 +65,7 @@ public class ChannelsController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> updateChannel(
         @ValidateNumberId @PathVariable Integer id, 
         @Valid @RequestBody ChannelUpdateDTO dto,
@@ -86,7 +86,7 @@ public class ChannelsController {
     }
 
     @PatchMapping("/swap-order")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CHANNEL_UPDATE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     @TenantHandlerLocker
     public ResponseEntity<Void> swapChannelOrder(@RequestBody ChannelOrderSwapDTO dto, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
@@ -96,7 +96,7 @@ public class ChannelsController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSPEL.hasOrgAuthority(@organizationPermissions.CHANNEL_DELETE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
+    @PreAuthorize("@customSPEL.hasOrgAuthority(@orgPermissions.CHANNEL_DELETE)"+ " and @customSPEL.hasCategoryAccess(#categoryId)")
     public ResponseEntity<Object> deleteChannel(@ValidateNumberId @PathVariable Integer id, @PathVariable @ValidateNumberId Integer categoryId) {
         var tenantId = AppUtils.getTenantId();
 

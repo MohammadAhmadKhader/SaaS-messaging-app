@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import com.example.multitenant.common.validators.contract.AtLeastInFuture;
-import com.example.multitenant.models.OrganizationRestriction;
+import com.example.multitenant.models.OrgRestriction;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -26,8 +26,8 @@ public class OrgRestrictionCreateDTO {
     @Size(min = 4, message = "reason must be at least {min} characters")
     private String reason;
 
-    public OrganizationRestriction toModel() {
-        var rest = new OrganizationRestriction();
+    public OrgRestriction toModel() {
+        var rest = new OrgRestriction();
         rest.setUntil(until);
         rest.setReason(reason);
     
