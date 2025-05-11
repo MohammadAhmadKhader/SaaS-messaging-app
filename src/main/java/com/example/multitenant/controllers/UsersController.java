@@ -60,7 +60,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUser.toViewDTO());
     }
 
-    @DeleteMapping("/self-delete")
+    @PatchMapping("/self-delete")
     public ResponseEntity<Object> selfDeleteUser() {
         var principal = SecurityUtils.getPrincipal();
         if(principal == null) {
@@ -68,18 +68,7 @@ public class UsersController {
         }
 
         var user = principal.getUser();
-        var isSuperAdmin = user.getRoles().stream().anyMatch((role) -> {
-            return role.getName().equals(DefaultGlobalRole.SUPERADMIN.getRoleName());
-        });
-
-        if(isSuperAdmin) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse(String.format("invalid operation, can't delete super admin")));
-        }
-
-        var deletedUser = this.usersService.findThenDeleteById(user.getId());
-        if(deletedUser == null) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("user", user.getId()));
-        }
+        this.usersService.softDeleteAndAnonymizeUserById(user.getId());
         
         return ResponseEntity.noContent().build();
     }

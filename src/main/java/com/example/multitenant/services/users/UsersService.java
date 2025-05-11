@@ -1,5 +1,7 @@
 package com.example.multitenant.services.users;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -13,7 +15,9 @@ import com.example.multitenant.dtos.users.UsersFilter;
 import com.example.multitenant.exceptions.InvalidOperationException;
 import com.example.multitenant.exceptions.ResourceNotFoundException;
 import com.example.multitenant.exceptions.UnknownException;
+import com.example.multitenant.models.GlobalRole;
 import com.example.multitenant.models.User;
+import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.models.enums.FilesPath;
 import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.files.FilesService;
@@ -146,19 +150,48 @@ public class UsersService {
     }
 
     @Transactional
-    public User findThenDeleteById(Long id) {
-        var user = this.usersCrudService.findById(id);
+    public User softDeleteAndAnonymizeUserById(Long id) {
+        var user = this.usersRepository.findOneByIdWithRoles(id);
         if (user == null) {
-            return null;
+            throw new ResourceNotFoundException("user", id);
         }
 
-        this.usersRepository.delete(user);
-        if(user.getAvatarUrl() != null) {
+        if(user.isDeleted()) {
+            throw new InvalidOperationException("user is already deleted");
+        }
+
+        var superAdmin = DefaultGlobalRole.SUPERADMIN.getRoleName();
+        var admin = DefaultGlobalRole.ADMIN.getRoleName();
+        var isAdmin = user.getRoles().stream().anyMatch((role) -> {
+            return role.getName().equals(superAdmin) || role.getName().equals(admin);
+        });
+
+        if(isAdmin) {
+           throw new InvalidOperationException("can not delete a user with admin privileges");
+        }
+
+        user.setDeleted(true);
+
+        // clearing sensitive data
+        user.setEmail(null);
+        user.setFirstName(null);
+        user.setLastName(null);
+        user.setPassword(null);
+        var avatarUrl = user.getAvatarUrl();
+        user.setAvatarUrl(null);
+
+        // clearing relations
+        user.setFriends(new HashSet<User>());
+        user.setFriendOf(new HashSet<User>());
+        user.setRoles(new HashSet<GlobalRole>());
+
+        this.usersRepository.save(user);
+        if(avatarUrl != null) {
             TransactionSynchronizationManager.registerSynchronization(
                 new TransactionSynchronization() {
                     @Override
                     public void afterCommit() {
-                        filesService.deleteFile(FilesPath.USERS_AVATARS, user.getAvatarUrl());
+                        filesService.deleteFile(FilesPath.USERS_AVATARS, avatarUrl);
                     }
                 }
             );  

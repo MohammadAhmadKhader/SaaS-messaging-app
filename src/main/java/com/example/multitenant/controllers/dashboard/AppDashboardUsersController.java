@@ -30,13 +30,6 @@ public class AppDashboardUsersController {
     @Autowired
     private UsersService usersService;
 
-    @GetMapping("/test")
-    @PreAuthorize("hasAuthority(@globalPermissions.DASH_USER_VIEW)")
-    public ResponseEntity<Object> test() {
-        var res = Map.of("message","hello world");
-        return ResponseEntity.ok().body(res);
-    }
-
     @GetMapping("")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_USER_VIEW)")
     public ResponseEntity<Object> getAllUsers(@HandlePage Integer page, @HandleSize Integer size, 
@@ -74,23 +67,10 @@ public class AppDashboardUsersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(respBody);
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasAuthority(@globalPermissions.DASH_USER_DELETE)")
-    public ResponseEntity<Object> deleteUser(@ValidateNumberId @PathVariable Long id) {
-        var user = this.usersService.findById(id);
-        if(user == null) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetNotFoundErr("user", id));
-        }
-
-        var isAdmin = user.getRoles().stream().anyMatch((role) -> {
-            return role.getName().equals(DefaultGlobalRole.SUPERADMIN.getRoleName()) || role.getName().equals(DefaultGlobalRole.ADMIN.getRoleName());
-        });
-
-        if(isAdmin) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("invalid operation: can not delete an admin user or super admin if it was an admin then remove this role first"));
-        }
-
-        this.usersService.findThenDeleteById(id);
+    public ResponseEntity<Object> handleSoftDeleteUser(@ValidateNumberId @PathVariable Long id) {
+        this.usersService.softDeleteAndAnonymizeUserById(id);
         
         return ResponseEntity.noContent().build();
     }
