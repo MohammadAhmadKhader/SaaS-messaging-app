@@ -3,8 +3,6 @@ package com.example.multitenant.services.membership;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import com.example.multitenant.services.security.*;
 import com.example.multitenant.specifications.MembershipSpec;
 import com.example.multitenant.specificationsbuilders.MembershipSpecBuilder;
@@ -134,7 +132,12 @@ public class MemberShipService {
             throw new ResourceNotFoundException("organization", orgId);
         }
 
-        var newOwnerMembeship = this.findUserMembershipWithRoles(orgId, newOwnerId);
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.findUserMembershipWithRoles(orgId, newOwnerId),
+            () -> this.findUserMembershipWithRoles(orgId, currOwner.getId())
+        );
+
+        var newOwnerMembeship = tasksResults.getLeft();
         if(newOwnerMembeship == null || !newOwnerMembeship.isMember()) {
             throw new InvalidOperationException("user must be an organization member");
         }
@@ -144,7 +147,7 @@ public class MemberShipService {
             throw new InvalidOperationException("user must be the owner");
         }
 
-        var currOwnerMembership = this.findUserMembershipWithRoles(orgId, currOwner.getId());
+        var currOwnerMembership = tasksResults.getRight();
         if(currOwnerMembership == null || !currOwnerMembership.isMember()) {
             throw new UnknownException("error during fetching current owner membership");
         }
@@ -170,89 +173,83 @@ public class MemberShipService {
     }
 
     public Membership kickUserFromOrganization(Integer orgId, long userId) {
-       try { 
-            var membershipKey = new MembershipKey(orgId, userId);
+        var membershipKey = new MembershipKey(orgId, userId);
 
-            var orgFuture = CompletableFuture.supplyAsync(() -> this.organizationsService.findById(orgId));
-            var membershipFuture = CompletableFuture.supplyAsync(() -> this.memberShipCrudService.findById(membershipKey));
+        var trasksResults = VirtualThreadsUtils.run(
+            () -> this.organizationsService.findById(orgId),
+            () -> this.memberShipCrudService.findById(membershipKey)
+        );
 
-            var membership = membershipFuture.get();
-            var organization = orgFuture.get();
-            if (membership == null) {
-                throw new ResourceNotFoundException("membership");
-            }
-
-            if (organization == null) {
-                throw new ResourceNotFoundException("organization", orgId);
-            }
-
-            membership.setMember(false);
-            this.membershipRepository.save(membership);
-
-            return membership; 
-        } catch (InterruptedException | ExecutionException e) {
-            throw new AsyncOperationException("Error occurred during task execution", e);
+        var membership = trasksResults.getRight();
+        var organization = trasksResults.getLeft();
+        if (membership == null) {
+            throw new ResourceNotFoundException("membership");
         }
+
+        if (organization == null) {
+            throw new ResourceNotFoundException("organization", orgId);
+        }
+
+        membership.setMember(false);
+        this.membershipRepository.save(membership);
+
+        return membership; 
     }
 
     public OrgRole assignRole(Integer orgRoleId, Integer orgId, long userId) {
-        try {
-            var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
-            var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.findUserMembershipWithRoles(orgId, userId),
+            () -> this.organizationRolesService.findOne(orgRoleId)
+        );
 
-            var membership = membershipTask.get();
-            var orgRole = orgRoleTask.get();
+        var membership = tasksResults.getLeft();
+        var orgRole = tasksResults.getRight();
 
-            if(membership == null) {
-                throw new ResourceNotFoundException("membership");
-            }
-
-            if(orgRole == null || !orgRole.getOrganizationId().equals(orgId)) {
-                throw new ResourceNotFoundException("organization role", orgRoleId);
-            }
-
-            membership.getOrganizationRoles().forEach((role) -> {
-                if(role.getId().equals(orgRoleId)) {
-                    throw new InvalidOperationException("user already have the role");
-                }
-            });
-
-            this.assignRoleToUser(membership, orgRole);
-            return orgRole;
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        if(membership == null) {
+            throw new ResourceNotFoundException("membership");
         }
+
+        if(orgRole == null || !orgRole.getOrganizationId().equals(orgId)) {
+            throw new ResourceNotFoundException("organization role", orgRoleId);
+        }
+
+        membership.getOrganizationRoles().forEach((role) -> {
+            if(role.getId().equals(orgRoleId)) {
+                throw new InvalidOperationException("user already have the role");
+            }
+        });
+
+        this.assignRoleToUser(membership, orgRole);
+        return orgRole;
     }
 
     public OrgRole unAssignRole(Integer orgRoleId, Integer orgId, long userId) {
-        try {
-            var membershipTask = CompletableFuture.supplyAsync(() -> this.findUserMembershipWithRoles(orgId, userId));
-            var orgRoleTask = CompletableFuture.supplyAsync(() -> this.organizationRolesService.findOne(orgRoleId));
+        var tasksResult = VirtualThreadsUtils.run(
+            () -> this.findUserMembershipWithRoles(orgId, userId), 
+            () -> this.organizationRolesService.findOne(orgRoleId)
+        );
 
-            var membership = membershipTask.get();
-            var orgRole = orgRoleTask.get();
-
-            if(membership == null) {
-                throw new ResourceNotFoundException("membership");
-            }
-
-            if(orgRole == null) {
-                throw new ResourceNotFoundException("organization role", orgRoleId);
-            }
-
-            var hasRole = membership.getOrganizationRoles()
-                .stream()
-                .anyMatch(role -> role.getId().equals(orgRoleId));
-
-            if (!hasRole) {
-                throw new InvalidOperationException("user does not have this role assigned");
-            }
-
-            this.unAssignRoleToUser(membership, orgRole);
-            return orgRole;
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        var membership = tasksResult.getLeft();
+        var orgRole = tasksResult.getRight();
+    
+        if(membership == null) {
+            throw new ResourceNotFoundException("membership");
         }
+
+        if(orgRole == null) {
+            throw new ResourceNotFoundException("organization role", orgRoleId);
+        }
+
+        var hasRole = membership.getOrganizationRoles()
+            .stream()
+            .anyMatch(role -> role.getId().equals(orgRoleId));
+
+        if (!hasRole) {
+            throw new InvalidOperationException("user does not have this role assigned");
+        }
+
+        this.unAssignRoleToUser(membership, orgRole);
+        return orgRole;
     }
 
     public Membership findOne(Integer orgId, long userId) {

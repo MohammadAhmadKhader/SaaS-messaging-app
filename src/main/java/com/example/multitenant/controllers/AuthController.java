@@ -1,8 +1,6 @@
 package com.example.multitenant.controllers;
 
 import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import javax.management.RuntimeErrorException;
 
@@ -33,6 +31,7 @@ import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.utils.AppUtils;
 import com.example.multitenant.utils.SecurityUtils;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -106,32 +105,34 @@ public class AuthController {
 
         var userId = principal.getUser().getId();
         var user = this.usersService.findById(userId);
-        try {
-            var isOldPasswordIsIncorrectTask = CompletableFuture.supplyAsync(() -> !this.passwordEncoder.matches(dto.getOldPassword(), user.getPassword()));
-            var isNewAndOldPasswordEqualTask = CompletableFuture.supplyAsync(() -> this.passwordEncoder.matches(dto.getNewPassword(), user.getPassword()));
+
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> !this.passwordEncoder.matches(dto.getOldPassword(), user.getPassword()),
+            () -> this.passwordEncoder.matches(dto.getNewPassword(), user.getPassword())
+        );
         
-            if(isOldPasswordIsIncorrectTask.get()) {
-                var res = ApiResponses.GetErrResponse(String.format("old password is incorrect"));
-                return ResponseEntity.badRequest().body(res);
-            }
-
-            if(isNewAndOldPasswordEqualTask.get()) {
-                var res = ApiResponses.GetErrResponse(String.format("new password can't be the same as the current password"));
-                return ResponseEntity.badRequest().body(res);
-            }
-
-            var encodedNewPassword = this.passwordEncoder.encode(dto.getNewPassword());
-            user.setPassword(encodedNewPassword);
-            this.usersService.save(user);
-
-            var userAgent = AppUtils.getUserAgrent(req);
-            var ipAddress = AppUtils.getClientIp(req);
-            this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.RESET_PASSWORD);
-        
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new AsyncOperationException( "an error has occured during async process");
+        var isOldPasswordIsIncorrectTask = tasksResults.getLeft();
+        var isNewAndOldPasswordEqualTask = tasksResults.getRight();
+    
+        if(isOldPasswordIsIncorrectTask) {
+            var res = ApiResponses.GetErrResponse(String.format("old password is incorrect"));
+            return ResponseEntity.badRequest().body(res);
         }
+
+        if(isNewAndOldPasswordEqualTask) {
+            var res = ApiResponses.GetErrResponse(String.format("new password can't be the same as the current password"));
+            return ResponseEntity.badRequest().body(res);
+        }
+
+        var encodedNewPassword = this.passwordEncoder.encode(dto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        this.usersService.save(user);
+
+        var userAgent = AppUtils.getUserAgrent(req);
+        var ipAddress = AppUtils.getClientIp(req);
+        this.logsService.createAuthLogs(user, userAgent, ipAddress, LogEventType.RESET_PASSWORD);
+    
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping("/login")

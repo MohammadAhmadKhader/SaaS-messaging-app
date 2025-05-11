@@ -133,7 +133,8 @@ public class LogsService {
 
     public AuthLog createAuthLogs(User user, String userAgent, String ipAddress, LogEventType event) {
         var log = new AuthLog();
-        if(!event.equals(LogEventType.LOGIN) && !event.equals(LogEventType.REGISTER) && !event.equals(LogEventType.LOGOUT)) {
+        if(!event.equals(LogEventType.LOGIN) && !event.equals(LogEventType.REGISTER) 
+        && !event.equals(LogEventType.LOGOUT) && !event.equals(LogEventType.RESET_PASSWORD)) {
             throw new InvalidOperationException("invalid event type");
         }
 

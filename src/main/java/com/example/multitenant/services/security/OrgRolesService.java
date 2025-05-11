@@ -3,8 +3,6 @@ package com.example.multitenant.services.security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.*;
@@ -15,6 +13,7 @@ import com.example.multitenant.models.*;
 import com.example.multitenant.models.enums.*;
 import com.example.multitenant.repository.OrgRolesRepository;
 import com.example.multitenant.services.security.helperservices.OrgRolesCrudService;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -58,77 +57,72 @@ public class OrgRolesService {
     }
 
     public OrgRole assignPermissionsToRole(Integer roleId, Set<Integer> permissionsIds, Integer organizationId) {
-        try {
-            var roleTask = CompletableFuture.supplyAsync(() -> this.rolesRepository.findByIdAndOrgIdWithPermissions(roleId, organizationId));
-            var permissionsTask = CompletableFuture.supplyAsync(() -> this.orgPermissionsService.findAllByIds(permissionsIds));
-            
-            var role = roleTask.get();
-            var permissions = permissionsTask.get();
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.rolesRepository.findByIdAndOrgIdWithPermissions(roleId, organizationId),
+            () -> this.orgPermissionsService.findAllByIds(permissionsIds)
+        );
 
-            if(role == null) {
-                throw new ResourceNotFoundException("role", roleId);
-            }
+        var role = tasksResults.getLeft();
+        var permissions = tasksResults.getRight();
 
-            if(permissions == null || permissions.size() == 0) {
-                throw new InvalidOperationException(String.format("no permissions were provided to be assigned to the role"));
-            }
-
-            if(permissions.size() != permissionsIds.size()) {
-                throw new InvalidOperationException("some permissions Ids are invalid");
-            } 
-
-            var currPerms = role.getOrganizationPermissions();
-            var existingPermIds = currPerms.stream()
-                .map((org) -> org.getId()) 
-                .collect(Collectors.toSet());
-
-            var hasAnyAlreadyAssigned = permissions.stream()
-                .anyMatch(p -> existingPermIds.contains(p.getId())); 
-
-            if (hasAnyAlreadyAssigned) {
-                throw new InvalidOperationException("some or all provided permissions are already assigned to the role");
-            }
-
-            currPerms.addAll(permissions);
-            this.rolesRepository.save(role);
-
-            return role;
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        if(role == null) {
+            throw new ResourceNotFoundException("role", roleId);
         }
+
+        if(permissions == null || permissions.size() == 0) {
+            throw new InvalidOperationException(String.format("no permissions were provided to be assigned to the role"));
+        }
+
+        if(permissions.size() != permissionsIds.size()) {
+            throw new InvalidOperationException("some permissions Ids are invalid");
+        } 
+
+        var currPerms = role.getOrganizationPermissions();
+        var existingPermIds = currPerms.stream()
+            .map((org) -> org.getId()) 
+            .collect(Collectors.toSet());
+
+        var hasAnyAlreadyAssigned = permissions.stream()
+            .anyMatch(p -> existingPermIds.contains(p.getId())); 
+
+        if (hasAnyAlreadyAssigned) {
+            throw new InvalidOperationException("some or all provided permissions are already assigned to the role");
+        }
+
+        currPerms.addAll(permissions);
+        this.rolesRepository.save(role);
+
+        return role;
     }
 
     @Transactional
     public OrgRole unAssignPermissionsFromRole(Integer roleId, Set<Integer> permissionsIds, Integer organizationId) {
-        try {
-            var roleTask = CompletableFuture.supplyAsync(() -> this.rolesRepository.findByIdAndOrgIdWithPermissions(roleId, organizationId));
-            var permissionsTask = CompletableFuture.supplyAsync(() -> this.orgPermissionsService.findAllByIds(permissionsIds));
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.rolesRepository.findByIdAndOrgIdWithPermissions(roleId, organizationId), 
+            () -> this.orgPermissionsService.findAllByIds(permissionsIds)
+        );
             
-            var role = roleTask.get();
-            var permissions = permissionsTask.get();
+        var role = tasksResults.getLeft();
+        var permissions = tasksResults.getRight();
 
-            if(role == null) {
-                throw new ResourceNotFoundException("role", roleId);
-            }
-
-            if(role.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
-                throw new InvalidOperationException("can not remove permissions from organization owner");
-            }
-
-            if(permissions == null || permissions.size() == 0) {
-                throw new InvalidOperationException("no permissions were provided to be assigned to the role");
-            }
-
-            var isRemoved = role.getOrganizationPermissions().removeIf((perm) ->permissionsIds.contains(perm.getId()));
-
-            if(!isRemoved) {
-                throw new UnknownException("an error has occured during attempt to remove permissions from organization role");
-            }
-
-            return this.rolesRepository.save(role);
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        if(role == null) {
+            throw new ResourceNotFoundException("role", roleId);
         }
+
+        if(role.getName().equals(DefaultOrganizationRole.ORG_OWNER.getRoleName())) {
+            throw new InvalidOperationException("can not remove permissions from organization owner");
+        }
+
+        if(permissions == null || permissions.size() == 0) {
+            throw new InvalidOperationException("no permissions were provided to be assigned to the role");
+        }
+
+        var isRemoved = role.getOrganizationPermissions().removeIf((perm) ->permissionsIds.contains(perm.getId()));
+        if(!isRemoved) {
+            throw new InvalidOperationException("role does not have the permission");
+        }
+
+        return this.rolesRepository.save(role);
     }
 
     public void deleteRole(Integer roleId, Integer organizationId) {

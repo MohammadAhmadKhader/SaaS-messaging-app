@@ -14,6 +14,7 @@ import com.example.multitenant.models.Category;
 import com.example.multitenant.models.Organization;
 import com.example.multitenant.repository.CategoriesRepository;
 import com.example.multitenant.services.security.OrgRolesService;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -101,12 +102,17 @@ public class CategoriesService {
     }
 
     public Category authorizeOrgRole(Integer id, Integer orgId, Integer roleId) {
-        var cat = this.findOne(id, orgId);
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.findOne(id, orgId),
+            () -> this.orgRolesService.findOne(roleId, orgId)
+        );
+
+        var cat = tasksResults.getLeft();
         if (cat == null) {
             throw new ResourceNotFoundException("category", id);
         }
 
-        var orgRole = this.orgRolesService.findOne(roleId, orgId);
+        var orgRole = tasksResults.getRight();
         if (orgRole == null) {
             throw new ResourceNotFoundException("organization role", roleId);
         }
@@ -120,12 +126,17 @@ public class CategoriesService {
     }
 
     public Category unAuthorizeOrgRole(Integer id, Integer orgId, Integer roleId) {
-        var cat = this.findOne(id, orgId);
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.findOne(id, orgId),
+            () -> this.orgRolesService.findOne(roleId, orgId)
+        );
+
+        var cat = tasksResults.getLeft();
         if (cat == null) {
             throw new ResourceNotFoundException("category", id);
         }
 
-        var orgRole = this.orgRolesService.findOne(roleId, orgId);
+        var orgRole = tasksResults.getRight();
         if (orgRole == null) {
             throw new ResourceNotFoundException("organization role", roleId);
         }

@@ -1,9 +1,6 @@
 package com.example.multitenant.services.security;
 
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +8,7 @@ import com.example.multitenant.exceptions.*;
 import com.example.multitenant.models.GlobalRole;
 import com.example.multitenant.repository.GlobalRolesRepository;
 import com.example.multitenant.services.security.helperservices.GlobalRolesCrudService;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,57 +31,49 @@ public class GlobalRolesService {
     }
 
     public GlobalRole assignPermissionsToRole(Integer roleId, Set<Integer> permissionsIds) {
-        try {
-            var roleTask = CompletableFuture.supplyAsync(() -> {
-                return this.globalRolesRepository.findById(roleId).orElse(null);
-            });
-            var permissionsTask = CompletableFuture.supplyAsync(() -> this.globalPermissionsService.findAllByIds(permissionsIds));
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.globalRolesRepository.findById(roleId).orElse(null),
+            () -> this.globalPermissionsService.findAllByIds(permissionsIds)
+        );
 
-            var role = roleTask.get();
-            var permissions = permissionsTask.get();
+        var role = tasksResults.getLeft();
+        var permissions = tasksResults.getRight();
 
-            if(role == null) {
-                throw new ResourceNotFoundException("role", roleId);
-            }
-
-            if(permissions == null || permissions.size() == 0) {
-                throw new InvalidOperationException("no permissions were provided to be assigned to the role");
-            }
-
-            role.getPermissions().addAll(permissions);
-            this.globalRolesRepository.save(role);
-
-            return role;
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        if(role == null) {
+            throw new ResourceNotFoundException("role", roleId);
         }
+
+        if(permissions == null || permissions.size() == 0) {
+            throw new InvalidOperationException("no permissions were provided to be assigned to the role");
+        }
+
+        role.getPermissions().addAll(permissions);
+        this.globalRolesRepository.save(role);
+
+        return role;
     }
 
     public GlobalRole unAssignPermissionsFromRole(Integer roleId, Set<Integer> permissionsIds) {
-        try {
-            var roleTask = CompletableFuture.supplyAsync(() -> {
-                return this.globalRolesRepository.findById(roleId).orElse(null);
-            });
-            var permissionsTask = CompletableFuture.supplyAsync(() -> this.globalPermissionsService.findAllByIds(permissionsIds));
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.globalRolesRepository.findById(roleId).orElse(null), 
+            () -> this.globalPermissionsService.findAllByIds(permissionsIds)
+        );
+    
+        var role = tasksResults.getLeft();
+        var permissions = tasksResults.getRight();
 
-            var role = roleTask.get();
-            var permissions = permissionsTask.get();
-
-            if(role == null) {
-                throw new ResourceNotFoundException("role", roleId);
-            }
-
-            if(permissions == null || permissions.size() == 0) {
-                throw new InvalidOperationException("no permissions were provided to be assigned to the role");
-            }
-
-            role.getPermissions().addAll(permissions);
-            this.globalRolesRepository.save(role);
-
-            return role;
-        } catch (InterruptedException | ExecutionException ex) {
-            throw new AsyncOperationException("Error occurred during task execution", ex);
+        if(role == null) {
+            throw new ResourceNotFoundException("role", roleId);
         }
+
+        if(permissions == null || permissions.size() == 0) {
+            throw new InvalidOperationException("no permissions were provided to be assigned to the role");
+        }
+
+        role.getPermissions().addAll(permissions);
+        this.globalRolesRepository.save(role);
+
+        return role;
     }
 
     public void deleteRole(Integer roleId) {

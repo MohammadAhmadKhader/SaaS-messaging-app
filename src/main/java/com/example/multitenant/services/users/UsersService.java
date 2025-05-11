@@ -23,6 +23,7 @@ import com.example.multitenant.repository.UsersRepository;
 import com.example.multitenant.services.files.FilesService;
 import com.example.multitenant.specificationsbuilders.UsersSpecBuilder;
 import com.example.multitenant.utils.PageableHelper;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -46,18 +47,26 @@ public class UsersService {
     }
 
     // curr user always assumed to be there because its authenticated
+    // TODO: refactor logic inside with a better performance by reducing un-necessary queries
+    @Transactional
     public List<User> removeFriend(Long currUserId, Long userIdToUnFriend) {
-        var userToRemove = this.usersCrudService.findById(userIdToUnFriend);
+        var tasksResult = VirtualThreadsUtils.run(
+            () -> this.usersCrudService.findById(userIdToUnFriend),
+            () -> this.isUserFriend(currUserId, userIdToUnFriend),
+            () -> this.usersRepository.findAllByIdsWithFriends(List.of(currUserId, userIdToUnFriend))
+        );
+    
+        var userToRemove = tasksResult.getLeft();
         if(userToRemove == null) {
             throw new ResourceNotFoundException("user", userIdToUnFriend);
         }
 
-        var areUsersFriends = this.isUserFriend(currUserId, userIdToUnFriend);
+        var areUsersFriends = tasksResult.getMiddle();
         if(!areUsersFriends) {
             throw new InvalidOperationException("user must be a friend to be removed");
         }
 
-        var users = this.usersRepository.findAllByIdsWithFriends(List.of(currUserId, userIdToUnFriend));
+        var users = tasksResult.getRight();
         if (users.size() != 2) {
             throw new UnknownException("An error occurred while fetching the users.");
         }

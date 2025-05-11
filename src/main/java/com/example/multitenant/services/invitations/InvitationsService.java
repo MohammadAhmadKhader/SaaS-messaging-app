@@ -13,6 +13,7 @@ import com.example.multitenant.repository.InvitationsRepository;
 import com.example.multitenant.services.cache.OrgRestrictionsCacheSerivce;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.users.UsersService;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -75,12 +76,17 @@ public class InvitationsService {
             throw new InvalidOperationException("user already a member");
         }
 
-        var existingInvitation = this.findPendingInvitation(recipientId, orgId);
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.findPendingInvitation(recipientId, orgId), 
+            () -> this.usersService.findById(recipientId)
+        );
+
+        var existingInvitation = tasksResults.getLeft();
         if(existingInvitation != null) {
             throw new InvalidOperationException("user already has an invitation");
         }
 
-        var user = this.usersService.findById(recipientId);
+        var user = tasksResults.getRight();
         if(user == null) {
             throw new ResourceNotFoundException("user", recipientId);
         }

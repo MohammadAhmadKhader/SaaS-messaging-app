@@ -15,6 +15,7 @@ import com.example.multitenant.models.enums.DefaultGlobalRole;
 import com.example.multitenant.repository.RestrictionsRepository;
 import com.example.multitenant.services.users.UsersService;
 import com.example.multitenant.specificationsbuilders.RestrictionsSpecBuilder;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +40,12 @@ public class RestrictionsService {
     }
 
     public Restriction restrictUser(Long userId, Restriction dto) {
-        var user = this.usersService.findUserWithRoles(userId);
+        var tasksResults = VirtualThreadsUtils.run(
+            () -> this.usersService.findUserWithRoles(userId), 
+            () -> this.restrictionsRepository.isUserRestricted(userId)
+        );
+    
+        var user = tasksResults.getLeft();
         if(user == null) {
             throw new ResourceNotFoundException("user", userId);
         }
@@ -50,7 +56,7 @@ public class RestrictionsService {
             throw new InvalidOperationException("can not restrict a user with super admin role");
         }
 
-        var isAlreadyRestricted = this.restrictionsRepository.isUserRestricted(userId);
+        var isAlreadyRestricted = tasksResults.getRight();
         if(isAlreadyRestricted) {
             throw new InvalidOperationException("user already has active restriction");
         }

@@ -3,8 +3,6 @@ package com.example.multitenant.services.helperservices;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
 
 import org.springframework.data.domain.*;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.example.multitenant.dtos.shared.CursorPage;
 import com.example.multitenant.exceptions.AsyncOperationException;
 import com.example.multitenant.exceptions.UnknownException;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
@@ -60,17 +59,15 @@ public abstract class SpecificationsService<TModel, PrimaryKey extends Serializa
         .setFirstResult((int) pageable.getOffset())
         .setMaxResults(pageable.getPageSize());
 
-        try {
-            var listTask = CompletableFuture.supplyAsync(()-> typedQuery.getResultList());
-            var countTask = CompletableFuture.supplyAsync(() -> countTotalWithSpec(spec));
-
-            var count = countTask.get();
-            var list = listTask.get();
+        var tasksResults = VirtualThreadsUtils.run(
+            ()-> typedQuery.getResultList(),
+            () -> countTotalWithSpec(spec)
+        );
+        
+        var list = tasksResults.getLeft();
+        var count = tasksResults.getRight();
             
-            return new PageImpl<TModel>(list, pageable, count);
-        }  catch (ExecutionException | InterruptedException e) {
-            throw new AsyncOperationException("Error occurred during task execution", e);
-        }
+        return new PageImpl<TModel>(list, pageable, count);
     }
 
     public CursorPage<TModel, PrimaryKey> findAllWithCursor(Specification<TModel> spec, Long cursor, int size, String idFieldName) {

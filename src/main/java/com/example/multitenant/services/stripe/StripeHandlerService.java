@@ -97,25 +97,8 @@ public class StripeHandlerService {
                 throw new AppStripeException("product id is missing");
             }
 
-            Subscription stripeSub = null;
             try {
-                stripeSub = this.stripeService.getSubscriptionById(session.getSubscription());
-            } catch (StripeException ex) {
-                var errMsg = String.format(
-                "an error occured during attempt to fetch subsecription from stripe api", 
-                session.getSubscription());
-                throw new AppStripeException(errMsg, ex);
-            }
-
-            if(stripeSub == null) {
-                var errMsg = String.format(
-                "stripe subsecription with session id '%s' was received as null after fetching from stripe api", 
-                session.getSubscription());
-                throw new AppStripeException(errMsg);
-            }
-
-            try {
-                this.stripeService.createInternalSubscription(session, stripeSub, organizationIdAsInteger, userIdAsLong);
+                this.stripeService.createInternalSubscription(session, sub, organizationIdAsInteger, userIdAsLong);
             } catch (StripeException ex) {
                 var errMsg = String.format(
                 "an error occured during attempt to created an internal subsecription with stripe session id '%s'", 
@@ -128,6 +111,7 @@ public class StripeHandlerService {
     public void handleSubscriptionUpdate(Event event){ 
         var deserializer = event.getDataObjectDeserializer();
         var stripeObject = deserializer.getObject();
+
         stripeObject.ifPresent((obj) -> {
             var subsecription = (Subscription) obj;
             if (subsecription.getStatus().equals("canceled")) {
@@ -150,6 +134,7 @@ public class StripeHandlerService {
     public void handleSubscriptionCancellation(Event event){ 
         var deserializer = event.getDataObjectDeserializer();
         var stripeObject = deserializer.getObject();
+
         stripeObject.ifPresent((obj) -> {
             var subsecription = (Subscription) obj;
             log.info("received cancelled sub: {}", subsecription.toJson());
