@@ -16,10 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class TenantHeaderFilter extends OncePerRequestFilter {
-
-    @Value("${custom.passkey.bypass.tenant-filter:false}")
-    private boolean bypassFilters;
-    
     private static final String TENANT_HEADER = "X-Tenant-ID";
     private static final List<String> EXCLUDED_PATHS = List.of(
         "/api/app-dashboard", 
@@ -43,11 +39,6 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        if(this.bypassFilters) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         var tenantId = request.getHeader(TENANT_HEADER);
         if (tenantId == null || tenantId.isBlank()) {

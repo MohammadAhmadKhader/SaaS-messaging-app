@@ -15,9 +15,6 @@ public class SupabaseConfig {
     @Value("${supabase.url}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
-    private String supabaseKey;
-
     @Value("${supabase.jwt_secret}")
     private String jwtSecret;
 

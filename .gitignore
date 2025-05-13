@@ -31,7 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# others
 /frontend
-**/src/main/resources/**.properties
-!**/src/main/resources/**.example**
 **/src/main/resources/stashed
+/.env

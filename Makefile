@@ -24,3 +24,6 @@ create-testing-customer:
 
 test:
 	mvn test -Dspring.profiles.active=test
+
+test-ci:
+	act --secret-file .env --pull=false

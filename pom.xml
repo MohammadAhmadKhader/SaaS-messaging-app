@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>24</java.version>
+		<enablePreview>true</enablePreview>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -147,10 +148,24 @@
 	<build>
 		<plugins>
 			<plugin>
+        	    <groupId>org.apache.maven.plugins</groupId>
+        	    <artifactId>maven-compiler-plugin</artifactId>
+        	    <version>3.11.0</version>
+        	    <configuration>
+					<release>24</release>
+        	        <compilerArgs>
+        			    <arg>--enable-preview</arg>
+        			</compilerArgs>
+        	    </configuration>
+        	</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<parameters>true</parameters>
+					 <compilerArgs>
+                    	<arg>--enable-preview</arg>
+                	</compilerArgs>
             	</configuration>
 			</plugin>
 
@@ -159,6 +174,7 @@
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-surefire-plugin</artifactId>
 			    <configuration>
+					<argLine>--enable-preview</argLine>
 			        <argLine>
 			            -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 			            -Xshare:off
