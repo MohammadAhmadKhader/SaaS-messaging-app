@@ -36,3 +36,4 @@ build/
 /frontend
 **/src/main/resources/stashed
 /.env
+.github/workflows/local

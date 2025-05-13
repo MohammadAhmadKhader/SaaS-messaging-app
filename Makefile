@@ -25,5 +25,7 @@ create-testing-customer:
 test:
 	mvn test -Dspring.profiles.active=test
 
+# this for local running github actions via cli tool "act-cli"
+# act --secret-file .env --pull=false
 test-ci:
-	act --secret-file .env --pull=false
+	act --secret-file .env --pull=false -W .github/workflows/local/ci.yml

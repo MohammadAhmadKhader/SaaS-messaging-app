@@ -110,6 +110,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.38</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -156,6 +157,13 @@
         	        <compilerArgs>
         			    <arg>--enable-preview</arg>
         			</compilerArgs>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.38</version>
+						</path>
+					</annotationProcessorPaths>
         	    </configuration>
         	</plugin>
 			<plugin>
@@ -166,25 +174,35 @@
 					 <compilerArgs>
                     	<arg>--enable-preview</arg>
                 	</compilerArgs>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.38</version>
+						</path>
+					</annotationProcessorPaths>
             	</configuration>
 			</plugin>
-
-			<!-- this was added to avoid a warning during testing -->
+			
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-surefire-plugin</artifactId>
 			    <configuration>
 					<argLine>--enable-preview</argLine>
+					<!-- this was added to avoid a warning during testing -->
 			        <argLine>
 			            -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 			            -Xshare:off
 			        </argLine>
-					  <properties>
+
+					<properties>
         			    <property>
         			        <name>listener</name>
         			        <value>com.example.CustomRunListener</value>
         			    </property>
         			</properties>
+
+				
 			    </configuration>
 			</plugin>
 			
