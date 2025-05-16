@@ -28,4 +28,4 @@ test:
 # this for local running github actions via cli tool "act-cli"
 # act --secret-file .env --pull=false
 test-ci:
-	act --secret-file .env --pull=false -W .github/workflows/local/ci.yml
+	act --secret-file .env --pull=false

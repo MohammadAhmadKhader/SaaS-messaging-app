@@ -57,6 +57,17 @@ jobs:
             java-version: '24'
             cache: maven
 
+        - name: Install Maven 3.9.9
+          # if its act-cli (locally not on github) it requires Maven to be installed manually
+          if: ${{ env.ACT }}
+          run: |
+            MAVEN_VERSION=3.9.9
+            wget https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
+            tar -xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz
+            sudo mv apache-maven-${MAVEN_VERSION} /opt/maven
+            echo "MAVEN_HOME=/opt/maven" >> $GITHUB_ENV
+            echo "/opt/maven/bin" >> $GITHUB_PATH
+
         - name: Build maven project
           run: mvn -B clean package --file pom.xml
     
