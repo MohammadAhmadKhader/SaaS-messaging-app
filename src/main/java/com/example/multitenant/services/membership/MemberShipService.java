@@ -6,7 +6,8 @@ import java.util.Map;
 import com.example.multitenant.services.security.*;
 import com.example.multitenant.specifications.MembershipSpec;
 import com.example.multitenant.specificationsbuilders.MembershipSpecBuilder;
-import com.example.multitenant.utils.*;
+import com.example.multitenant.utils.PageableHelper;
+import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +82,8 @@ public class MemberShipService {
             throw new ResourceNotFoundException("organization role");
         }
         
-        membership.setOrganizationRoles(List.of(orgUserRole));
+        membership.getOrganizationRoles().add(orgUserRole);
+        membership.loadDefaults();
 
         return this.membershipRepository.save(membership);
     }
@@ -91,19 +93,15 @@ public class MemberShipService {
         var membership = new Membership(org.getId(), user.getId());
         var createdMembership = this.membershipRepository.save(membership);
 
-        var ownerRole = this.initializeDefaultRolesAndPermissions(org.getId());
-        ownerRole.setMemberships(new ArrayList<>());
-        ownerRole.getMemberships().add(createdMembership);
+        var roles = this.initializeDefaultRolesAndPermissions(org.getId());
+        if(roles.isEmpty()) {
+            throw new InvalidOperationException("could not create default roles and permissions");
+        }
 
-        this.organizationRolesService.create(ownerRole);
+        createdMembership.getOrganizationRoles().addAll(roles);
+        createdMembership.loadDefaults();
         
-        var orgRoles = new ArrayList<OrgRole>();
-        orgRoles.add(ownerRole);
-
-        membership.setOrganizationRoles(orgRoles);
-        membership.loadDefaults();
-        
-        return this.membershipRepository.saveAndFlush(membership);
+        return this.membershipRepository.saveAndFlush(createdMembership);
     }
 
     @Transactional
@@ -111,16 +109,10 @@ public class MemberShipService {
         var org = this.organizationsService.create(dto.toModel());
         var membership = new Membership(org.getId(), user.getId());
 
-        var ownerRole = this.initializeDefaultRolesAndPermissions(org.getId());
-        var membershipList = new ArrayList<Membership>();
-        ownerRole.setMemberships(membershipList);
-
-        this.organizationRolesService.create(ownerRole);
-        
-        var orgRoles = new ArrayList<OrgRole>();
-        orgRoles.add(ownerRole);
-
-        membership.setOrganizationRoles(orgRoles);
+        var roles = this.initializeDefaultRolesAndPermissions(org.getId());
+        membership.setOrganizationRoles(roles);
+        membership.loadDefaults();
+        org.getMemberships().add(membership);
         
         return this.membershipRepository.saveAndFlush(membership);
     }
@@ -191,9 +183,13 @@ public class MemberShipService {
         }
 
         membership.setMember(false);
-        this.membershipRepository.save(membership);
 
-        return membership; 
+        return this.membershipRepository.save(membership);
+    }
+
+    public Membership kickUserFromOrganization(Membership membership) {
+        membership.setMember(false);
+        return this.membershipRepository.save(membership);
     }
 
     public OrgRole assignRole(Integer orgRoleId, Integer orgId, long userId) {
@@ -331,7 +327,7 @@ public class MemberShipService {
         return this.membershipRepository.countMembersByOrgId(orgId);
     }
 
-    public OrgRole initializeDefaultRolesAndPermissions(Integer orgId) {
+    public List<OrgRole> initializeDefaultRolesAndPermissions(Integer orgId) {
         var roles = List.of(
             DefaultOrganizationRole.ORG_OWNER,
             DefaultOrganizationRole.ORG_ADMIN,
@@ -342,9 +338,7 @@ public class MemberShipService {
             .map(role -> createRoleWithPermissions(role, orgId))
             .toList();
     
-        this.organizationRolesService.createMany(orgRoles);
-    
-        return orgRoles.get(0);
+        return this.organizationRolesService.createMany(orgRoles);
     }
 
     // * private methods below

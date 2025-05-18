@@ -23,9 +23,15 @@ create-testing-customer:
 	stripe customers create --email user10@gmail.com --name "john doe"
 
 test:
-	mvn test -Dspring.profiles.active=test
+	mvn "-Dspring.profiles.include=test,local-test" test
 
 # this for local running github actions via cli tool "act-cli"
 # act --secret-file .env --pull=false
 test-ci:
 	act --secret-file .env --pull=false
+
+class ?= ""
+method ?= ""
+test-method:
+	mvn "-Dspring.profiles.include=test,local-test" \
+	"-Dtest=$(class)#$(method)" test

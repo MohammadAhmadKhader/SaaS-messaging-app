@@ -181,14 +181,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handle(AppFilesException ex) {
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr());
     }
-    
-    @ExceptionHandler(UnknownException.class)
-    public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
-        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
-    }
 
     @ExceptionHandler(AsyncOperationException.class)
     public ResponseEntity<Map<String, Object>> handleAsyncOperationException(AsyncOperationException ex) {
+        return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
+    }   
+ 
+    @ExceptionHandler(UnknownException.class)
+    public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
+        System.out.println(ex.getMessage());
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
     }
     
@@ -197,7 +198,7 @@ public class GlobalExceptionHandler {
         var errBody = ApiResponses.GetInternalErr();
         log.error("cause:{} - message:{}",ex.getCause(),ex.getMessage());
         ex.printStackTrace();
-        
+
         return ResponseEntity.internalServerError().body(errBody);
     }
 }

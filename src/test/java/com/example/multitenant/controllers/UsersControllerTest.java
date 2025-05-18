@@ -5,8 +5,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.multitenant.models.User;
 import com.example.multitenant.repository.OrgRolesRepository;
 import com.example.multitenant.repository.UsersRepository;
-import com.example.multitenant.utils.BaseIntegration;
-import com.example.multitenant.utils.DataLoader;
+import com.example.multitenant.testsupport.utils.BaseIntegration;
+import com.example.multitenant.testsupport.utils.DataLoaderServce;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
@@ -29,30 +29,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestConstructor;
 
+@SpringBootTest
 @RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 public class UsersControllerTest extends BaseIntegration {
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
-    private final UsersRepository usersRepository;
     private Integer defaultSearchSize = 10;
-    private List<User> users;
-    
     private static final String ENDPOINT = "/api/users/search";
-    
-    @BeforeAll
-    void setUp() throws Exception {
-        var resource = new ClassPathResource("test-data/users.json");
-        List<User> users = objectMapper.readValue(resource.getInputStream(), new TypeReference<>() {});
-        var savedUsers = DataLoader.loadUsers(users, this.usersRepository, true);
-        this.users = savedUsers;
-    }
-
-    @AfterAll
-    void tearDown() {
-        this.usersRepository.deleteAll(this.users);
-    }
 
     @Nested
     @DisplayName("When no filter parameters are provided")

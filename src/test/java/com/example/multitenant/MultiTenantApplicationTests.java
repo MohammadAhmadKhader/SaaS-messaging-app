@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.example.multitenant.utils.BaseTests;
+import com.example.multitenant.testsupport.utils.BaseTests;
 
 @SpringBootTest
 class MultiTenantApplicationTests extends BaseTests {

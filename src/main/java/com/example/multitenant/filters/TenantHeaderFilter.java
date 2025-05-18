@@ -32,7 +32,14 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
+        var path = request.getRequestURI();
+        var method = request.getMethod();
+
+        if (path.equals("/api/organizations") && 
+            method.equalsIgnoreCase("POST")) {
+            return true;
+        }
+
         return EXCLUDED_PATHS.stream().anyMatch((str) -> path.startsWith(str));
     }
 

@@ -119,7 +119,6 @@
     		<artifactId>spring-boot-starter-logging</artifactId>
 		</dependency>
 
-
 		<!-- Logback dependencies -->
     	<dependency>
     			<groupId>net.logstash.logback</groupId>
@@ -143,6 +142,12 @@
             <artifactId>httpmime</artifactId>
             <version>4.5.13</version>
         </dependency>
+
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-test</artifactId>
+		    <scope>test</scope>
+		</dependency>
         
 	</dependencies>
 
@@ -188,9 +193,9 @@
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-surefire-plugin</artifactId>
 			    <configuration>
-					<argLine>--enable-preview</argLine>
-					<!-- this was added to avoid a warning during testing -->
 			        <argLine>
+						--enable-preview
+						<!-- this was added to avoid a warning during testing -->
 			            -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 			            -Xshare:off
 			        </argLine>
@@ -201,8 +206,6 @@
         			        <value>com.example.CustomRunListener</value>
         			    </property>
         			</properties>
-
-				
 			    </configuration>
 			</plugin>
 			

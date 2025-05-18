@@ -31,8 +31,7 @@ import lombok.*;
 @Component
 public class DataLoader {
 
-    @PersistenceContext
-    private final EntityManager entityManager;
+  
     private final OrgPermissionsRepository organizationPermissionsRepository;
     private final OrgRolesRepository organizationRolesRepository;
     private final OrgsRepository organizationsRepository;
@@ -207,18 +206,14 @@ public class DataLoader {
             if(isFoundUserRole == null) {
                 var userRole = new GlobalRole();
                 userRole.setName(userRoleName);
+                userRole.setDisplayName(userRoleName);
 
                 var userProbe = new GlobalPermission();
                 userProbe.setIsDefaultUser(true);
                 var userEx = Example.of(userProbe);
                 
                 var userPermissions = this.globalPermissionsRepository.findAll(userEx);
-                var attachedPermissions = new ArrayList<GlobalPermission>();
-                for (var permission : userPermissions) {
-                    attachedPermissions.add(entityManager.merge(permission));
-                }
-
-                userRole.setPermissions(attachedPermissions);
+                userRole.setPermissions(userPermissions);
                 this.globalRolesRepository.save(userRole);
 
                 System.out.println("User Role Loaded Successfully");
@@ -228,18 +223,14 @@ public class DataLoader {
             if(isFoundAdminRole == null) {
                 var adminRole = new GlobalRole();
                 adminRole.setName(adminRoleName);
+                adminRole.setDisplayName(adminRoleName);
 
                 var adminProbe = new GlobalPermission();
                 adminProbe.setIsDefaultAdmin(true);
                 var adminEx = Example.of(adminProbe);
 
                 var adminPermissions = this.globalPermissionsRepository.findAll(adminEx);
-                var attachedPermissions = new ArrayList<GlobalPermission>();
-                for (var permission : adminPermissions) {
-                    attachedPermissions.add(entityManager.merge(permission));
-                }
-
-                adminRole.setPermissions(attachedPermissions);
+                adminRole.setPermissions(adminPermissions);
                 this.globalRolesRepository.save(adminRole);
 
                 System.out.println("Admin Role Loaded Successfully");
@@ -250,18 +241,15 @@ public class DataLoader {
             if(isFoundSuperAdminRole == null) {
                 var superAdminRole = new GlobalRole();
                 superAdminRole.setName(superAdminRoleName);
+                superAdminRole.setDisplayName(superAdminRoleName);
 
                 var superAdminProbe = new GlobalPermission();
                 superAdminProbe.setIsDefaultSuperAdmin(true);
                 var superAdminEx = Example.of(superAdminProbe);
                 
                 var superAdminPermissions = this.globalPermissionsRepository.findAll(superAdminEx);
-                var attachedPermissions = new ArrayList<GlobalPermission>();
-                for (var permission : superAdminPermissions) {
-                    attachedPermissions.add(entityManager.merge(permission));
-                }
-
-                superAdminRole.setPermissions(attachedPermissions);
+                superAdminRole.setPermissions(superAdminPermissions);
+                
                 this.globalRolesRepository.save(superAdminRole);
 
                 System.out.println("SuperAdmin Role Loaded Successfully");

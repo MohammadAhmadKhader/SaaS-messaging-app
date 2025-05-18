@@ -1,4 +1,4 @@
-package com.example.multitenant.utils;
+package com.example.multitenant.testsupport.utils;
 
 import org.springframework.test.context.ActiveProfiles;
 

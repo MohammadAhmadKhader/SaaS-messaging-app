@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
@@ -30,22 +31,36 @@ public class RedisConfig {
     @Value("${spring.data.redis.password}")
     private String password;
 
+    @Value("${spring.data.redis.database:0}")
+    private Integer database;
+
     @Value("${spring.data.redis.port}")
     private Integer port;
 
     @Value("${spring.data.redis.ssl.enabled}")
     private boolean isSsl;
 
+    // for sessions and spring JPA and also redis-templates
     @Bean
     LettuceConnectionFactory connectionFactory() {
         var config = new RedisStandaloneConfiguration();
         config.setHostName(host);
         config.setPort(port);
         config.setPassword(password);
+        config.setDatabase(database);
+
+        var clientConfigBuilder = LettuceClientConfiguration.builder();
+            
+        if(isSsl) {
+            clientConfigBuilder.useSsl();
+        }
+
+        var clientConfig = clientConfigBuilder.build();
         
-        return new LettuceConnectionFactory(config);
+        return new LettuceConnectionFactory(config, clientConfig);
     }
 
+    // this is only used with the Bucket4j
     @Bean
     ProxyManager<String> lettuceBasedProxyManager() {
         RedisClient redisClient = redisClient();
@@ -60,6 +75,7 @@ public class RedisConfig {
         return RedisClient.create(RedisURI.builder()
             .withHost(host)
             .withPort(port)
+            .withDatabase(database)
             .withSsl(isSsl)
             .build());
     }

@@ -73,11 +73,11 @@ public class OrgsController {
         var user = SecurityUtils.getUserFromAuth();
 
         var membership = this.memberShipService.findOne(orgId, userId);
-        if(!membership.isMember()) {
+        if(membership == null || !membership.isMember()) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
         }
         
-        this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
+        this.memberShipService.kickUserFromOrganization(membership);
         this.logsService.createKickLog(user, userId, orgId, LogEventType.KICK);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -89,7 +89,7 @@ public class OrgsController {
         var user = SecurityUtils.getUserFromAuth();
 
         var membership = this.memberShipService.findOne(orgId, user.getId());
-        if(!membership.isMember()) {
+        if(membership == null || !membership.isMember()) {
             return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
         }
 
