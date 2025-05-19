@@ -189,7 +189,6 @@ public class GlobalExceptionHandler {
  
     @ExceptionHandler(UnknownException.class)
     public ResponseEntity<Map<String, Object>> handleUnknownException(UnknownException ex) {
-        System.out.println(ex.getMessage());
         return ResponseEntity.internalServerError().body(ApiResponses.GetInternalErr(ex.getMessage()));
     }
     

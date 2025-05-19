@@ -99,7 +99,7 @@ public class OrgsController {
         }
 
         this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
-        this.logsService.createKickLog(user, user.getId(), orgId, LogEventType.LEAVE);
+        this.logsService.createMembershipLog(user, orgId, LogEventType.LEAVE);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }

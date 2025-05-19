@@ -22,6 +22,8 @@ import com.example.multitenant.services.security.GlobalPermissions;
 import com.example.multitenant.services.security.OrgPermissions;
 import com.example.multitenant.testsupport.annotations.WithMockCustomUser;
 import com.example.multitenant.testsupport.utils.BaseIntegration;
+import com.example.multitenant.testsupport.utils.TestAuthHelpers;
+import com.example.multitenant.testsupport.utils.TestDbHelpers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
@@ -47,9 +49,38 @@ import lombok.RequiredArgsConstructor;
 @SpringBootTest
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) 
 public class OrganizationsControllerTest extends BaseIntegration {
     private static final String ENDPOINT = "/api/organizations";
+    private final TestDbHelpers testDbHelpers;
+    private final TestAuthHelpers testAuthHelpers;
+    private static int orgIdToRemoveUserFrom;
+    private static int orgIdToLeave;
+
+    private static long userIdToBeRemovedFromOrg;
+    private static long userIdPerformingKickAction;
+
+    private static long userIdToLeaveOrg;
+
+    @BeforeAll
+    public void setUp() {
+        var userToRemoveFromOrg = this.users.get(0);
+        var userToLeaveOrg = this.users.get(1);
+        
+        var orgToPerformKicking = this.organizations.get(0);
+        var orgToLeaving = this.organizations.get(5);
+
+        orgIdToRemoveUserFrom = orgToPerformKicking.getId();
+        orgIdToLeave = orgToLeaving.getId();
+        
+        userIdToBeRemovedFromOrg = userToRemoveFromOrg.getId();
+        userIdToLeaveOrg = userToLeaveOrg.getId();
+    
+        userIdPerformingKickAction = orgToPerformKicking.getOwner().getId();
+        
+        this.testDbHelpers.addUserToOrganization(userIdToBeRemovedFromOrg, orgIdToRemoveUserFrom);
+        this.testDbHelpers.addUserToOrganization(userIdToLeaveOrg, orgIdToLeave);
+    }
 
     @Nested
     @DisplayName("No filter parameters")
@@ -168,21 +199,16 @@ public class OrganizationsControllerTest extends BaseIntegration {
         .andExpect(status().isUnauthorized());
     }  
 
-    // @Test
-    // @WithMockCustomUser(username = "jane.smith2@gmail.com", roles = {"User","Owner","Admin"}, authorities ={OrgPermissions.USER_KICK})
-    // @DisplayName("Should kick user from organization")
-    // public void kickUser() throws Exception {
-    //     var firstOrgIndex = 5;
-    //     var secondOrgIndex = 6;
-    //     var firstOrg = this.organizations.get(firstOrgIndex);
-    //     var ownerOfSecondAsMemberOfFirst = this.organizations.get(secondOrgIndex).getOwner();
-    
-    //     // kick owner of second org from the first org
-    //     this.mockMvc.perform(patch("/api/organizations/memberships/" + ownerOfSecondAsMemberOfFirst.getId() + "/kick")
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .header(tenantHeaderName, firstOrg.getId()))
-    //         .andExpect(status().isAccepted());
-    // }
+    @Test
+    @DisplayName("Should kick user from organization")
+    public void kickUser() throws Exception {
+        testAuthHelpers.setMockUser(userIdPerformingKickAction, null, List.of(OrgPermissions.USER_KICK));
+
+        this.mockMvc.perform(patch("/api/organizations/memberships/" + userIdToBeRemovedFromOrg + "/kick")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(tenantHeaderName, orgIdToRemoveUserFrom))
+            .andExpect(status().isAccepted());
+    }
     
     @Test
     @WithMockCustomUser(username = "jane.smith2@gmail.com", roles = {"User","Owner","Admin"}, authorities ={OrgPermissions.USER_KICK})
@@ -202,21 +228,16 @@ public class OrganizationsControllerTest extends BaseIntegration {
             .value("user is not part of the organization"));
     }
     
-    // @Test
-    // @WithMockCustomUser(username = "michael.johnson3@gmail.com")
-    // @DisplayName("Should leave organization")
-    // void leaveOrganization() throws Exception {
-    //     // first organization if the one that user leave,
-    //     // the second organizatino its owner was considered as member of the first organization for testing
-    //     var firstOrgIndex = 1;
-    //     var firstOrg = this.organizations.get(firstOrgIndex);
-    //     var orgIdToLeave = firstOrg.getId();
-    
-    //     this.mockMvc.perform(patch("/api/organizations/leave/" + orgIdToLeave)
-    //             .contentType(MediaType.APPLICATION_JSON)
-    //             .header(tenantHeaderName, orgIdToLeave))
-    //         .andExpect(status().isAccepted());
-    // }
+    @Test
+    @DisplayName("Should leave organization")
+    void leaveOrganization() throws Exception {
+        testAuthHelpers.setMockUser(userIdToLeaveOrg, null, null);
+
+        this.mockMvc.perform(patch("/api/organizations/leave/" + orgIdToLeave)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(tenantHeaderName, orgIdToLeave))
+            .andExpect(status().isAccepted());
+    }
     
     @Test
     @WithMockCustomUser(username = "sarah.wilson6@gmail.com")

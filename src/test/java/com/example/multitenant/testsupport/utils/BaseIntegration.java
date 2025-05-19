@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.multitenant.models.*;
 import com.example.multitenant.repository.*;
 import com.example.multitenant.repository.logsrepositories.KickLogsRepository;
+import com.example.multitenant.repository.logsrepositories.MemberShipsLogsRepository;
 import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.security.GlobalRolesService;
 import com.example.multitenant.utils.dataloader.DataLoader;
@@ -54,31 +55,34 @@ public class BaseIntegration extends BaseTests {
     protected ObjectMapper objectMapper;
 
     @Autowired
-    protected MemberShipService memberShipService;
+    private MemberShipService memberShipService;
 
     @Autowired
-    protected MembershipRepository membershipRepository;
+    private MembershipRepository membershipRepository;
 
     @Autowired
-    protected OrgsRepository organizationsRepository;
+    private OrgsRepository organizationsRepository;
 
     @Autowired
-    protected UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
     @Autowired 
-    protected GlobalPermissionsRepository globalPermissionsRepository;
+    private GlobalPermissionsRepository globalPermissionsRepository;
 
     @Autowired
-    protected GlobalRolesRepository globalRolesRepository;
+    private GlobalRolesRepository globalRolesRepository;
 
     @Autowired
-    protected OrgPermissionsRepository orgPermissionsRepository;
+    private OrgPermissionsRepository orgPermissionsRepository;
 
     @Autowired
-    protected OrgRolesRepository orgRolesRepository;
+    private OrgRolesRepository orgRolesRepository;
 
     @Autowired
-    protected KickLogsRepository kickLogsRepository;
+    private KickLogsRepository kickLogsRepository;
+
+    @Autowired
+    private MemberShipsLogsRepository memberShipsLogsRepository; 
 
     @Autowired
     private DataLoader dataSeeder;
@@ -92,7 +96,7 @@ public class BaseIntegration extends BaseTests {
     protected List<Membership> memberships = new ArrayList<Membership>();
 
     @BeforeAll
-    public void setUp() throws Exception {
+    public void baseIntegrationSetUp() throws Exception {
         var activeProfiles = Arrays.asList(environment.getActiveProfiles());
         if (activeProfiles.contains("dev") || activeProfiles.contains("prod")) {
             var errMsg = String.format("invalid profile set, expected 'test' or 'local-test' but got: %s", activeProfiles);
@@ -147,6 +151,7 @@ public class BaseIntegration extends BaseTests {
         }
 
         this.kickLogsRepository.deleteAll();
+        this.memberShipsLogsRepository.deleteAll();
         this.organizationsRepository.saveAll(orgs);
         this.organizationsRepository.deleteAll();
         this.orgPermissionsRepository.deleteAll();
