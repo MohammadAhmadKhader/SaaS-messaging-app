@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.example.multitenant.dtos.auth.UserPrincipal;
 import com.example.multitenant.models.Membership;
+import com.example.multitenant.models.User;
 import com.example.multitenant.models.binders.MembershipKey;
 import com.example.multitenant.repository.*;
 
@@ -22,6 +23,7 @@ public class TestDbHelpers {
     private final MembershipRepository membershipRepository;
     private final UsersRepository usersRepository;
     private final OrgsRepository orgsRepository;
+    private final TestAuthHelpers testAuthHelpers;
 
     public void addUserToOrganization(Long userId, Integer orgId) {
         if(userId == null || userId.equals(0L)) {
@@ -46,5 +48,15 @@ public class TestDbHelpers {
         membership.loadDefaults();
 
         this.membershipRepository.save(membership);
+    }
+
+    public User updateUserPassword(User user, String newPassword) {
+        var userFromDb = this.usersRepository.findByEmail(user.getEmail());
+        if(userFromDb == null) {
+            throw new IllegalStateException("user was not found");
+        }
+
+        userFromDb.setPassword(this.testAuthHelpers.encodePassword(newPassword));
+        return this.usersRepository.save(userFromDb);
     }
 }

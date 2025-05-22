@@ -9,12 +9,12 @@ import com.example.multitenant.models.Organization;
 import jakarta.validation.constraints.*;
 
 public record OrgCreateDTO(
-    @NotBlank(message = "name can not be empty")
+    @NotNull(message = "name can not be empty")
     @Size(max = 128, message = "name must be at most {max}")
     @Size(min = 1, message = "name must be at least {min}")
     String name,
 
-    @NotBlank(message = "industry can not be empty")
+    @NotNull(message = "industry can not be empty")
     @Size(max = 128, message = "industry must be at most {max}")
     @Size(min = 1, message = "industry must be at least {min}")
     String industry,

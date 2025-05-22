@@ -20,9 +20,7 @@ public class TenantHeaderFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PATHS = List.of(
         "/api/app-dashboard", 
         "/api/auth/register",
-        "/api/auth/login",
-        "/api/auth/user",
-        "/api/auth/logout",
+        "/api/auth",
         "/api/users/search",
         "/api/organizations/search",
         "/ws",

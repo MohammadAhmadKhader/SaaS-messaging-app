@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 public class OrgMessageUpdateDTO {
-    @NotBlank
+    @NotNull(message = "content can not be empty")
     @Size(min = 1, message = "content can not be less than {min} characters")
     @Size(max = 256, message = "content can not be more than {max} characters")
     private String content;

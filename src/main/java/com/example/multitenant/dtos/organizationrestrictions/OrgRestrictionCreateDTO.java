@@ -21,7 +21,7 @@ public class OrgRestrictionCreateDTO {
     @AtLeastInFuture(amount = 1, unit = ChronoUnit.DAYS, message = "restriction must be at least 1 days in the future")
     private Instant until;
 
-    @NotBlank(message = "reason is required")
+    @NotNull(message = "reason is required")
     @Size(max = 128, message = "reason must be at most {max} characters")
     @Size(min = 4, message = "reason must be at least {min} characters")
     private String reason;

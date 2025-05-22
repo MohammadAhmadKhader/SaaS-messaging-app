@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChannelUpdateDTO {
-    @NotBlank(message = "name can not be empty")
+    @NotNull(message = "name can not be empty")
     @Size(min = 2, message = "name can not be less than {min} characters")
     @Size(max = 32, message = "name can not be more than {max} characters")
     private String name;

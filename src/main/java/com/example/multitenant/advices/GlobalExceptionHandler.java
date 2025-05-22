@@ -29,20 +29,20 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex) {
-        var errors = new ArrayList<String>();
+        var errors = new HashMap<String, String>();
         var resp = new HashMap<String, Object>();
 
         var violations = ex.getConstraintViolations();
-        for (ConstraintViolation<?> violation : violations) {
-            String fieldName = violation.getPropertyPath().toString();
+        for (var violation : violations) {
+            var fieldName = violation.getPropertyPath().toString();
             fieldName = fieldName.substring(fieldName.lastIndexOf('.') + 1);
 
             var errorMessage = violation.getMessage();
-            errors.add(errorMessage);
+            errors.put(fieldName, errorMessage);
         }
 
         resp.put("errors", errors);
-        return ResponseEntity.badRequest().body(resp);
+        return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -57,10 +57,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
-        var errors = new ArrayList<String>();
-        
-        var nonFieldError = ex.getBindingResult().getAllErrors().get(0);
-        errors.add(nonFieldError.getDefaultMessage());
+        var errors = new HashMap<String, String>();
+        var resp = new HashMap<String, Object>();
+
+        var fieldErrors = ex.getFieldErrors();
+        for (var fieldError : fieldErrors) {
+            var fieldName = fieldError.getField();
+            var message = fieldError.getDefaultMessage();
+            
+            errors.put(fieldName, message);
+        }
+
+        resp.put("errors", errors);
         var body = ApiResponses.OneKey("errors", errors);
 
         return ResponseEntity.badRequest().body(body);
@@ -86,8 +94,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Object> handleValidationException(BadRequestException ex) {
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException ex) {
         var errors = new ArrayList<String>();
+        System.out.println("""
+        BadRequestException 
+        <------------------------------------------------------------
+        <------------------------------------------------------------
+        <------------------------------------------------------------
+        <------------------------------------------------------------
+        <------------------------------------------------------------""");
+        
         errors.add(ex.getMessage());
         var body = ApiResponses.OneKey("errors", errors);
 

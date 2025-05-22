@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryUpdateDTO {
-    @NotBlank(message = "name is required")
+    @NotNull(message = "name is required")
     @Size(min = 2, message = "name can not be less than {min} characters")
     @Size(max = 32, message = "name can not be more than {max} characters")
     private String name;

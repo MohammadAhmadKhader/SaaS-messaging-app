@@ -35,3 +35,7 @@ method ?= ""
 test-method:
 	mvn "-Dspring.profiles.include=test,local-test" \
 	"-Dtest=$(class)#$(method)" test
+
+test-class:
+	mvn "-Dspring.profiles.include=test,local-test" \
+	"-Dtest=$(class)" test

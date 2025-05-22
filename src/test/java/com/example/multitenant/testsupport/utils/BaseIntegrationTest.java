@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.multitenant.models.*;
 import com.example.multitenant.repository.*;
+import com.example.multitenant.repository.logsrepositories.AuthLogsRepository;
 import com.example.multitenant.repository.logsrepositories.KickLogsRepository;
 import com.example.multitenant.repository.logsrepositories.MemberShipsLogsRepository;
 import com.example.multitenant.services.membership.MemberShipService;
@@ -80,6 +81,9 @@ public class BaseIntegrationTest extends BaseTests {
 
     @Autowired
     private KickLogsRepository kickLogsRepository;
+
+    @Autowired
+    private AuthLogsRepository authLogsRepository;
 
     @Autowired
     private MemberShipsLogsRepository memberShipsLogsRepository; 
@@ -150,6 +154,7 @@ public class BaseIntegrationTest extends BaseTests {
             org.setOwner(null);
         }
 
+        this.authLogsRepository.deleteAll();
         this.kickLogsRepository.deleteAll();
         this.memberShipsLogsRepository.deleteAll();
         this.organizationsRepository.saveAll(orgs);

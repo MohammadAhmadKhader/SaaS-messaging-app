@@ -22,11 +22,14 @@ public class DataLoaderServce {
     private final UsersRepository usersRepository;
     private final OrgsRepository organizationsRepository;
     private final MemberShipService memberShipService;
+    private final TestAuthHelpers testAuthHelpers;
+    private String encodedPassword;
+    private String testPasswordPlain = "test-password";
     
     @Transactional
     public Organization loadTestOrganization(Organization org, List<Membership> memberships) {
         var owner = org.getOwner();
-        owner.setPassword("test-password");
+        owner.setPassword(this.encodePasswordAndCache(this.testPasswordPlain));
         owner.setEmail(owner.getEmail().toLowerCase());
         var savedOwner = this.usersRepository.saveAndFlush(owner);
         
@@ -53,15 +56,24 @@ public class DataLoaderServce {
     }
 
     public User loadUser(User user, UsersRepository usersRepository) {
-        user.setPassword("test-password");
+        user.setPassword(this.encodePasswordAndCache(this.testPasswordPlain));
         user.setEmail(user.getEmail().toLowerCase());
         return usersRepository.save(user);
     }
 
     public List<User> loadUsers(List<User> users) {
         for (var user : users) {
-            user.setPassword("test-password");
+            user.setPassword(this.encodePasswordAndCache(this.testPasswordPlain));
         }
         return this.usersRepository.saveAll(users);
+    }
+
+    private String encodePasswordAndCache(String password) {
+        if(this.encodedPassword != null) {
+            return this.encodedPassword;
+        }
+
+        this.encodedPassword = testAuthHelpers.encodePassword(password);
+        return this.encodedPassword;
     }
 }

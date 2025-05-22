@@ -9,12 +9,12 @@ import lombok.*;
 @Setter
 public class GlobalRoleCreateDTO {
 
-    @NotBlank(message = "name can not be empty")
+    @NotNull(message = "name can not be empty")
     @Size(max = 64, message = "name must be at most {max}")
     @Size(min = 2, message = "name must be at least {min}")
     private String name;
 
-    @NotBlank(message = "display name can not be empty")
+    @NotNull(message = "display name can not be empty")
     @Size(max = 64, message = "display name must be at most {max}")
     @Size(min = 2, message = "display name must be at least {min}")
     private String displayName;
