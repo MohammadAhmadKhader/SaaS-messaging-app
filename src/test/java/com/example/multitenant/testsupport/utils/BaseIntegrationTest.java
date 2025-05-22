@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class BaseIntegration extends BaseTests {
+public class BaseIntegrationTest extends BaseTests {
     protected String tenantHeaderName = "X-Tenant-ID";
     @Autowired
     private LettuceConnectionFactory connectionFactory;

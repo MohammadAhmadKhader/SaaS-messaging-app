@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.multitenant.models.User;
 import com.example.multitenant.repository.OrgRolesRepository;
 import com.example.multitenant.repository.UsersRepository;
-import com.example.multitenant.testsupport.utils.BaseIntegration;
+import com.example.multitenant.testsupport.utils.BaseIntegrationTest;
 import com.example.multitenant.testsupport.utils.DataLoaderServce;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ import org.springframework.test.context.TestConstructor;
 @RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-public class UsersControllerTest extends BaseIntegration {
+public class UsersControllerIntegrationTest extends BaseIntegrationTest {
     private Integer defaultSearchSize = 10;
     private static final String ENDPOINT = "/api/users/search";
 

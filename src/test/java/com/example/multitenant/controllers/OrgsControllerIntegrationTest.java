@@ -21,7 +21,7 @@ import com.example.multitenant.services.membership.MemberShipService;
 import com.example.multitenant.services.security.GlobalPermissions;
 import com.example.multitenant.services.security.OrgPermissions;
 import com.example.multitenant.testsupport.annotations.WithMockCustomUser;
-import com.example.multitenant.testsupport.utils.BaseIntegration;
+import com.example.multitenant.testsupport.utils.BaseIntegrationTest;
 import com.example.multitenant.testsupport.utils.TestAuthHelpers;
 import com.example.multitenant.testsupport.utils.TestDbHelpers;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -50,7 +50,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) 
-public class OrganizationsControllerTest extends BaseIntegration {
+public class OrgsControllerIntegrationTest extends BaseIntegrationTest {
     private static final String ENDPOINT = "/api/organizations";
     private final TestDbHelpers testDbHelpers;
     private final TestAuthHelpers testAuthHelpers;
