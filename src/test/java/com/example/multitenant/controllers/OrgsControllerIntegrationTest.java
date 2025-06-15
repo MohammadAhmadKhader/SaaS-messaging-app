@@ -41,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.everyItem;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -224,8 +225,8 @@ public class OrgsControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(tenantHeaderName, firstOrg.getId()))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.error")
-            .value("user is not part of the organization"));
+            .andExpect(jsonPath("$.errors")
+            .value(everyItem(containsString("user is not part of the organization"))));
     }
     
     @Test
@@ -250,7 +251,7 @@ public class OrgsControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(tenantHeaderName, orgId))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.error")
-            .value("can not leave an owned organization you have to delete it, or transfer ownership first"));
+            .andExpect(jsonPath("$.errors")
+            .value(everyItem(containsString("can not leave an owned organization you have to delete it, or transfer ownership first"))));
     }
 }

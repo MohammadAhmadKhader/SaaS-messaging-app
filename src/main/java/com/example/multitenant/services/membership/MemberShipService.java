@@ -7,6 +7,7 @@ import com.example.multitenant.services.security.*;
 import com.example.multitenant.specifications.MembershipSpec;
 import com.example.multitenant.specificationsbuilders.MembershipSpecBuilder;
 import com.example.multitenant.utils.PageableHelper;
+import com.example.multitenant.utils.SecurityUtils;
 import com.example.multitenant.utils.VirtualThreadsUtils;
 
 import jakarta.transaction.Transactional;
@@ -14,10 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.multitenant.dtos.apiresponse.ApiResponses;
 import com.example.multitenant.dtos.membership.MembershipFilter;
 import com.example.multitenant.dtos.organizations.*;
 import com.example.multitenant.exceptions.*;
@@ -166,29 +169,30 @@ public class MemberShipService {
 
     public Membership kickUserFromOrganization(Integer orgId, long userId) {
         var membershipKey = new MembershipKey(orgId, userId);
-
+        
         var trasksResults = VirtualThreadsUtils.run(
-            () -> this.organizationsService.findById(orgId),
-            () -> this.memberShipCrudService.findById(membershipKey)
+            () -> this.organizationsService.findOneWithOwner(orgId),
+            () -> this.membershipRepository.findById(membershipKey)
         );
 
-        var membership = trasksResults.getRight();
+        var membershipOpt = trasksResults.getRight();
         var organization = trasksResults.getLeft();
-        if (membership == null) {
-            throw new ResourceNotFoundException("membership");
+        if (membershipOpt.isEmpty() || !membershipOpt.get().isMember()) {
+            throw new InvalidOperationException("user is not part of the organization");
         }
+
+        var membership = membershipOpt.get();
 
         if (organization == null) {
             throw new ResourceNotFoundException("organization", orgId);
         }
 
+        if(organization.getOwner().getId() == membership.getId().getUserId()) {
+            throw new InvalidOperationException("can not leave an owned organization you have to delete it, or transfer ownership first");
+        }
+
         membership.setMember(false);
 
-        return this.membershipRepository.save(membership);
-    }
-
-    public Membership kickUserFromOrganization(Membership membership) {
-        membership.setMember(false);
         return this.membershipRepository.save(membership);
     }
 

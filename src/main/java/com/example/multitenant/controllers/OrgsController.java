@@ -71,13 +71,8 @@ public class OrgsController {
     public ResponseEntity<Object> kickUser(@ValidateNumberId @PathVariable long userId) {
         var orgId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
-
-        var membership = this.memberShipService.findOne(orgId, userId);
-        if(membership == null || !membership.isMember()) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
-        }
         
-        this.memberShipService.kickUserFromOrganization(membership);
+        this.memberShipService.kickUserFromOrganization(orgId, userId);
         this.logsService.createKickLog(user, userId, orgId, LogEventType.KICK);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -88,17 +83,7 @@ public class OrgsController {
         var orgId = AppUtils.getTenantId();
         var user = SecurityUtils.getUserFromAuth();
 
-        var membership = this.memberShipService.findOne(orgId, user.getId());
-        if(membership == null || !membership.isMember()) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("user is not part of the organization"));
-        }
-
-        var org = this.organizationsService.findOneWithOwner(orgId);
-        if(org.getOwner().getId() == user.getId()) {
-            return ResponseEntity.badRequest().body(ApiResponses.GetErrResponse("can not leave an owned organization you have to delete it, or transfer ownership first"));
-        }
-
-        this.memberShipService.kickUserFromOrganization(membership.getId().getOrganizationId(), membership.getId().getUserId());
+        this.memberShipService.kickUserFromOrganization(orgId, user.getId());
         this.logsService.createMembershipLog(user, orgId, LogEventType.LEAVE);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
